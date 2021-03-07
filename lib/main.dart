@@ -410,15 +410,6 @@ class MyApp extends StatelessWidget {
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
 
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
   final String title;
 
   @override
@@ -426,7 +417,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
   String barcode = "";
   /***********************************************
  * Reading and Writing to Preferences
@@ -529,18 +519,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   }
 
-  
-
-
-
-
-  void _incrementCounter() {
-    setState(() {
-  
-      _counter++;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
@@ -590,7 +568,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 bottom: 20,
                 left: 20,
                     child: IconButton(
-                      icon: Icon(Icons.access_alarm),
+                      icon: Icon(Icons.palette),
                         color: Color(0xFF0690d4),
                         onPressed: () {
                           /*Navigator.push(
@@ -907,10 +885,811 @@ class CreateDecksScreen extends StatefulWidget {
   _CreateDecksScreenState createState() => _CreateDecksScreenState();
 }
 class _CreateDecksScreenState extends State<CreateDecksScreen>{
+  static int editBeginningIndex = 0;
+  static int editMiddleIndex = 0;
+  static int editEndIndex = 0;
+  int _defaultBeginningChoiceIndex = 0;
+  int _defaultMiddleChoiceIndex = 1;
+  int _defaultEndChoiceIndex = 0;
+  List <ChoiceChip> choiceChipList = [];
+  static List <LetterSet> beginningSetsList = [];
+  static List <LetterSet> middleSetsList = [];
+  static List <LetterSet> endSetsList = [];
+  static LetterSet tempBeginningSet;
+  static LetterSet tempMiddleSet;
+  static LetterSet tempEndSet;
+
+  void sortChips(){
+    beginningSetsList.clear();
+    middleSetsList.clear();
+    endSetsList.clear();
+    //go through all the sets, take the ones that are beginning, and put them into a list
+    for(int i = 0; i<allSets.length; i++){
+     
+     for(int j = 0; j<allSets[i].position.length; j++){
+       if(allSets[i].position[j] == "beginning"){
+        
+        beginningSetsList.add(allSets[i]);
+       } 
+       if (allSets[i].position[j] == "middle"){
+         middleSetsList.add(allSets[i]);
+       }
+       if (allSets[i].position[j] == "end"){
+         endSetsList.add(allSets[i]);
+       }
+     }
+    }
+  }
+  @override
+  void initState(){
+    super.initState();
+    SystemChrome.setPreferredOrientations([
+        DeviceOrientation.landscapeRight,
+        DeviceOrientation.landscapeLeft,
+    ]);
+    
+    sortChips();
+   }
   Widget build(BuildContext context){
-    return null;
+    return MaterialApp(
+      theme: ThemeData(
+        fontFamily: 'SF-Pro-Rounded',
+      ),
+      debugShowCheckedModeBanner: false,
+      home: Stack (
+      children: <Widget>[
+        Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage("assets/water-blue-ocean.jpg"), 
+                fit: BoxFit.cover
+            )
+          ),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+              child: Container(
+                decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.4),
+                ),
+              )
+            )
+        ),
+        Scaffold(
+          backgroundColor: Colors.transparent,
+          body: Stack(
+            
+            children: <Widget>[
+             choiceChipRow(),
+             
+              Positioned(
+                bottom: 20,
+                left: 20,
+                child: IconButton(
+                  icon: Icon(SFSymbols.house_fill),
+                  iconSize: SizeConfig.screenHeight * 0.05,
+                  color: Color(0xFF0690d4),
+                  onPressed: () {
+                  setState(() {
+                      sortChips();
+                    });
+                    
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => MyApp()),
+                    );
+                    
+                  },
+                )
+              )
+            ],
+          )
+        )   
+      ],
+      )
+    );
+  }
+  /***********************************************
+ * Build methods for widgets in Create Decks Screen
+ ***********************************************/
+  Widget beginningChoiceChips() {
+    return ListView.builder(
+      itemCount: beginningSetsList.length,
+      //itemExtent: 100,
+      itemBuilder: (BuildContext context, int index) {
+        return Container(
+          //height: 50,
+          //width: SizeConfig.screenWidth * 0.25,
+          margin: EdgeInsets.only(bottom: 10,),
+         // padding: EdgeInsets.only(bottom: 10,),
+            child: InputChip(
+        selected: _defaultBeginningChoiceIndex == index,
+        label: Container(
+          width: 200,
+          margin: EdgeInsets.all(10),
+          child:  
+            Text(beginningSetsList[index].name,
+                style: TextStyle(fontSize: SizeConfig.safeBlockHorizontal * 2, fontWeight: FontWeight.w500),
+              textAlign: TextAlign.center,
+            ),
+        ),
+        showCheckmark: false,
+        deleteButtonTooltipMessage: "Edit",
+        onDeleted: () {
+          mid = beginningSetsList[index];
+            Navigator.push(
+              context,
+              //pass letterset index
+              MaterialPageRoute(builder: (context) => CustomizeLettersScreen()),
+            ); 
+        },
+        deleteIcon: Icon(SFSymbols.pencil,
+        color: Color(0xFF0342dc),),
+        onPressed: () {
+          setState(() {
+            _defaultBeginningChoiceIndex = index;
+           // print("defaultindex: $defaultIndex");
+           // print("listbuilder: $listBuilderIndex");
+          });
+        },
+      
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.only(topRight: Radius.circular(10),bottomRight: Radius.circular(10),topLeft: Radius.circular(10),bottomLeft: Radius.circular(10))),
+            selectedColor: Color(0xFF3478F6).withOpacity(0.3),
+            backgroundColor: Colors.white,
+            labelStyle: TextStyle(color: Color(0xFF0342dc)),
+            )
+        );
+          
+        },
+      
+    );
+    
+  }
+  Widget middleChoiceChips() {
+    return ListView.builder(
+      itemCount: middleSetsList.length,
+      //itemExtent: 50,
+      itemBuilder: (BuildContext context, int index) {
+        return Container(
+          margin: EdgeInsets.only(bottom: 10),
+          child: InputChip(
+        selected: _defaultMiddleChoiceIndex == index,
+        label: Container(
+          width: 200,
+          margin: EdgeInsets.all(10),
+          child:  
+            Text(middleSetsList[index].name,
+                style: TextStyle(fontSize: SizeConfig.safeBlockHorizontal * 2, fontWeight: FontWeight.w500),
+              textAlign: TextAlign.center,
+            ),
+        ),
+        showCheckmark: false,
+        deleteButtonTooltipMessage: "Edit",
+        onDeleted: () {
+          mid = middleSetsList[index];
+            Navigator.push(
+              context,
+              //pass letterset index
+              MaterialPageRoute(builder: (context) => CustomizeLettersScreen()),
+            );    
+        },
+        deleteIcon: Icon(SFSymbols.pencil,
+        color: Color(0xFF0342dc),),
+        onPressed: () {
+          setState(() {
+            _defaultMiddleChoiceIndex = index;
+           // print("defaultindex: $defaultIndex");
+           // print("listbuilder: $listBuilderIndex");
+          });
+        },
+      
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.only(topRight: Radius.circular(10),bottomRight: Radius.circular(10),topLeft: Radius.circular(10),bottomLeft: Radius.circular(10))),
+            selectedColor: Color(0xFF3478F6).withOpacity(0.3),
+            backgroundColor: Colors.white,
+            labelStyle: TextStyle(color: Color(0xFF0342dc)),
+            )
+        );
+        
+          
+        },
+      
+    );
+  }
+  Widget endChoiceChips() {
+      return ListView.builder(
+        itemCount: endSetsList.length,
+        itemBuilder: (BuildContext context, int index) {
+          return Container(
+            margin: EdgeInsets.only(bottom: 10,),
+            child: InputChip(
+        selected: _defaultEndChoiceIndex == index,
+        label: Container(
+          width: 200,
+          margin: EdgeInsets.all(10),
+          child:  
+            Text(endSetsList[index].name,
+                style: TextStyle(fontSize: SizeConfig.safeBlockHorizontal * 2, fontWeight: FontWeight.w500),
+              textAlign: TextAlign.center,
+            ),
+        ),
+        showCheckmark: false,
+        deleteButtonTooltipMessage: "Edit",
+        onDeleted: () {
+          mid = endSetsList[index];
+            Navigator.push(
+              context,
+              //pass letterset index
+              MaterialPageRoute(builder: (context) => CustomizeLettersScreen()),
+            );  
+        },
+        deleteIcon: Icon(SFSymbols.pencil,
+        color: Color(0xFF0342dc),),
+        onPressed: () {
+          setState(() {
+            _defaultEndChoiceIndex = index;
+           // print("defaultindex: $defaultIndex");
+           // print("listbuilder: $listBuilderIndex");
+          });
+        },
+      
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.only(topRight: Radius.circular(10),bottomRight: Radius.circular(10),topLeft: Radius.circular(10),bottomLeft: Radius.circular(10))),
+            selectedColor: Color(0xFF3478F6).withOpacity(0.3),
+            backgroundColor: Colors.white,
+            labelStyle: TextStyle(color: Color(0xFF0342dc)),
+            )
+        );
+          
+        },
+      
+    );
+  }
+  Widget checkmarkButton() {
+    return Container(
+      margin: EdgeInsets.only(top: 20, right: SizeConfig._safeAreaVertical + 5, left: SizeConfig._safeAreaVertical + 5, bottom: 20),
+      child: IconButton(
+          icon: Icon(SFSymbols.checkmark_circle_fill),
+          color: Color(0xFF00cbfb),
+          iconSize: SizeConfig.screenHeight * 0.1,
+          onPressed: () {
+            setState(() {
+              //sortChips();
+              
+              selectedBeginningSet = beginningSetsList[_defaultBeginningChoiceIndex];
+              selectedMiddleSet = middleSetsList[_defaultMiddleChoiceIndex];
+              selectedEndSet = endSetsList[_defaultEndChoiceIndex];
+  
+       
+             
+              print(selectedMiddleSet.lettersToRemove);
+              tempBeginningSet = LetterSet(selectedBeginningSet.name, selectedBeginningSet.position, selectedBeginningSet.generateCustomLetters());
+              tempMiddleSet = LetterSet(selectedMiddleSet.name, selectedMiddleSet.position, selectedMiddleSet.generateCustomLetters());
+              tempEndSet = LetterSet(selectedEndSet.name, selectedEndSet.position, selectedEndSet.generateCustomLetters());
+              //clear lettersToRemove and lettersToAdd
+
+              //HAVE TO DO TO ALL, NOT JUST SELECTED
+              for (LetterSet b in beginningSetsList){
+                b.lettersToAdd.clear();
+                b.lettersToRemove.clear();
+              }
+              for (LetterSet m in middleSetsList){
+                m.lettersToAdd.clear();
+                m.lettersToRemove.clear();
+              }
+              for (LetterSet e in endSetsList){
+                e.lettersToAdd.clear();
+                e.lettersToRemove.clear();
+              }
+          
+              Navigator.push(
+                context,
+                ScaleRoute(page: SaveScreen()),
+              );
+            });
+          },
+        ),
+    );
+  }
+  Widget column1(){
+    return Container(
+      width: SizeConfig.screenWidth * 0.25,
+      height: 500,
+      margin: EdgeInsets.only(top: SizeConfig._safeAreaVertical + 20, right: 5,),
+      child: Column(
+        mainAxisSize: MainAxisSize.max,
+      children: [
+        Container( 
+          margin: EdgeInsets.only(bottom: 10),
+          child: Text("Column 1",
+            style: TextStyle(
+              fontWeight: FontWeight.w700,
+              color: Colors.blue,
+              fontSize: SizeConfig.safeBlockHorizontal * 3,
+            )
+          ), 
+        ),
+        Flexible(
+          child: beginningChoiceChips(),
+        )
+
+        
+      ],
+      )
+    );
+  }
+  Widget column2(){
+    return Container(
+      width: SizeConfig.screenWidth * 0.25,
+      height: 500,
+      margin: EdgeInsets.only(top: SizeConfig._safeAreaVertical + 20, right: 5, left: 5,),
+      child: Column(
+        children: [
+          Container(
+            margin: EdgeInsets.only(bottom: 10),
+            child: Text("Column 2",
+              style: TextStyle(
+                fontWeight: FontWeight.w700,
+                color: Colors.blue,
+                fontSize: (SizeConfig.safeBlockHorizontal * 3)
+              )
+            ),
+          ),
+          Flexible(
+            child: middleChoiceChips(),
+          )
+          
+        ],
+      )
+    );
+  }
+  Widget column3(){
+    return Container(
+      width: SizeConfig.screenWidth * 0.25,
+      height: 500,
+      margin: EdgeInsets.only(top: SizeConfig._safeAreaVertical + 20, left: 5),
+      child: Column(
+        children: [
+          Container( 
+            margin: EdgeInsets.only(bottom: 10),
+            child: Text("Column 3",
+              style: TextStyle(
+                fontWeight: FontWeight.w700,
+                color: Colors.blue,
+                fontSize: (SizeConfig.safeBlockHorizontal * 3),
+              )
+            ),
+          ),
+          Flexible(
+            child: endChoiceChips(),
+          )
+          
+        ],
+      )
+   );
+  }
+  Widget choiceChipRow(){
+    return Row(
+        children: [
+          Spacer(),
+          column1(),
+          column2(),
+          column3(),
+          checkmarkButton(),
+        ],
+    );
+  }
+  
+}
+/***********************************************
+ * Customize Letters Screen
+ ***********************************************/
+ class CustomizeLettersScreen extends StatefulWidget {
+  @override
+  _CustomizeLettersState createState() => _CustomizeLettersState();
+}
+class _CustomizeLettersState extends State<CustomizeLettersScreen> {
+  final _controller = TextEditingController();
+  static List<String> removeMiddleLetterList = [];
+  static List<String> addMiddleLetterList = [];
+  @override
+  void initState(){
+    super.initState();
+    SystemChrome.setPreferredOrientations([
+        DeviceOrientation.landscapeRight,
+        DeviceOrientation.landscapeLeft,
+    ]);
+  }
+  Widget build(BuildContext context) {
+    final double itemWidth = SizeConfig.screenWidth/50;
+    final double itemHeight = SizeConfig.screenWidth/50;
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        body: Stack(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Container(
+                  margin: EdgeInsets.all(30),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Text("Letter sets"),
+                      Text(mid.name)
+                    ],
+                  ),
+                ),
+                Container(
+                  margin: EdgeInsets.all(30),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Text("Letters"),
+                      gridView(itemWidth, itemHeight)
+                    ],
+                  ),
+                ),
+              ]
+            ),
+            Positioned(
+              bottom: 20,
+              left: 20,
+              child: IconButton(
+                onPressed: () {
+                  /*Navigator.push(
+                    context,
+                    //FadeSlideRightRoute(page: MyApp()),
+                    //MaterialPageRoute(builder: (context) => CreateDecksScreen()),
+                    
+                  );*/
+                  Navigator.pop(context);
+                },
+                icon: Icon(SFSymbols.house_fill),
+                iconSize: SizeConfig.screenHeight * 0.05,
+                color: Color(0xFF0690d4)
+              ),
+            ),   
+          ]
+        )
+      )
+    );
+  }
+/***********************************************
+ * Build methods for widgets in Customize Letters Screen
+ ***********************************************/
+ Widget gridView(double width, double height) {
+    return ConstrainedBox(
+      constraints: new BoxConstraints(
+      //minHeight: ,
+      maxHeight: SizeConfig.screenWidth-514,
+      maxWidth: SizeConfig.screenWidth/2
+    ),
+
+    child: GridView.count(
+      // Create a grid with 3 columns. If you change the scrollDirection to
+      // horizontal, this produces 3 rows.
+      crossAxisCount: 3,
+      childAspectRatio: (width / height),
+      // Generate allPacks.length amount widgets that display their index in the List.
+      children: List.generate(mid.letters.length + 1 + mid.lettersToAdd.length, (index) {
+       
+        //print("index: $index");
+       
+        //last element of gridview should be a textformfield
+        if(index == mid.letters.length + mid.lettersToAdd.length){
+          return Container(
+            width: SizeConfig.screenWidth * 0.3,
+            decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10)
+          ),
+            child: TextFormField(
+              style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+              onFieldSubmitted: (String input){
+
+            setState(() {
+              //when text is submitted to the textformfield, the letters are added to lettersToAdd list of the selected letterset
+              mid.lettersToAdd.add(input);
+            });
+            
+            
+          },
+          textAlign: TextAlign.center,
+           decoration: InputDecoration(
+            contentPadding: EdgeInsets.symmetric(vertical: SizeConfig.screenWidth * 0.02,),
+            fillColor: Colors.black.withOpacity(0.3),
+            filled: true,
+            border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10.0),
+            borderSide: BorderSide.none)
+          ),
+          controller: _controller,
+        ),
+        
+      
+    );
+        }
+        //sorting letters that were manually added, putting their filterchips after original letters 
+        else if(mid.letters.length-1<index && index <mid.letters.length + mid.lettersToAdd.length){
+          return Container(
+            margin: EdgeInsets.only(top: 5, right: 5, left: SizeConfig._safeAreaVertical + 10, bottom: 5),
+           
+            child: FilterChip(
+              label: FittedBox(
+                fit: BoxFit.fitWidth,
+                child: Text(mid.lettersToAdd[index-mid.letters.length],
+                  style: TextStyle(fontSize: SizeConfig.safeBlockHorizontal * 2, fontWeight: FontWeight.w500),
+                    textAlign: TextAlign.center),
+              ),
+              selected: !mid.lettersToRemove.contains(mid.lettersToAdd[index-mid.letters.length]),
+              onSelected: (bool selected) {
+                setState(() {
+                  if(selected){
+                    //not selected yet, you are selecting now
+                    //(undoing the remove) you do not want to remove this letter from the letter set, so remove it form removeMiddleLetterList
+                    mid.lettersToRemove.remove(mid.lettersToAdd[index-mid.letters.length]);
+                  }
+                  else{
+                    //already selected, you are deselecting now
+                    //adding letter you want to remove into removeMiddleLetterList
+                  
+                    mid.lettersToRemove.add(mid.lettersToAdd[index-mid.letters.length]);
+                   
+                  }
+                });
+              }
+            )
+           
+            );
+        }
+        else{
+          return Container(
+            
+            margin: EdgeInsets.only(top: 5, right: 5, left: SizeConfig._safeAreaVertical + 10, bottom: 5),
+            child: FilterChip(
+              label:  Container( 
+                width: 50,
+                height: 50,
+                child:Text(mid.letters[index],
+                  style: TextStyle(fontSize: SizeConfig.safeBlockHorizontal * 2, fontWeight: FontWeight.w500),
+                    textAlign: TextAlign.center),
+              ),
+              selected: !mid.lettersToRemove.contains(mid.letters[index]),
+              
+              onSelected: (bool selected) {
+                setState(() {
+                  if(selected){
+                    //not selected yet, you are selecting now
+                    //undoing the remove
+                    
+                    mid.lettersToRemove.remove(mid.letters[index]);
+                    //_CreateDecksScreenState.middleSetsList[editMiddleIndex].letters.remove(_CreateDecksScreenState.middleSetsList[editMiddleIndex].letters[index]);
+                  }
+                  else{
+                    //already selected, you are deselecting now
+                    //removeMiddleLetterList.add(_CreateDecksScreenState.middleSetsList[_CreateDecksScreenState.editMiddleIndex].letters[index]);
+                    mid.lettersToRemove.add(mid.letters[index]);
+                   
+                  }
+                });
+              }
+            )
+           
+            );
+        }
+        
+          
+      }),
+    ),
+     
+    );
   }
 }
+/***********************************************
+ * Save Screen
+ ***********************************************/
+class SaveScreen extends StatefulWidget {
+  @override
+  _SaveScreenState createState() => _SaveScreenState();
+}
+class _SaveScreenState extends State<SaveScreen> {
+  final _controller = TextEditingController();
+  /***********************************************
+ * Saving to Preferences
+ ***********************************************/
+  _saveInt(int numValue) async {
+        final prefs = await SharedPreferences.getInstance();
+        final key = "numberOfKeys";
+        final value = numValue;
+        prefs.setInt(key, value);
+        //print('saved $value');
+  }
+  _saveLetterPack(List<String> stringList, String keyName) async {
+        LetterPack.encodeAll();
+        final prefs = await SharedPreferences.getInstance();
+        final key = keyName;
+        final value = stringList;
+        prefs.setStringList(key, value);
+        //print('saved $value');
+  }
+  _saveAll() async {
+        numberOfLetterPacks++;
+        LetterPack.encodeAll();
+        print("encode all success!");
+        await _saveInt(numberOfLetterPacks);
+        print("saveInt success!");
+        //goes through allData (list of string lists), which saves each letter pack
+        for(int i=0; i<numberOfLetterPacks; i++){
+          await _saveLetterPack(allData[i], i.toString());
+        }
+        print('Saved All');
+        print(numberOfLetterPacks);
+  }
+  final _formKey = GlobalKey<FormState>();
+  
+  @override
+  void initState(){
+    super.initState();
+    SystemChrome.setPreferredOrientations([
+        DeviceOrientation.landscapeRight,
+        DeviceOrientation.landscapeLeft,
+    ]);
+  }
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      theme: ThemeData(
+        fontFamily: 'SF-Pro-Rounded',
+      ),
+      home: Stack(
+      children: <Widget>[
+        Container(
+          decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage("assets/water-blue-ocean.jpg"), 
+                fit: BoxFit.cover
+              )
+            ),
+            child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.4),
+                  ),
+                )
+            )
+        ),
+        Scaffold(
+          resizeToAvoidBottomPadding: false,
+          backgroundColor: Colors.transparent,
+          body: Column(
+            children: <Widget>[
+              Container( 
+                margin: EdgeInsets.only(top: SizeConfig._safeAreaVertical + 20, bottom: 5),
+                child: Text("Save Your Deck?",
+                style: TextStyle(color: Color(0xFF1079c4), fontWeight: FontWeight.w700, fontSize: SizeConfig.safeBlockHorizontal * 4),
+                ),
+              ),
+              textSaveRow(),
+              skipSaveButton(), 
+            ],
+          )
+        )
+      ],
+      )
+    );
+  }
+  /***********************************************
+ * Build methods for widgets in Save Screen
+ ***********************************************/
+  Widget textSaveRow(){
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+      Spacer(),
+      textFormField(),
+      Expanded(
+          child: Padding(
+          padding: EdgeInsets.only(right: 10),
+          child: saveButton(),
+        ),
+      ),
+      ],
+    );
+  }
+  
+  Widget textFormField(){
+    return Container(
+      width: SizeConfig.screenWidth * 0.4,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10)
+      ),
+      child: Form(
+        key: _formKey,
+        child: TextFormField(
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+          validator: (value) {
+            if (value.isEmpty) {
+              return 'Please enter some text';
+            }
+            return null;
+          },
+          textAlign: TextAlign.center,
+          controller: _controller,
+          decoration: InputDecoration(
+            contentPadding: EdgeInsets.symmetric(vertical: SizeConfig.screenWidth * 0.02,),
+            fillColor: Colors.white.withOpacity(0.3),
+            filled: true,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10.0),
+              borderSide: BorderSide.none
+            ),
+            hintText: 'Deck Name',
+            hintStyle: TextStyle(color: Color(0xFF373737), fontWeight: FontWeight.w500, fontSize: SizeConfig.safeBlockHorizontal * 2.5),
+        ),
+        )
+      )
+    );
+  }
+  Widget saveButton() {
+    return Container(
+      margin: EdgeInsets.all(20),
+      child:IconButton(
+          icon: Icon(SFSymbols.checkmark_circle_fill),
+          iconSize: SizeConfig.screenWidth * 0.05,
+        color: Colors.blue,
+        onPressed: (){
+ 
+          if (_formKey.currentState.validate()) {
+          setState(() {
+            allPacks.add(new LetterPack(_controller.text, _CreateDecksScreenState.tempBeginningSet, _CreateDecksScreenState.tempMiddleSet, _CreateDecksScreenState.tempEndSet));
+            letterPackName = _controller.text;
+            //put new letterPack into letterPackMap
+            letterPackMap[allPacks.last.name] = allPacks.last;
+            _saveAll();
+            Navigator.push(
+              context,
+              FadeRoute(page: BoardScreen()),
+          );
+          }); 
+          }
+        },
+      ),
+    );
+  }
+  Widget skipSaveButton() {
+    return Container(
+      margin: EdgeInsets.all(20),
+      child: FlatButton(
+        child: Text("Skip, Don't Save Deck",
+          style: TextStyle(decoration: TextDecoration.underline, color: Color(0xFF0094c8), fontWeight: FontWeight.w500, fontSize: SizeConfig.safeBlockHorizontal * 2),
+        ),
+        color: Colors.transparent,
+        textColor: Colors.black,
+        onPressed: ()async {
+            //Load the discard pack to the blending board
+            discardPack = LetterPack("discardPack", _CreateDecksScreenState.tempBeginningSet, _CreateDecksScreenState.tempMiddleSet, _CreateDecksScreenState.tempEndSet);
+            letterPackName = "discardPack";
+            letterPackMap["discardPack"] = discardPack;
+            
+            //Save the discard letter pack
+            List <String> tempEncodedStringList = [];
+            discardPack.dataEncode(tempEncodedStringList);
+            await _saveLetterPack(tempEncodedStringList, "discardPackKey");
+            print(tempEncodedStringList);
+            Navigator.push(
+              context,
+              FadeRoute(page: BoardScreen()),
+          );
+        },
+      ),
+    );
+  }
+}
+
+
  /***********************************************
  * My Decks Screen
  ***********************************************/
@@ -994,6 +1773,9 @@ class _MyDecksScreenState extends State<MyDecksScreen> {
       )
     );
   }
+  /***********************************************
+ * Build methods for My Decks Screen
+ ***********************************************/
   Widget myDecksColumn(double width, double height){
     return Container(
       margin: EdgeInsets.only(top: SizeConfig.safeBlockHorizontal),
