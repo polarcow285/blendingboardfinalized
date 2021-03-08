@@ -1448,12 +1448,15 @@ class _CustomizeLettersState extends State<CustomizeLettersScreen> {
               label:  Container( 
                 width: 50,
                 height: 50,
-                child:Text(mid.letters[index],
-                  style: TextStyle(fontSize: SizeConfig.safeBlockHorizontal * 2, fontWeight: FontWeight.w500),
-                    textAlign: TextAlign.center),
+                child: Center(
+                  child: Text(mid.letters[index],
+                  style: TextStyle(color: Colors.lightBlue, fontSize: SizeConfig.safeBlockHorizontal * 2, fontWeight: FontWeight.w500),
+                    textAlign: TextAlign.center,),
+                )
               ),
+
               selected: !mid.lettersToRemove.contains(mid.letters[index]),
-              
+              showCheckmark: false,
               onSelected: (bool selected) {
                 setState(() {
                   if(selected){
