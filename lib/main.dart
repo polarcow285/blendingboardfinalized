@@ -5,6 +5,7 @@ import 'dart:ui';
 import 'package:flutter/widgets.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_sfsymbols/flutter_sfsymbols.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 /***********************************************
  * main function to run app
@@ -1454,7 +1455,6 @@ class _CustomizeLettersState extends State<CustomizeLettersScreen> {
                     textAlign: TextAlign.center,),
                 )
               ),
-
               selected: !mid.lettersToRemove.contains(mid.letters[index]),
               showCheckmark: false,
               onSelected: (bool selected) {
@@ -1922,7 +1922,8 @@ class _BoardScreenState extends State<BoardScreen> {
   bool isVowelBeginningBool;
   bool isVowelMiddleBool;
   bool isVowelEndBool;
-
+  List<String> QRStringList = [];
+  
   bool checkVowels(String letter, bool isVowelBoolean){
     if(letter.toLowerCase() == 'a'||letter.toLowerCase() == 'e'||letter.toLowerCase() == 'i'||letter.toLowerCase() == 'o'||letter.toLowerCase() == 'u'){
       isVowelBoolean = true;
@@ -1939,7 +1940,32 @@ class _BoardScreenState extends State<BoardScreen> {
     final value = stringValue;
     prefs.setString(key, value);
   }
-
+  String listToStringConverter(List<String> stringList){
+    String stringData = "";
+    //convert stringlist to a string 
+    for(int i=0; i<stringList.length; i++){
+      stringData += stringList[i];
+      //the comma separates each element of QRStringList
+      stringData += ",";
+    }
+    return stringData;
+  }
+  List<String> stringToListConverter(String longString){
+    List<String> stringList = [];
+    int lengthOfElement = 0;
+    //goes through the string and 
+    //pol,jkhb,apo,bop,
+    for(int i=0; i<longString.length; i++){
+      if(longString[i] == ","){
+        stringList.add(longString.substring(i-lengthOfElement, i));
+        lengthOfElement = 0;
+      }
+      else{
+        lengthOfElement++;
+      } 
+    }
+    return stringList;
+  }
   @override
   void initState(){
     super.initState();
@@ -1949,6 +1975,7 @@ class _BoardScreenState extends State<BoardScreen> {
     ]);
     //save current letter pack name
     _saveLetterPackName(letterPackName);
+    letterPackMap[letterPackName].dataEncode(QRStringList);
     
   }
   Widget build(BuildContext context) {
@@ -2004,10 +2031,24 @@ class _BoardScreenState extends State<BoardScreen> {
                 iconSize: SizeConfig.screenHeight * 0.05,
                 color: Color(0xFF0690d4),
                 onPressed: () {
-                  /*Navigator.push(
-                    context,
-                    FadeRoute(page: Test1Screen()),
-                  );*/
+                  print(QRStringList);
+                  print(listToStringConverter(QRStringList));
+                  print(stringToListConverter(listToStringConverter(QRStringList)));
+                  showDialog(context: context, child:
+                      new AlertDialog(
+                        title: new Text("QR Code"),
+                        content: Container(
+                          width: 100,
+                          height: 100,
+                          child: QrImage(
+                            data: listToStringConverter(QRStringList),
+                            version: QrVersions.auto,
+                            size: 100,
+                          ),
+                        )
+                      )
+                  );
+                  
                 },
               ),
               )
