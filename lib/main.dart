@@ -6,6 +6,7 @@ import 'package:flutter/widgets.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_sfsymbols/flutter_sfsymbols.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:barcode_scan/barcode_scan.dart';
 
 /***********************************************
  * main function to run app
@@ -392,6 +393,13 @@ LetterSet beg;
 LetterSet mid;
 LetterSet end;
 
+_reset() async{
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    await preferences.clear(); 
+    // allPacks.clear();  
+    print("CLEARED ALL");
+}
+
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
@@ -418,7 +426,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  String barcode = "";
+  String qrCodeResult;
   /***********************************************
  * Reading and Writing to Preferences
  ***********************************************/
@@ -504,6 +512,47 @@ class _MyHomePageState extends State<MyHomePage> {
      
   }
 
+/***********************************************
+ * QR functions
+ ***********************************************/
+List<String> stringToListConverter(String longString){
+  List<String> stringList = [];
+  int lengthOfElement = 0;
+  //goes through the string and 
+  //pol,jkhb,apo,bop,
+  for(int i=0; i<longString.length; i++){
+    if(longString[i] == ","){
+      stringList.add(longString.substring(i-lengthOfElement, i));
+      lengthOfElement = 0;
+    }
+    else{
+      lengthOfElement++;
+    } 
+  }
+  return stringList;
+}
+Future<void> _scan() async {
+  ScanResult codeSanner = await BarcodeScanner.scan(
+    options: ScanOptions(
+      useCamera: -1,
+    ),
+  );
+  setState(() {
+    qrCodeResult = codeSanner.rawContent;
+    print(stringToListConverter(qrCodeResult));
+    LetterPack tempLP = LetterPack.decodeLetterPack(stringToListConverter(qrCodeResult));
+    allPacks.add(tempLP);
+    letterPackName = tempLP.name;
+    //put new letterPack into letterPackMap
+    letterPackMap[allPacks.last.name] = allPacks.last;
+    _SaveScreenState._saveAll();
+    Navigator.push(
+      context,
+      FadeRoute(page: BoardScreen()),
+    );
+  });
+}
+
   @override
   void initState(){
     super.initState();
@@ -572,6 +621,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       icon: Icon(Icons.palette),
                         color: Color(0xFF0690d4),
                         onPressed: () {
+                          _reset();
                           /*Navigator.push(
                             context,
                             SlideRightRoute(page: Test1Screen()),
@@ -764,7 +814,8 @@ class _MyHomePageState extends State<MyHomePage> {
       child: IconButton(
         icon: Icon(Icons.camera),
         onPressed: () {
-          //scan();
+          _scan();
+          
         },
       ),
     );
@@ -1498,14 +1549,14 @@ class _SaveScreenState extends State<SaveScreen> {
   /***********************************************
  * Saving to Preferences
  ***********************************************/
-  _saveInt(int numValue) async {
+  static _saveInt(int numValue) async {
         final prefs = await SharedPreferences.getInstance();
         final key = "numberOfKeys";
         final value = numValue;
         prefs.setInt(key, value);
         //print('saved $value');
   }
-  _saveLetterPack(List<String> stringList, String keyName) async {
+  static _saveLetterPack(List<String> stringList, String keyName) async {
         LetterPack.encodeAll();
         final prefs = await SharedPreferences.getInstance();
         final key = keyName;
@@ -1513,7 +1564,7 @@ class _SaveScreenState extends State<SaveScreen> {
         prefs.setStringList(key, value);
         //print('saved $value');
   }
-  _saveAll() async {
+  static _saveAll() async {
         numberOfLetterPacks++;
         LetterPack.encodeAll();
         print("encode all success!");
@@ -1950,22 +2001,7 @@ class _BoardScreenState extends State<BoardScreen> {
     }
     return stringData;
   }
-  List<String> stringToListConverter(String longString){
-    List<String> stringList = [];
-    int lengthOfElement = 0;
-    //goes through the string and 
-    //pol,jkhb,apo,bop,
-    for(int i=0; i<longString.length; i++){
-      if(longString[i] == ","){
-        stringList.add(longString.substring(i-lengthOfElement, i));
-        lengthOfElement = 0;
-      }
-      else{
-        lengthOfElement++;
-      } 
-    }
-    return stringList;
-  }
+  
   @override
   void initState(){
     super.initState();
@@ -2033,7 +2069,6 @@ class _BoardScreenState extends State<BoardScreen> {
                 onPressed: () {
                   print(QRStringList);
                   print(listToStringConverter(QRStringList));
-                  print(stringToListConverter(listToStringConverter(QRStringList)));
                   showDialog(context: context, child:
                       new AlertDialog(
                         title: new Text("QR Code"),
