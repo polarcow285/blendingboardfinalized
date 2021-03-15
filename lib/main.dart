@@ -1040,6 +1040,16 @@ class _CreateDecksScreenState extends State<CreateDecksScreen>{
       )
     );
   }
+  bool isLongName (String name){
+    bool isLongName;
+    if(name.length > 18){
+      isLongName = true;
+    }
+    else{
+      isLongName = false;
+    }
+    return isLongName;
+  }
   /***********************************************
  * Build methods for widgets in Create Decks Screen
  ***********************************************/
@@ -1060,7 +1070,7 @@ class _CreateDecksScreenState extends State<CreateDecksScreen>{
           margin: EdgeInsets.all(10),
           child:  
             Text(beginningSetsList[index].name,
-                style: TextStyle(fontSize: SizeConfig.safeBlockHorizontal * 2, fontWeight: FontWeight.w500),
+                style: TextStyle(fontSize: isLongName(beginningSetsList[index].name) ? SizeConfig.safeBlockHorizontal * 1.6 : SizeConfig.safeBlockHorizontal * 2, fontWeight: FontWeight.w500),
               textAlign: TextAlign.center,
             ),
         ),
@@ -1110,7 +1120,8 @@ class _CreateDecksScreenState extends State<CreateDecksScreen>{
           margin: EdgeInsets.all(10),
           child:  
             Text(middleSetsList[index].name,
-                style: TextStyle(fontSize: SizeConfig.safeBlockHorizontal * 2, fontWeight: FontWeight.w500),
+                style: TextStyle(fontSize: isLongName(middleSetsList[index].name) ? SizeConfig.safeBlockHorizontal * 1.6 : SizeConfig.safeBlockHorizontal * 2, 
+                fontWeight: FontWeight.w500),
               textAlign: TextAlign.center,
             ),
         ),
@@ -1159,7 +1170,7 @@ class _CreateDecksScreenState extends State<CreateDecksScreen>{
           margin: EdgeInsets.all(10),
           child:  
             Text(endSetsList[index].name,
-                style: TextStyle(fontSize: SizeConfig.safeBlockHorizontal * 2, fontWeight: FontWeight.w500),
+                style: TextStyle(fontSize: isLongName(endSetsList[index].name) ? SizeConfig.safeBlockHorizontal * 1.6 : SizeConfig.safeBlockHorizontal * 2, fontWeight: FontWeight.w500),
               textAlign: TextAlign.center,
             ),
         ),
@@ -1355,8 +1366,9 @@ class _CustomizeLettersState extends State<CustomizeLettersScreen> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
+        backgroundColor: Color(0xFF1b454f),
         body: Stack(
-          children: [
+          children: <Widget>[
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
@@ -1372,34 +1384,23 @@ class _CustomizeLettersState extends State<CustomizeLettersScreen> {
                 ),
                 Container(
                   margin: EdgeInsets.all(30),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Text("Letters"),
-                      gridView(itemWidth, itemHeight)
-                    ],
-                  ),
+                  width: SizeConfig.screenWidth * 0.5,
+                  height: 500,
+                  
+                  child: gridView(itemWidth, itemHeight),
                 ),
+                IconButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  icon: Icon(SFSymbols.checkmark_circle_fill),
+                  iconSize: SizeConfig.screenHeight * 0.1,
+                  color: Color(0xFF77b9c7)
+                ),
+             
+            
               ]
             ),
-            Positioned(
-              bottom: 20,
-              left: 20,
-              child: IconButton(
-                onPressed: () {
-                  /*Navigator.push(
-                    context,
-                    //FadeSlideRightRoute(page: MyApp()),
-                    //MaterialPageRoute(builder: (context) => CreateDecksScreen()),
-                    
-                  );*/
-                  Navigator.pop(context);
-                },
-                icon: Icon(SFSymbols.house_fill),
-                iconSize: SizeConfig.screenHeight * 0.05,
-                color: Color(0xFF0690d4)
-              ),
-            ),   
           ]
         )
       )
@@ -1409,14 +1410,7 @@ class _CustomizeLettersState extends State<CustomizeLettersScreen> {
  * Build methods for widgets in Customize Letters Screen
  ***********************************************/
  Widget gridView(double width, double height) {
-    return ConstrainedBox(
-      constraints: new BoxConstraints(
-      //minHeight: ,
-      maxHeight: SizeConfig.screenWidth-514,
-      maxWidth: SizeConfig.screenWidth/2
-    ),
-
-    child: GridView.count(
+    return  GridView.count(
       // Create a grid with 3 columns. If you change the scrollDirection to
       // horizontal, this produces 3 rows.
       crossAxisCount: 3,
@@ -1424,12 +1418,11 @@ class _CustomizeLettersState extends State<CustomizeLettersScreen> {
       // Generate allPacks.length amount widgets that display their index in the List.
       children: List.generate(mid.letters.length + 1 + mid.lettersToAdd.length, (index) {
        
-        //print("index: $index");
-       
         //last element of gridview should be a textformfield
         if(index == mid.letters.length + mid.lettersToAdd.length){
           return Container(
-            width: SizeConfig.screenWidth * 0.3,
+            width: SizeConfig.screenWidth,
+            //height: 50,
             decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10)
           ),
@@ -1446,6 +1439,7 @@ class _CustomizeLettersState extends State<CustomizeLettersScreen> {
           },
           textAlign: TextAlign.center,
            decoration: InputDecoration(
+            hintText: "+",
             contentPadding: EdgeInsets.symmetric(vertical: SizeConfig.screenWidth * 0.02,),
             fillColor: Colors.black.withOpacity(0.3),
             filled: true,
@@ -1463,15 +1457,27 @@ class _CustomizeLettersState extends State<CustomizeLettersScreen> {
         else if(mid.letters.length-1<index && index <mid.letters.length + mid.lettersToAdd.length){
           return Container(
             margin: EdgeInsets.only(top: 5, right: 5, left: SizeConfig._safeAreaVertical + 10, bottom: 5),
-           
             child: FilterChip(
-              label: FittedBox(
+              label: Container(
+                width: 40,
+                height: 50,
+                child: FittedBox(
                 fit: BoxFit.fitWidth,
                 child: Text(mid.lettersToAdd[index-mid.letters.length],
-                  style: TextStyle(fontSize: SizeConfig.safeBlockHorizontal * 2, fontWeight: FontWeight.w500),
-                    textAlign: TextAlign.center),
+                  style: TextStyle(color: !mid.lettersToRemove.contains(mid.letters[index-mid.letters.length]) == true ?  Color(0xFF78cbff): Color(0xFF78c9ff), fontSize: SizeConfig.safeBlockHorizontal * 3, fontWeight: FontWeight.w500),
+                    textAlign: TextAlign.center,),
               ),
+              ),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
+                  side: BorderSide(
+                    color: !mid.lettersToRemove.contains(mid.letters[index-mid.letters.length]) == true ? Color(0xFF0d45bc) : Color(0xFF2b4a5d),
+                  ),
+                ),
               selected: !mid.lettersToRemove.contains(mid.lettersToAdd[index-mid.letters.length]),
+              selectedColor: Color(0xFF2250be),
+              backgroundColor: Color(0xFF2b4a5d),
+              showCheckmark: false,
               onSelected: (bool selected) {
                 setState(() {
                   if(selected){
@@ -1482,14 +1488,11 @@ class _CustomizeLettersState extends State<CustomizeLettersScreen> {
                   else{
                     //already selected, you are deselecting now
                     //adding letter you want to remove into removeMiddleLetterList
-                  
-                    mid.lettersToRemove.add(mid.lettersToAdd[index-mid.letters.length]);
-                   
+                    mid.lettersToRemove.add(mid.lettersToAdd[index-mid.letters.length]); 
                   }
                 });
               }
             )
-           
             );
         }
         else{
@@ -1497,29 +1500,36 @@ class _CustomizeLettersState extends State<CustomizeLettersScreen> {
             
             margin: EdgeInsets.only(top: 5, right: 5, left: SizeConfig._safeAreaVertical + 10, bottom: 5),
             child: FilterChip(
+              selected: !mid.lettersToRemove.contains(mid.letters[index]),
               label:  Container( 
-                width: 50,
+                width: 40,
                 height: 50,
                 child: Center(
                   child: Text(mid.letters[index],
-                  style: TextStyle(color: Colors.lightBlue, fontSize: SizeConfig.safeBlockHorizontal * 2, fontWeight: FontWeight.w500),
+                  //if the letter is not part of the lettersToRemove list, it should be selected
+                  style: TextStyle(color: !mid.lettersToRemove.contains(mid.letters[index]) == true ?  Color(0xFF78cbff): Color(0xFF78c9ff), fontSize: SizeConfig.safeBlockHorizontal * 3, fontWeight: FontWeight.w500),
                     textAlign: TextAlign.center,),
                 )
               ),
-              selected: !mid.lettersToRemove.contains(mid.letters[index]),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
+                  side: BorderSide(
+                    color: !mid.lettersToRemove.contains(mid.letters[index]) == true ? Color(0xFF0d45bc) : Color(0xFF2b4a5d),
+                  ),
+                ),
+              selectedColor: Color(0xFF2250be),
+              backgroundColor: Color(0xFF2b4a5d),
+         
               showCheckmark: false,
               onSelected: (bool selected) {
                 setState(() {
                   if(selected){
                     //not selected yet, you are selecting now
                     //undoing the remove
-                    
                     mid.lettersToRemove.remove(mid.letters[index]);
-                    //_CreateDecksScreenState.middleSetsList[editMiddleIndex].letters.remove(_CreateDecksScreenState.middleSetsList[editMiddleIndex].letters[index]);
                   }
                   else{
                     //already selected, you are deselecting now
-                    //removeMiddleLetterList.add(_CreateDecksScreenState.middleSetsList[_CreateDecksScreenState.editMiddleIndex].letters[index]);
                     mid.lettersToRemove.add(mid.letters[index]);
                    
                   }
@@ -1532,7 +1542,7 @@ class _CustomizeLettersState extends State<CustomizeLettersScreen> {
         
           
       }),
-    ),
+    
      
     );
   }
@@ -1870,7 +1880,6 @@ class _MyDecksScreenState extends State<MyDecksScreen> {
       children: List.generate(allPacks.length, (index) {
         //left deck
         if (index % 3 == 0){
-          print("left : $index");
           return Container(
             margin: EdgeInsets.only(top: 5, right: 5, left: SizeConfig._safeAreaVertical + 10, bottom: 5),
             child: FlatButton(
@@ -1896,7 +1905,6 @@ class _MyDecksScreenState extends State<MyDecksScreen> {
           }
                 //right deck
           else if ((index-2) % 3 == 0){
-            print("right $index");
             return Container(
               margin: EdgeInsets.only(top: 5, right: SizeConfig._safeAreaVertical + 10, left: 5, bottom: 5),
               child: FlatButton(
@@ -1922,7 +1930,6 @@ class _MyDecksScreenState extends State<MyDecksScreen> {
             }
                 //middle deck
                 else{
-                    print("middle: $index");
                   return Container(
                     //width: width,
                     //height: height,
