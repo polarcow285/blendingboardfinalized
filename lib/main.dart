@@ -185,23 +185,28 @@ int numberOfLetterPacks;
 LetterPack discardPack;
 class LetterSet{
   String name;
-  List <String> position;
+  int positionBinary; //for 3 collumns
+  //List <String> position;
   List<String> letters;
   List<String> lettersToRemove;
   List<String> lettersToAdd;
-
-  LetterSet(String nameString, List<String> positionList, List<String> letterList){
+  
+  LetterSet(String nameString, int positionInt, List<String> letterList){
     name = nameString;
-    position = positionList;
+    positionBinary = positionInt;
+    /*position = positionList;
     if (positionList[0] == "sides"){
       position = ["beginning", "end"];
+      positionBinary = 5; //101 in binary
     }
     if (positionList[0] == "all"){
       position = ["beginning", "middle", "end"];
+      positionBinary = 7; //111
     }
     if (positionList[0] == "latterHalf"){
       position = ["middle", "end"];
-    }
+      positionBinary = 3; //011
+    }*/
     letters = letterList;
     lettersToRemove = [];
     lettersToAdd = [];
@@ -233,14 +238,37 @@ class LetterSet{
   
   void dataEncode(List<String> stringList){
     stringList.add("#" + name);
-    stringList.add(position[0]);
+    stringList.add("$positionBinary");
     for(int i=0; i<letters.length; i++){
       stringList.add(letters[i]);
     }
   }
+
+  String dataEncodeiOS(){
+    String encodedLetterSet = "";
+    //stringList.add("{\"$position\":");
+    encodedLetterSet += ("{\"name\":");
+    encodedLetterSet += ("\"$name\",");
+    encodedLetterSet += ("\"position\":");
+    encodedLetterSet += ("$positionBinary");
+    encodedLetterSet += (",");
+    encodedLetterSet += ("\"letters\":");
+    encodedLetterSet += ("[");
+    
+    for(int i=0; i<letters.length; i++){
+      if(i == letters.length - 1){
+        encodedLetterSet += ("\"${letters[i]}\"]}");
+      }
+      else{
+        encodedLetterSet += ("\"${letters[i]}\",");
+      }
+      
+    }
+    return encodedLetterSet;
+  }
   void letterSetInfo(){
     print (name);
-    print (position);
+    print (positionBinary);
     print (letters);
   }
   
@@ -288,6 +316,27 @@ class LetterPack{
       allData.add(temp);
     }
   }
+  String dataEncodeiOS(){
+    String encodedLetterPack = "";
+    encodedLetterPack += "{";
+    encodedLetterPack += "\"beginning\":";
+    encodedLetterPack += beginning.dataEncodeiOS();
+    encodedLetterPack += ",";
+
+    encodedLetterPack += "\"end\":";
+    encodedLetterPack += end.dataEncodeiOS();
+    encodedLetterPack += ",";
+
+    encodedLetterPack += "\"name\":";
+    encodedLetterPack += "\"$name\"";
+    encodedLetterPack += ",";
+
+    encodedLetterPack += "\"middle\":";
+    encodedLetterPack += middle.dataEncodeiOS();
+    encodedLetterPack += "}";
+
+    return encodedLetterPack;
+  }
   static LetterPack decodeLetterPack(List <String> letterSetList){
     LetterPack tempLP;
     String letterPackName = "";
@@ -300,9 +349,9 @@ class LetterPack{
     String letterSetName1 = "";
     String letterSetName2 = "";
     String letterSetName3 = "";
-    List<String> position1 = [];
-    List<String> position2 = [];
-    List<String> position3 = [];
+    int position1 = 0;
+    int position2 = 0;
+    int position3 = 0;
     List<String> lettersList1 = [];
     List<String> lettersList2 = [];
     List<String> lettersList3 = [];
@@ -315,17 +364,17 @@ class LetterPack{
          if(count == 1){
            index1 = i;
            letterSetName1 = letterSetList[i].substring(1,letterSetList[i].length);
-           position1.add(letterSetList[i+1]);
+           position1 = int.parse(letterSetList[i+1]);
          }
          if(count == 2){
            index2 = i;
            letterSetName2 = letterSetList[i].substring(1,letterSetList[i].length);
-           position2.add(letterSetList[i+1]);
+           position2 = int.parse(letterSetList[i+1]);
          }
          if(count == 3){
            index3 = i;
            letterSetName3 = letterSetList[i].substring(1,letterSetList[i].length);
-           position3.add(letterSetList[i+1]);
+           position3 = int.parse(letterSetList[i+1]);
          }
        }
     }
@@ -353,29 +402,36 @@ class LetterPack{
   }
   
 }
-LetterSet singleConsonantsBeginning = LetterSet("Single Consonants", ["beginning"], ["b", "c", "d", "f", "g", "h", "j", "k", "l", "m", "n", "p", "qu", "r", "s", "t", "v", "w", "x", "y", "z"]);  
-LetterSet singleConsonantsEnding = LetterSet("Single Consonants",["end"], ["b", "c", "d", "f", "g", "h", "j", "k", "l", "m", "n", "p", "r", "s", "t", "v", "w", "x", "y", "z"]);
-LetterSet hBrothers = LetterSet("H Brothers", ["sides"], ["ch", "ph", "sh", "th", "wh"]);
-LetterSet beginningBlends = LetterSet("Beginning Blends", ["beginning"], ["bl", "br", "cl", "cr", "dr", "fl", "fr", "gl", "gr", "pl", "pr", "sc", "scr", "shr", "sk", "sl", "sm", "sn", "sp", "spl", "spr", "squ", "st", "str", "sw", "thr", "tr", "tw"]);
-LetterSet shortVowelPointers = LetterSet("Short Vowel Pointers", ["latterHalf"], ["ck", "dge", "tch", "ff", "ll", "ss", "zz"]);
-LetterSet endingBlends = LetterSet("Ending Blends", ["end"], ["sk", "sp", "st", "ct", "ft", "lk", "lt", "mp", "nch", "nd", "nt", "pt"]);
-LetterSet magicEEnding = LetterSet("Magic E", ["end"], ["be", "ce", "de", "fe", "ge", "ke", "le", "me", "ne", "pe", "se", "te"]);
-LetterSet closedSyllable = LetterSet("Closed Syllable", ["middle"], ["a", "e", "i", "o", "u"]);
-LetterSet openSyllable = LetterSet("Open Syllable", ["middle"], ["a", "e", "i", "o", "u"]);
-LetterSet magicEMiddle = LetterSet("Magic E", ["middle"], ["a", "e", "i", "o", "u"]);
-LetterSet controlledR = LetterSet("Controlled R", ["middle"], ["ar", "er", "ir", "or", "ur"]);
-LetterSet shortVowelExceptions = LetterSet("Short Vowel Exceptions", ["middle"], ["ang", "ank", "ild", "ind", "ing", "ink", "old", "oll", "olt", "ong", "onk", "ost", "ung", "unk"]);
-LetterSet vowelTeamBasic = LetterSet("Vowel Team Basic", ["middle"], ["ai", "ay", "ea", "ee", "igh", "oa", "oy"]);
-LetterSet vowelTeamIntermediate = LetterSet("Vowel Team Intermediate", ["middle"], ["aw", "eigh", "ew", "ey", "ie", "oe", "oi", "oo", "ou", "ow"]);
-LetterSet vowelTeamAdvanced = LetterSet("Vowel Team Advanced", ["middle"], ["aw", "eigh", "ew", "ey", "ie", "oe", "oi", "oo", "ou", "ow"]);
-LetterSet vowelA = LetterSet("Vowel A", ["middle"], ["al", "all", "wa", "al", "all", "wa"]);
-LetterSet empty = LetterSet("Empty", ["all"], [" ", " ", " ", " "]);
+//binary representation of position
+const int beginning = 1;
+const int middle = 2;
+const int end = 4;
+const int sides = 5;
+const int latterHalf = 6;
+const int all = 7;
+LetterSet singleConsonantsBeginning = LetterSet("Single Consonants", beginning, ["b", "c", "d", "f", "g", "h", "j", "k", "l", "m", "n", "p", "qu", "r", "s", "t", "v", "w", "x", "y", "z"]);  
+LetterSet singleConsonantsEnding = LetterSet("Single Consonants", end, ["b", "c", "d", "f", "g", "h", "j", "k", "l", "m", "n", "p", "r", "s", "t", "v", "w", "x", "y", "z"]);
+LetterSet hBrothers = LetterSet("H Brothers", sides, ["ch", "ph", "sh", "th", "wh"]);
+LetterSet beginningBlends = LetterSet("Beginning Blends", beginning, ["bl", "br", "cl", "cr", "dr", "fl", "fr", "gl", "gr", "pl", "pr", "sc", "scr", "shr", "sk", "sl", "sm", "sn", "sp", "spl", "spr", "squ", "st", "str", "sw", "thr", "tr", "tw"]);
+LetterSet shortVowelPointers = LetterSet("Short Vowel Pointers", latterHalf, ["ck", "dge", "tch", "ff", "ll", "ss", "zz"]);
+LetterSet endingBlends = LetterSet("Ending Blends", end, ["sk", "sp", "st", "ct", "ft", "lk", "lt", "mp", "nch", "nd", "nt", "pt"]);
+LetterSet magicEEnding = LetterSet("Magic E", end, ["be", "ce", "de", "fe", "ge", "ke", "le", "me", "ne", "pe", "se", "te"]);
+LetterSet closedSyllable = LetterSet("Closed Syllable", middle, ["a", "e", "i", "o", "u"]);
+LetterSet openSyllable = LetterSet("Open Syllable", middle, ["a", "e", "i", "o", "u"]);
+LetterSet magicEMiddle = LetterSet("Magic E", middle, ["a", "e", "i", "o", "u"]);
+LetterSet controlledR = LetterSet("Controlled R", middle, ["ar", "er", "ir", "or", "ur"]);
+LetterSet shortVowelExceptions = LetterSet("Short Vowel Exceptions", middle, ["ang", "ank", "ild", "ind", "ing", "ink", "old", "oll", "olt", "ong", "onk", "ost", "ung", "unk"]);
+LetterSet vowelTeamBasic = LetterSet("Vowel Team Basic", middle, ["ai", "ay", "ea", "ee", "igh", "oa", "oy"]);
+LetterSet vowelTeamIntermediate = LetterSet("Vowel Team Intermediate", middle, ["aw", "eigh", "ew", "ey", "ie", "oe", "oi", "oo", "ou", "ow"]);
+LetterSet vowelTeamAdvanced = LetterSet("Vowel Team Advanced", middle, ["aw", "eigh", "ew", "ey", "ie", "oe", "oi", "oo", "ou", "ow"]);
+LetterSet vowelA = LetterSet("Vowel A", middle, ["al", "all", "wa", "al", "all", "wa"]);
+LetterSet empty = LetterSet("Empty", all, [" ", " ", " ", " "]);
   
 List<LetterSet> allSets = [singleConsonantsBeginning, singleConsonantsEnding,  hBrothers, beginningBlends, endingBlends, magicEEnding, closedSyllable, openSyllable, magicEMiddle, shortVowelPointers,  controlledR, shortVowelExceptions, vowelTeamBasic, vowelTeamIntermediate, vowelTeamAdvanced, vowelA, empty];
 
 LetterPack standardClosed = LetterPack("Standard (Closed Syllable)", singleConsonantsBeginning, closedSyllable, singleConsonantsEnding);
 LetterPack standardOpen = LetterPack("Standard (Open Syllable)", singleConsonantsBeginning, openSyllable, singleConsonantsEnding);
-LetterPack blendingDemo = LetterPack("Blending Demo", LetterSet("Bl",  ["beginning"], ["bl"]), LetterSet("e", ["middle"], ["E"]), LetterSet("Nd", ["beginning"], ["nd"]));
+LetterPack blendingDemo = LetterPack("Blending Demo", LetterSet("Bl",  beginning, ["bl"]), LetterSet("e", middle, ["E"]), LetterSet("Nd", beginning, ["nd"]));
   
 List<LetterPack> defaultPacks = [standardClosed, standardOpen, blendingDemo];
 List<LetterPack> allPacks = [standardClosed, standardOpen, blendingDemo];
@@ -389,9 +445,9 @@ LetterSet selectedEndSet;
 bool firstBuild = true;
 bool isLargeScreen;
 
-LetterSet beg;
+//change variable name
 LetterSet mid;
-LetterSet end;
+
 
 _reset() async{
     SharedPreferences preferences = await SharedPreferences.getInstance();
@@ -957,19 +1013,17 @@ class _CreateDecksScreenState extends State<CreateDecksScreen>{
     endSetsList.clear();
     //go through all the sets, take the ones that are beginning, and put them into a list
     for(int i = 0; i<allSets.length; i++){
-     
-     for(int j = 0; j<allSets[i].position.length; j++){
-       if(allSets[i].position[j] == "beginning"){
+      //using bit masking
+       if(allSets[i].positionBinary & 1 > 0){
         
         beginningSetsList.add(allSets[i]);
        } 
-       if (allSets[i].position[j] == "middle"){
+       if (allSets[i].positionBinary & 2 > 0){
          middleSetsList.add(allSets[i]);
        }
-       if (allSets[i].position[j] == "end"){
+       if (allSets[i].positionBinary & 4 > 0){
          endSetsList.add(allSets[i]);
        }
-     }
     }
   }
   @override
@@ -1223,9 +1277,9 @@ class _CreateDecksScreenState extends State<CreateDecksScreen>{
        
              
               print(selectedMiddleSet.lettersToRemove);
-              tempBeginningSet = LetterSet(selectedBeginningSet.name, selectedBeginningSet.position, selectedBeginningSet.generateCustomLetters());
-              tempMiddleSet = LetterSet(selectedMiddleSet.name, selectedMiddleSet.position, selectedMiddleSet.generateCustomLetters());
-              tempEndSet = LetterSet(selectedEndSet.name, selectedEndSet.position, selectedEndSet.generateCustomLetters());
+              tempBeginningSet = LetterSet(selectedBeginningSet.name, selectedBeginningSet.positionBinary, selectedBeginningSet.generateCustomLetters());
+              tempMiddleSet = LetterSet(selectedMiddleSet.name, selectedMiddleSet.positionBinary, selectedMiddleSet.generateCustomLetters());
+              tempEndSet = LetterSet(selectedEndSet.name, selectedEndSet.positionBinary, selectedEndSet.generateCustomLetters());
               //clear lettersToRemove and lettersToAdd
 
               //HAVE TO DO TO ALL, NOT JUST SELECTED
@@ -1998,6 +2052,7 @@ class _BoardScreenState extends State<BoardScreen> {
     final value = stringValue;
     prefs.setString(key, value);
   }
+  
   String listToStringConverter(List<String> stringList){
     String stringData = "";
     //convert stringlist to a string 
@@ -2074,8 +2129,8 @@ class _BoardScreenState extends State<BoardScreen> {
                 iconSize: SizeConfig.screenHeight * 0.05,
                 color: Color(0xFF0690d4),
                 onPressed: () {
-                  print(QRStringList);
-                  print(listToStringConverter(QRStringList));
+                  print(letterPackMap[letterPackName].dataEncodeiOS());
+                  //print(listToStringConverter(QRStringList));
                   showDialog(context: context, child:
                       new AlertDialog(
                         title: new Text("QR Code"),
@@ -2083,7 +2138,7 @@ class _BoardScreenState extends State<BoardScreen> {
                           width: 100,
                           height: 100,
                           child: QrImage(
-                            data: listToStringConverter(QRStringList),
+                            data: letterPackMap[letterPackName].dataEncodeiOS(),
                             version: QrVersions.auto,
                             size: 100,
                           ),
