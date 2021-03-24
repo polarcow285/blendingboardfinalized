@@ -662,10 +662,10 @@ Future<void> _scan() async {
           backgroundColor: Colors.transparent,
           body: Stack(
         children: <Widget>[
-          Align(
+          Positioned(
             child: miscButtonRow(),
-            alignment: Alignment.bottomCenter,
           ),
+         
           Align(
             child: mainButtonRow(),
             alignment: Alignment.center,
@@ -716,9 +716,10 @@ Future<void> _scan() async {
   }
   Widget miscButtonRow(){
     return Container(
-      margin: EdgeInsets.only(bottom: 20),
+      margin: EdgeInsets.only(bottom: SizeConfig._safeAreaVertical),
     child: Row(
       mainAxisAlignment: MainAxisAlignment.center,
+      //crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           missionStatementButton(),
           qrCamera(),
@@ -866,12 +867,19 @@ Future<void> _scan() async {
   }
   Widget qrCamera() {
     return Container(
-      margin: EdgeInsets.all(20),
+      margin: EdgeInsets.only(bottom: SizeConfig.safeBlockHorizontal),
+      height: SizeConfig.screenWidth * (0.05),
+      width: SizeConfig.screenWidth * (0.05),
+      decoration: BoxDecoration( 
+        color: Colors.white.withOpacity(0.2),
+        borderRadius: BorderRadius.all(Radius.circular(10)),
+      ),
       child: IconButton(
-        icon: Icon(Icons.camera),
+        color: Color(0xFF00a8df),
+        icon: Icon(SFSymbols.qrcode_viewfinder),
+        //iconSize: SizeConfig.screenHeight * 0.1,
         onPressed: () {
-          _scan();
-          
+          _scan(); 
         },
       ),
     );
@@ -1261,7 +1269,7 @@ class _CreateDecksScreenState extends State<CreateDecksScreen>{
   }
   Widget checkmarkButton() {
     return Container(
-      margin: EdgeInsets.only(top: 20, right: SizeConfig._safeAreaVertical + 5, left: SizeConfig._safeAreaVertical + 5, bottom: 20),
+      margin: EdgeInsets.only(top: 20, right: SizeConfig._safeAreaVertical + 10, left: SizeConfig._safeAreaVertical + 5, bottom: 20),
       child: IconButton(
           icon: Icon(SFSymbols.checkmark_circle_fill),
           color: Color(0xFF00cbfb),
@@ -1431,14 +1439,45 @@ class _CustomizeLettersState extends State<CustomizeLettersScreen> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      Text("Letter sets"),
-                      Text(mid.name)
+                      Container(
+            margin: EdgeInsets.only(bottom: 10,),
+            child: InputChip(
+        selected: true,
+        label: Container(
+          width: 200,
+          margin: EdgeInsets.all(10),
+          child:  
+            Text(mid.name,
+                style: TextStyle(fontSize: SizeConfig.safeBlockHorizontal * 2, fontWeight: FontWeight.w500),
+              textAlign: TextAlign.center,
+            ),
+        ),
+        showCheckmark: false,
+        deleteButtonTooltipMessage: "Edit",
+        onDeleted: () {
+        },
+        deleteIcon: Icon(SFSymbols.pencil,
+        color: Color(0xFF0342dc),),
+        onPressed: () {
+          setState(() {
+            //_defaultEndChoiceIndex = index;
+           // print("defaultindex: $defaultIndex");
+           // print("listbuilder: $listBuilderIndex");
+          });
+        },
+      
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.only(topRight: Radius.circular(10),bottomRight: Radius.circular(10),topLeft: Radius.circular(10),bottomLeft: Radius.circular(10))),
+            selectedColor: Color(0xFF3478F6).withOpacity(0.3),
+            backgroundColor: Colors.white,
+            labelStyle: TextStyle(color: Color(0xFF0342dc)),
+            )
+        ),
                     ],
                   ),
                 ),
                 Container(
                   margin: EdgeInsets.all(30),
-                  width: SizeConfig.screenWidth * 0.5,
+                  width: SizeConfig.screenWidth * 0.35,
                   height: 500,
                   
                   child: gridView(itemWidth, itemHeight),
@@ -1463,6 +1502,34 @@ class _CustomizeLettersState extends State<CustomizeLettersScreen> {
 /***********************************************
  * Build methods for widgets in Customize Letters Screen
  ***********************************************/
+  Widget textFormField(){
+    return Container(
+      width: SizeConfig.screenWidth * 0.3,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10)
+      ),
+      child: Form(
+        child: TextFormField(
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+          
+          textAlign: TextAlign.center,
+          controller: _controller,
+          decoration: InputDecoration(
+            contentPadding: EdgeInsets.symmetric(vertical: SizeConfig.screenWidth * 0.02,),
+            fillColor: Colors.white.withOpacity(0.3),
+            filled: true,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10.0),
+              borderSide: BorderSide.none
+            ),
+            
+            hintText: 'Deck Name',
+            hintStyle: TextStyle(color: Color(0xFF373737), fontWeight: FontWeight.w500, fontSize: SizeConfig.safeBlockHorizontal * 2.5),
+        ),
+        )
+      )
+    );
+  }
  Widget gridView(double width, double height) {
     return  GridView.count(
       // Create a grid with 3 columns. If you change the scrollDirection to
@@ -1475,13 +1542,13 @@ class _CustomizeLettersState extends State<CustomizeLettersScreen> {
         //last element of gridview should be a textformfield
         if(index == mid.letters.length + mid.lettersToAdd.length){
           return Container(
-            width: SizeConfig.screenWidth,
+            width: SizeConfig.screenWidth * 0.8,
             //height: 50,
             decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10)
           ),
             child: TextFormField(
-              style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+              style: TextStyle(color: Color(0xFF559ec3), fontWeight: FontWeight.w600),
               onFieldSubmitted: (String input){
 
             setState(() {
@@ -1494,12 +1561,14 @@ class _CustomizeLettersState extends State<CustomizeLettersScreen> {
           textAlign: TextAlign.center,
            decoration: InputDecoration(
             hintText: "+",
+            hintStyle: TextStyle(color: Color(0xFF559ec3), fontSize: SizeConfig.safeBlockHorizontal * 3),
             contentPadding: EdgeInsets.symmetric(vertical: SizeConfig.screenWidth * 0.02,),
             fillColor: Colors.black.withOpacity(0.3),
             filled: true,
             border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10.0),
-            borderSide: BorderSide.none)
+            borderSide: BorderSide.none
+            )
           ),
           controller: _controller,
         ),
@@ -1720,7 +1789,7 @@ class _SaveScreenState extends State<SaveScreen> {
   
   Widget textFormField(){
     return Container(
-      width: SizeConfig.screenWidth * 0.4,
+      width: SizeConfig.screenWidth * 0.3,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10)
       ),
@@ -1744,6 +1813,7 @@ class _SaveScreenState extends State<SaveScreen> {
               borderRadius: BorderRadius.circular(10.0),
               borderSide: BorderSide.none
             ),
+            
             hintText: 'Deck Name',
             hintStyle: TextStyle(color: Color(0xFF373737), fontWeight: FontWeight.w500, fontSize: SizeConfig.safeBlockHorizontal * 2.5),
         ),
@@ -1935,7 +2005,7 @@ class _MyDecksScreenState extends State<MyDecksScreen> {
         //left deck
         if (index % 3 == 0){
           return Container(
-            margin: EdgeInsets.only(top: 5, right: 5, left: SizeConfig._safeAreaVertical + 10, bottom: 5),
+            margin: EdgeInsets.only(top: 5, right: 5, left: SizeConfig._safeAreaVertical + 30, bottom: 5),
             child: FlatButton(
               child: FittedBox(
                 fit: BoxFit.fitWidth,
@@ -1960,7 +2030,7 @@ class _MyDecksScreenState extends State<MyDecksScreen> {
                 //right deck
           else if ((index-2) % 3 == 0){
             return Container(
-              margin: EdgeInsets.only(top: 5, right: SizeConfig._safeAreaVertical + 10, left: 5, bottom: 5),
+              margin: EdgeInsets.only(top: 5, right: SizeConfig._safeAreaVertical + 30, left: 5, bottom: 5),
               child: FlatButton(
                 child: FittedBox(
                   fit: BoxFit.fitWidth,
@@ -1987,7 +2057,7 @@ class _MyDecksScreenState extends State<MyDecksScreen> {
                   return Container(
                     //width: width,
                     //height: height,
-                    margin: EdgeInsets.all(5),
+                    margin: EdgeInsets.only(top: 5, right: 20, left: 20, bottom: 5),
                     child: FlatButton(
                       child: FittedBox(
                           fit: BoxFit.fitWidth,
