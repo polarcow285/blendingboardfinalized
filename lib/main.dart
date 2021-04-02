@@ -662,7 +662,8 @@ Future<void> _scan() async {
           backgroundColor: Colors.transparent,
           body: Stack(
         children: <Widget>[
-          Positioned(
+          Align(
+            alignment: Alignment.bottomCenter,
             child: miscButtonRow(),
           ),
          
@@ -716,7 +717,7 @@ Future<void> _scan() async {
   }
   Widget miscButtonRow(){
     return Container(
-      margin: EdgeInsets.only(bottom: SizeConfig._safeAreaVertical),
+      margin: EdgeInsets.only(bottom: SizeConfig._safeAreaVertical, top: 5),
     child: Row(
       mainAxisAlignment: MainAxisAlignment.center,
       //crossAxisAlignment: CrossAxisAlignment.center,
@@ -826,7 +827,7 @@ Future<void> _scan() async {
   }
   Widget missionStatementButton() {
     return Container(
-      margin: EdgeInsets.only(bottom: SizeConfig.safeBlockHorizontal),
+      //margin: EdgeInsets.only(bottom: SizeConfig.safeBlockHorizontal),
       height: SizeConfig.screenWidth * (0.05),
       width: SizeConfig.screenWidth * (0.05),
       decoration: BoxDecoration( 
@@ -867,21 +868,24 @@ Future<void> _scan() async {
   }
   Widget qrCamera() {
     return Container(
-      margin: EdgeInsets.only(bottom: SizeConfig.safeBlockHorizontal),
+      margin: EdgeInsets.only(left: 5,),
       height: SizeConfig.screenWidth * (0.05),
       width: SizeConfig.screenWidth * (0.05),
       decoration: BoxDecoration( 
         color: Colors.white.withOpacity(0.2),
         borderRadius: BorderRadius.all(Radius.circular(10)),
       ),
-      child: IconButton(
+      child: Container(
+        //margin: EdgeInsets.all(5),
+        child: IconButton(
         color: Color(0xFF00a8df),
         icon: Icon(SFSymbols.qrcode_viewfinder),
-        //iconSize: SizeConfig.screenHeight * 0.1,
+        //iconSize: SizeConfig.screenHeight * 0.05,
         onPressed: () {
           _scan(); 
         },
       ),
+      )
     );
   }
 }
