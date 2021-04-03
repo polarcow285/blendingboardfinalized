@@ -482,7 +482,16 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  String qrCodeResult;
+  String qrString = "";
+  String beginningName = "";
+  String middleName = "";
+  String endName = "";
+  String lpName = "";
+  String beginningSubstring = "";
+  String endSubstring = "";
+  String letterPackSubstring = "";
+  String middleSubstring = "";
+
   /***********************************************
  * Reading and Writing to Preferences
  ***********************************************/
@@ -571,7 +580,81 @@ class _MyHomePageState extends State<MyHomePage> {
 /***********************************************
  * QR functions
  ***********************************************/
-List<String> stringToListConverter(String longString){
+void getBeginningSubstring(){
+  print(qrString.indexOf("},"));
+  beginningSubstring = qrString.substring(1, qrString.indexOf("},"));
+  print("beginning substring: " +  beginningSubstring);
+  qrString = qrString.substring(qrString.indexOf("},") + 2, qrString.length-1);
+  print("qr string: " + qrString);
+}
+
+void getEndSubstring(){
+  //print(qrString.indexOf("\"end\""));
+  endSubstring = qrString.substring(0, qrString.indexOf("},"));
+  print("end substring: " + endSubstring);
+  qrString = qrString.substring(qrString.indexOf("},") + 2, qrString.length);
+
+}
+
+void getLetterPackSubstring(){
+  letterPackSubstring = qrString.substring(qrString.indexOf("\"name\""), qrString.indexOf("\"middle\""));
+  
+  qrString = qrString.substring(qrString.indexOf("\"middle\""), qrString.length);
+
+}
+
+void getMiddleSubstring(){
+  middleSubstring = qrString.substring(0, qrString.indexOf("}"));
+}
+
+void divideSubstring(){
+  print("original qrString: " + qrString);
+  print("did i get ehre");
+  getBeginningSubstring();
+  print(qrString);
+  print("im guessing it will breka here");
+  getEndSubstring();
+  print("end worked");
+  getLetterPackSubstring();
+  print("letterpack worked");
+  getMiddleSubstring();
+}
+LetterSet stringToLetterSetConverter(String setSubstring){
+  LetterSet tempLS;
+  String lsName = "";
+  int positionInt = 0;
+  
+  setSubstring = setSubstring.replaceAll("\"","");
+  print(setSubstring);
+  //there are 5 characters in "name:"
+  lsName = setSubstring.substring(setSubstring.indexOf("name:") + 5, setSubstring.indexOf(","));
+  positionInt = int.parse(setSubstring.substring(setSubstring.indexOf("position:") + 9, setSubstring.indexOf(",letters")));
+  
+  List<String> lettersList = setSubstring.substring(setSubstring.indexOf("[") + 1,setSubstring.indexOf("]")).split(',').toList();
+  tempLS = LetterSet(lsName, positionInt, lettersList);
+  return tempLS;
+}
+
+LetterPack qrToLetterPack(){
+  LetterSet begLS;
+  LetterSet midLS;
+  LetterSet endLS;
+  LetterPack tempLP;
+  divideSubstring();
+  print("divide substring worked!");
+  begLS = stringToLetterSetConverter(beginningSubstring);
+  print("beginning worked");
+  midLS = stringToLetterSetConverter(middleSubstring);
+  print("middle worked");
+  endLS = stringToLetterSetConverter(endSubstring);
+  print("end worked");
+  letterPackSubstring = letterPackSubstring.replaceAll("\"","");
+  lpName = letterPackSubstring.substring(letterPackSubstring.indexOf("name:") + 5, letterPackSubstring.indexOf(","));
+  
+  tempLP = LetterPack(lpName, begLS, midLS, endLS);
+  return tempLP;
+}
+/*List<String> stringToListConverter(String longString){
   List<String> stringList = [];
   int lengthOfElement = 0;
   //goes through the string and 
@@ -586,27 +669,36 @@ List<String> stringToListConverter(String longString){
     } 
   }
   return stringList;
-}
+}*/
 Future<void> _scan() async {
-  ScanResult codeSanner = await BarcodeScanner.scan(
-    options: ScanOptions(
-      useCamera: -1,
-    ),
-  );
-  setState(() {
-    qrCodeResult = codeSanner.rawContent;
-    print(stringToListConverter(qrCodeResult));
-    LetterPack tempLP = LetterPack.decodeLetterPack(stringToListConverter(qrCodeResult));
-    allPacks.add(tempLP);
-    letterPackName = tempLP.name;
-    //put new letterPack into letterPackMap
-    letterPackMap[allPacks.last.name] = allPacks.last;
-    _SaveScreenState._saveAll();
-    Navigator.push(
-      context,
-      FadeRoute(page: BoardScreen()),
+  try {
+    ScanResult codeSanner = await BarcodeScanner.scan(
+      options: ScanOptions(
+        useCamera: -1,
+      ),
     );
-  });
+    setState(() {
+      qrString = codeSanner.rawContent;
+      //print(qrString);
+      LetterPack tempLP = qrToLetterPack();
+      allPacks.add(tempLP);
+      letterPackName = tempLP.name;
+      //put new letterPack into letterPackMap
+      letterPackMap[allPacks.last.name] = allPacks.last;
+      _SaveScreenState._saveAll();
+      Navigator.push(
+        context,
+        FadeRoute(page: BoardScreen()),
+      );
+    });
+  } on FormatException {
+      setState(() {
+        Navigator.push(
+          context,
+          FadeRoute(page: MyHomePage()),
+        );
+      });
+    }
 }
 
   @override
@@ -1515,10 +1607,11 @@ class _CustomizeLettersState extends State<CustomizeLettersScreen> {
       child: Form(
         child: TextFormField(
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
-          
+          inputFormatters: [new WhitelistingTextInputFormatter(RegExp("[a-zA-Z]")),],
           textAlign: TextAlign.center,
           controller: _controller,
           decoration: InputDecoration(
+            
             contentPadding: EdgeInsets.symmetric(vertical: SizeConfig.screenWidth * 0.02,),
             fillColor: Colors.white.withOpacity(0.3),
             filled: true,
@@ -1552,6 +1645,7 @@ class _CustomizeLettersState extends State<CustomizeLettersScreen> {
             borderRadius: BorderRadius.circular(10)
           ),
             child: TextFormField(
+              inputFormatters: [new WhitelistingTextInputFormatter(RegExp("[a-zA-Z]")),],
               style: TextStyle(color: Color(0xFF559ec3), fontWeight: FontWeight.w600),
               onFieldSubmitted: (String input){
 
