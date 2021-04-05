@@ -809,7 +809,7 @@ Future<void> _scan() async {
   }
   Widget miscButtonRow(){
     return Container(
-      margin: EdgeInsets.only(bottom: SizeConfig._safeAreaVertical, top: 5),
+      margin: EdgeInsets.only(bottom: SizeConfig._safeAreaVertical + 5, top: 5),
     child: Row(
       mainAxisAlignment: MainAxisAlignment.center,
       //crossAxisAlignment: CrossAxisAlignment.center,
@@ -967,17 +967,18 @@ Future<void> _scan() async {
         color: Colors.white.withOpacity(0.2),
         borderRadius: BorderRadius.all(Radius.circular(10)),
       ),
-      child: Container(
-        //margin: EdgeInsets.all(5),
+      
+        child: Center(
         child: IconButton(
         color: Color(0xFF00a8df),
         icon: Icon(SFSymbols.qrcode_viewfinder),
-        //iconSize: SizeConfig.screenHeight * 0.05,
+        //iconSize: SizeConfig.safeBlockHorizontal * 4,
         onPressed: () {
           _scan(); 
         },
       ),
-      )
+        )
+      
     );
   }
 }
@@ -1229,7 +1230,7 @@ class _CreateDecksScreenState extends State<CreateDecksScreen>{
           child:  
             Text(beginningSetsList[index].name,
                 style: TextStyle(fontSize: isLongName(beginningSetsList[index].name) ? SizeConfig.safeBlockHorizontal * 1.6 : SizeConfig.safeBlockHorizontal * 2, fontWeight: FontWeight.w500),
-              textAlign: TextAlign.center,
+              textAlign: TextAlign.center, overflow: TextOverflow.visible,
             ),
         ),
         showCheckmark: false,
@@ -1243,6 +1244,7 @@ class _CreateDecksScreenState extends State<CreateDecksScreen>{
             ); 
         },
         deleteIcon: Icon(SFSymbols.pencil,
+        size: SizeConfig.safeBlockHorizontal * 2.5,
         color: Color(0xFF0342dc),),
         onPressed: () {
           setState(() {
@@ -1281,6 +1283,7 @@ class _CreateDecksScreenState extends State<CreateDecksScreen>{
                 style: TextStyle(fontSize: isLongName(middleSetsList[index].name) ? SizeConfig.safeBlockHorizontal * 1.6 : SizeConfig.safeBlockHorizontal * 2, 
                 fontWeight: FontWeight.w500),
               textAlign: TextAlign.center,
+              overflow: TextOverflow.visible,
             ),
         ),
         showCheckmark: false,
@@ -1293,8 +1296,10 @@ class _CreateDecksScreenState extends State<CreateDecksScreen>{
               MaterialPageRoute(builder: (context) => CustomizeLettersScreen()),
             );    
         },
-        deleteIcon: Icon(SFSymbols.pencil,
-        color: Color(0xFF0342dc),),
+          deleteIcon: Icon(SFSymbols.pencil,
+          color: Color(0xFF0342dc),
+          size: SizeConfig.safeBlockHorizontal * 2.5,
+        ),
         onPressed: () {
           setState(() {
             _defaultMiddleChoiceIndex = index;
@@ -1329,7 +1334,7 @@ class _CreateDecksScreenState extends State<CreateDecksScreen>{
           child:  
             Text(endSetsList[index].name,
                 style: TextStyle(fontSize: isLongName(endSetsList[index].name) ? SizeConfig.safeBlockHorizontal * 1.6 : SizeConfig.safeBlockHorizontal * 2, fontWeight: FontWeight.w500),
-              textAlign: TextAlign.center,
+              textAlign: TextAlign.center, overflow: TextOverflow.visible,
             ),
         ),
         showCheckmark: false,
@@ -1343,6 +1348,7 @@ class _CreateDecksScreenState extends State<CreateDecksScreen>{
             );  
         },
         deleteIcon: Icon(SFSymbols.pencil,
+        size: SizeConfig.safeBlockHorizontal * 2.5,
         color: Color(0xFF0342dc),),
         onPressed: () {
           setState(() {
@@ -1365,11 +1371,11 @@ class _CreateDecksScreenState extends State<CreateDecksScreen>{
   }
   Widget checkmarkButton() {
     return Container(
-      margin: EdgeInsets.only(top: 20, right: SizeConfig._safeAreaVertical + 10, left: SizeConfig._safeAreaVertical + 5, bottom: 20),
+      //margin: EdgeInsets.only(right: SizeConfig._safeAreaVertical + 20, left: SizeConfig._safeAreaVertical + 20),
       child: IconButton(
           icon: Icon(SFSymbols.checkmark_circle_fill),
           color: Color(0xFF00cbfb),
-          iconSize: SizeConfig.screenHeight * 0.1,
+          iconSize: SizeConfig.screenHeight * 0.08,
           onPressed: () {
             setState(() {
               //sortChips();
@@ -1409,13 +1415,23 @@ class _CreateDecksScreenState extends State<CreateDecksScreen>{
         ),
     );
   }
+  Widget emptyColumn(){
+    return Container(
+      width: SizeConfig.screenWidth * 0.1,
+      height: SizeConfig.screenHeight,
+      margin: EdgeInsets.only(top: SizeConfig._safeAreaVertical + 20, right: 5,),
+      child: Column(
+      children: [
+      ],
+      )
+    );
+  }
   Widget column1(){
     return Container(
       width: SizeConfig.screenWidth * 0.25,
-      height: 500,
+      height: SizeConfig.screenHeight,
       margin: EdgeInsets.only(top: SizeConfig._safeAreaVertical + 20, right: 5,),
       child: Column(
-        mainAxisSize: MainAxisSize.max,
       children: [
         Container( 
           margin: EdgeInsets.only(bottom: 10),
@@ -1439,7 +1455,7 @@ class _CreateDecksScreenState extends State<CreateDecksScreen>{
   Widget column2(){
     return Container(
       width: SizeConfig.screenWidth * 0.25,
-      height: 500,
+      height: SizeConfig.screenHeight,
       margin: EdgeInsets.only(top: SizeConfig._safeAreaVertical + 20, right: 5, left: 5,),
       child: Column(
         children: [
@@ -1464,7 +1480,7 @@ class _CreateDecksScreenState extends State<CreateDecksScreen>{
   Widget column3(){
     return Container(
       width: SizeConfig.screenWidth * 0.25,
-      height: 500,
+      height: SizeConfig.screenHeight,
       margin: EdgeInsets.only(top: SizeConfig._safeAreaVertical + 20, left: 5),
       child: Column(
         children: [
@@ -1489,7 +1505,7 @@ class _CreateDecksScreenState extends State<CreateDecksScreen>{
   Widget choiceChipRow(){
     return Row(
         children: [
-          Spacer(),
+          emptyColumn(),
           column1(),
           column2(),
           column3(),
@@ -1527,6 +1543,25 @@ class _CustomizeLettersState extends State<CustomizeLettersScreen> {
         backgroundColor: Color(0xFF1b454f),
         body: Stack(
           children: <Widget>[
+            Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage("assets/water-blue-ocean.jpg"), 
+                fit: BoxFit.cover
+            )
+          ),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+              child: Container(
+                decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.4),
+                ),
+              )
+            )
+        ),
+        Scaffold(
+          backgroundColor: Colors.transparent,
+          body:
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
@@ -1536,31 +1571,32 @@ class _CustomizeLettersState extends State<CustomizeLettersScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       Container(
-            margin: EdgeInsets.only(bottom: 10,),
-            child: InputChip(
-        selected: true,
-        label: Container(
-          width: 200,
-          margin: EdgeInsets.all(10),
-          child:  
-            Text(mid.name,
-                style: TextStyle(fontSize: SizeConfig.safeBlockHorizontal * 2, fontWeight: FontWeight.w500),
-              textAlign: TextAlign.center,
-            ),
-        ),
-        showCheckmark: false,
-        deleteButtonTooltipMessage: "Edit",
-        onDeleted: () {
-        },
-        deleteIcon: Icon(SFSymbols.pencil,
-        color: Color(0xFF0342dc),),
-        onPressed: () {
-          setState(() {
-            //_defaultEndChoiceIndex = index;
-           // print("defaultindex: $defaultIndex");
-           // print("listbuilder: $listBuilderIndex");
-          });
-        },
+                        margin: EdgeInsets.only(bottom: 10,),
+                        child: InputChip(
+                    selected: true,
+                    label: Container(
+                      width: SizeConfig.screenHeight * 0.4,
+                      margin: EdgeInsets.all(10),
+                      child:  
+                        Text(mid.name,
+                            style: TextStyle(fontSize: SizeConfig.safeBlockHorizontal * 2, fontWeight: FontWeight.w500),
+                          textAlign: TextAlign.center,
+                        ),
+                    ),
+                    showCheckmark: false,
+                    deleteButtonTooltipMessage: "Edit",
+                    onDeleted: () {
+                    },
+                    deleteIcon: Icon(SFSymbols.pencil,
+                    size: SizeConfig.safeBlockHorizontal * 3,
+                    color: Color(0xFF0342dc),),
+                    onPressed: () {
+                      setState(() {
+                        //_defaultEndChoiceIndex = index;
+                      // print("defaultindex: $defaultIndex");
+                      // print("listbuilder: $listBuilderIndex");
+                      });
+                    },
       
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.only(topRight: Radius.circular(10),bottomRight: Radius.circular(10),topLeft: Radius.circular(10),bottomLeft: Radius.circular(10))),
             selectedColor: Color(0xFF3478F6).withOpacity(0.3),
@@ -1574,7 +1610,7 @@ class _CustomizeLettersState extends State<CustomizeLettersScreen> {
                 Container(
                   margin: EdgeInsets.all(30),
                   width: SizeConfig.screenWidth * 0.35,
-                  height: 500,
+                  height: SizeConfig.screenHeight,
                   
                   child: gridView(itemWidth, itemHeight),
                 ),
@@ -1583,13 +1619,14 @@ class _CustomizeLettersState extends State<CustomizeLettersScreen> {
                     Navigator.pop(context);
                   },
                   icon: Icon(SFSymbols.checkmark_circle_fill),
-                  iconSize: SizeConfig.screenHeight * 0.1,
+                  iconSize: SizeConfig.screenHeight * 0.08,
                   color: Color(0xFF77b9c7)
                 ),
              
             
               ]
             ),
+        )
           ]
         )
       )
@@ -1639,12 +1676,13 @@ class _CustomizeLettersState extends State<CustomizeLettersScreen> {
         //last element of gridview should be a textformfield
         if(index == mid.letters.length + mid.lettersToAdd.length){
           return Container(
-            width: SizeConfig.screenWidth * 0.8,
+            margin: EdgeInsets.only(top: 20, right: 5, left: SizeConfig._safeAreaVertical + 10, bottom: 5),
+           //margin: EdgeInsets.all(3),
             //height: 50,
             decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10)
+            //borderRadius: BorderRadius.circular(1)
           ),
-            child: TextFormField(
+            child:TextFormField(
               inputFormatters: [new WhitelistingTextInputFormatter(RegExp("[a-zA-Z]")),],
               style: TextStyle(color: Color(0xFF559ec3), fontWeight: FontWeight.w600),
               onFieldSubmitted: (String input){
@@ -1669,7 +1707,83 @@ class _CustomizeLettersState extends State<CustomizeLettersScreen> {
             )
           ),
           controller: _controller,
-        ),
+        ), /*FilterChip(
+              selected: true,
+              label:  Container(
+                margin: EdgeInsets.all(3),
+                width: 50,
+                height: 50,
+                child: Center(
+                  child: TextFormField(
+                     inputFormatters: [new WhitelistingTextInputFormatter(RegExp("[a-zA-Z]")),],
+              style: TextStyle(color: Color(0xFF559ec3), fontWeight: FontWeight.w600),
+              onFieldSubmitted: (String input){
+
+            setState(() {
+              //when text is submitted to the textformfield, the letters are added to lettersToAdd list of the selected letterset
+              mid.lettersToAdd.add(input);
+            });
+            
+            
+          },
+          textAlign: TextAlign.center,
+           decoration: InputDecoration(
+            hintText: "+",
+            hintStyle: TextStyle(color: Color(0xFF559ec3), fontSize: SizeConfig.safeBlockHorizontal * 3),
+            //contentPadding: EdgeInsets.symmetric(vertical: SizeConfig.screenWidth * 0.02,),
+            fillColor: Colors.black.withOpacity(0.3),
+            filled: true,
+            border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10.0),
+            borderSide: BorderSide.none
+            )
+          ),
+          controller: _controller,
+                  ),
+                )
+              ),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
+                  side: BorderSide(
+                    color:  Color(0xFF0d45bc) 
+                  ),
+                ),
+              selectedColor: Color(0xFF2250be),
+              backgroundColor: Color(0xFF2b4a5d),
+         
+              showCheckmark: false,
+              onSelected: (bool selected) {
+                setState(() {
+                 
+                });
+              }
+            )*/
+            /*TextFormField(
+              inputFormatters: [new WhitelistingTextInputFormatter(RegExp("[a-zA-Z]")),],
+              style: TextStyle(color: Color(0xFF559ec3), fontWeight: FontWeight.w600),
+              onFieldSubmitted: (String input){
+
+            setState(() {
+              //when text is submitted to the textformfield, the letters are added to lettersToAdd list of the selected letterset
+              mid.lettersToAdd.add(input);
+            });
+            
+            
+          },
+          textAlign: TextAlign.center,
+           decoration: InputDecoration(
+            hintText: "+",
+            hintStyle: TextStyle(color: Color(0xFF559ec3), fontSize: SizeConfig.safeBlockHorizontal * 3),
+            //contentPadding: EdgeInsets.symmetric(vertical: SizeConfig.screenWidth * 0.02,),
+            fillColor: Colors.black.withOpacity(0.3),
+            filled: true,
+            border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10.0),
+            borderSide: BorderSide.none
+            )
+          ),
+          controller: _controller,
+        ),*/
         
       
     );
@@ -1680,11 +1794,13 @@ class _CustomizeLettersState extends State<CustomizeLettersScreen> {
             margin: EdgeInsets.only(top: 5, right: 5, left: SizeConfig._safeAreaVertical + 10, bottom: 5),
             child: FilterChip(
               label: Container(
-                width: 40,
+                margin: EdgeInsets.all(3),
+                width: 50,
                 height: 50,
                 child: FittedBox(
                 fit: BoxFit.fitWidth,
                 child: Text(mid.lettersToAdd[index-mid.letters.length],
+                overflow: TextOverflow.visible,
                   style: TextStyle(color: !mid.lettersToRemove.contains(mid.letters[index-mid.letters.length]) == true ?  Color(0xFF78cbff): Color(0xFF78c9ff), fontSize: SizeConfig.safeBlockHorizontal * 3, fontWeight: FontWeight.w500),
                     textAlign: TextAlign.center,),
               ),
@@ -1722,11 +1838,13 @@ class _CustomizeLettersState extends State<CustomizeLettersScreen> {
             margin: EdgeInsets.only(top: 5, right: 5, left: SizeConfig._safeAreaVertical + 10, bottom: 5),
             child: FilterChip(
               selected: !mid.lettersToRemove.contains(mid.letters[index]),
-              label:  Container( 
-                width: 40,
+              label:  Container(
+                margin: EdgeInsets.all(3),
+                width: 50,
                 height: 50,
                 child: Center(
                   child: Text(mid.letters[index],
+                  overflow: TextOverflow.visible,
                   //if the letter is not part of the lettersToRemove list, it should be selected
                   style: TextStyle(color: !mid.lettersToRemove.contains(mid.letters[index]) == true ?  Color(0xFF78cbff): Color(0xFF78c9ff), fontSize: SizeConfig.safeBlockHorizontal * 3, fontWeight: FontWeight.w500),
                     textAlign: TextAlign.center,),
@@ -2036,7 +2154,7 @@ class _MyDecksScreenState extends State<MyDecksScreen> {
                 ),
             Positioned(
               bottom: 20,
-              left: 20,
+              left:  20,
               child: IconButton(
                 onPressed: () {
                   Navigator.push(
@@ -2287,7 +2405,7 @@ class _BoardScreenState extends State<BoardScreen> {
               )
             ),
             Positioned(
-              top: 20,
+              top: 5 + SizeConfig._safeAreaVertical,
               right: 20,
               child: CircleAvatar(
                 backgroundColor: Color(0xFF05334c),
@@ -2301,14 +2419,16 @@ class _BoardScreenState extends State<BoardScreen> {
                   //print(listToStringConverter(QRStringList));
                   showDialog(context: context, child:
                       new AlertDialog(
-                        title: new Text("QR Code"),
+                        //title: new Text("QR Code"),
                         content: Container(
-                          width: 100,
-                          height: 100,
-                          child: QrImage(
-                            data: letterPackMap[letterPackName].dataEncodeiOS(),
-                            version: QrVersions.auto,
-                            size: 100,
+                          width: SizeConfig.screenHeight - 20,
+                          height: SizeConfig.screenHeight - 20,
+                          child: Center(
+                            child: QrImage(
+                              data: letterPackMap[letterPackName].dataEncodeiOS(),
+                              version: QrVersions.auto,
+                            //size: 100,
+                            )
                           ),
                         )
                       )
