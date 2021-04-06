@@ -443,6 +443,7 @@ LetterSet selectedBeginningSet;
 LetterSet selectedMiddleSet;
 LetterSet selectedEndSet;
 bool firstBuild = true;
+bool ifQRErrorOcurred = false;
 bool isLargeScreen;
 
 //change variable name
@@ -678,6 +679,7 @@ Future<void> _scan() async {
       ),
     );
     setState(() {
+      //print("{\"beginning\":{\"name\":\"Beginning Blends\",\"position\":1,\"letters\":[\"bl\",\"br\",\"cl\",\"cr\",\"dr\",\"fl\",\"fr\",\"gl\",\"gr\",\"pl\",\"pr\",\"sc\",\"scr\",\"shr\",\"sk\",\"sl\",\"sm\",\"sn\",\"sp\",\"spl\",\"spr\",\"squ\",\"st\",\"str\",\"sw\",\"thr\",\"tr\",\"tw\"]},\"end\":{\"name\":\"Ending Blends\",\"position\":4,\"letters\":[\"sk\",\"sp\",\"st\",\"ct\",\"ft\",\"lk\",\"lt\",\"mp\",\"nch\",\"nd\",\"nt\",\"pt\"]},\"name\":\"Meld did Did Ke\",\"middle\":{\"name\":\"Open Syllable\",\"position\":2,\"letters\":[\"a\",\"e\",\"i\",\"o\",\"u\"]}}");
       qrString = codeSanner.rawContent;
       //print(qrString);
       LetterPack tempLP = qrToLetterPack();
@@ -691,14 +693,47 @@ Future<void> _scan() async {
         FadeRoute(page: BoardScreen()),
       );
     });
-  } on FormatException {
+  } /*on FormatException {
       setState(() {
         Navigator.push(
           context,
           FadeRoute(page: MyHomePage()),
         );
       });
+    } */catch (e){
+      print("$e");
+      showDialog(context: context, child:
+       new AlertDialog(
+        //title: new Text("QR Code"),
+        content: Container(
+         width: SizeConfig.screenHeight - 20,
+            height: SizeConfig.screenHeight - 20,
+             child: Center(
+              child: Text("This is not a blendingboard deck!"),
+                            //size: 100,
+              )
+           ),
+       )
+       
+    
+      );
+      setState(() {
+        ifQRErrorOcurred = true;
+        Navigator.push(
+          context,
+          FadeRoute(page: MyHomePage()),
+        );
+      });
     }
+}
+ void showErrorDialog(BuildContext context) {
+   showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text("Wifi"),
+            content: Text("Wifi not detected. Please activate it."),
+          )
+      );
 }
 
   @override
@@ -713,7 +748,11 @@ Future<void> _scan() async {
       //_reset();
       readAll();
       firstBuild = false;
-    }  
+    }
+    
+      
+ //ifQRErrorOcurred = false;
+    
 
   }
 
@@ -750,6 +789,7 @@ Future<void> _scan() async {
                 )
             )
         ),
+        
         Scaffold(
           backgroundColor: Colors.transparent,
           body: Stack(
@@ -974,6 +1014,7 @@ Future<void> _scan() async {
         icon: Icon(SFSymbols.qrcode_viewfinder),
         //iconSize: SizeConfig.safeBlockHorizontal * 4,
         onPressed: () {
+          
           _scan(); 
         },
       ),
