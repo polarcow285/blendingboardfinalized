@@ -702,7 +702,40 @@ Future<void> _scan() async {
       });
     } */catch (e){
       print("$e");
-      showDialog(context: context, child:
+      
+      setState(() {
+        showDialog(context: context, child:
+       new AlertDialog(
+        title: Text("Not a Blending Board Deck", textAlign: TextAlign.center),
+        content: Container(
+         width: SizeConfig.screenWidth * 0.3,
+        height: SizeConfig.screenWidth * 0.3,
+          child: Center(
+            child: Text("This code contains the data: $qrString, and is not a Blending Board Deck.", textAlign: TextAlign.center),
+          )
+           ),
+          actions: <Widget>[
+            FlatButton(
+              child: Text("OK"),
+              onPressed: (){
+                Navigator.of(context).pop();
+              }
+            ),
+          ],
+       )
+       
+    
+      );
+        //ifQRErrorOcurred = true;
+        /*Navigator.push(
+          context,
+          FadeRoute(page: MyHomePage()),
+        );*/
+      });
+    }
+}
+ void showErrorDialog() async {
+  return showDialog(context: context, child:
        new AlertDialog(
         //title: new Text("QR Code"),
         content: Container(
@@ -716,23 +749,6 @@ Future<void> _scan() async {
        )
        
     
-      );
-      setState(() {
-        ifQRErrorOcurred = true;
-        Navigator.push(
-          context,
-          FadeRoute(page: MyHomePage()),
-        );
-      });
-    }
-}
- void showErrorDialog(BuildContext context) {
-   showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: Text("Wifi"),
-            content: Text("Wifi not detected. Please activate it."),
-          )
       );
 }
 
@@ -1008,17 +1024,21 @@ Future<void> _scan() async {
         borderRadius: BorderRadius.all(Radius.circular(10)),
       ),
       
-        child: Center(
-        child: IconButton(
-        color: Color(0xFF00a8df),
-        icon: Icon(SFSymbols.qrcode_viewfinder),
+      
+        child: FlatButton(
+          padding: EdgeInsets.only(left: 1, right: 0),
+          child: Icon(SFSymbols.qrcode_viewfinder,
+          color: Color(0xFF00a8df),
+          size: SizeConfig.safeBlockHorizontal * 4
+          ),
+        
         //iconSize: SizeConfig.safeBlockHorizontal * 4,
         onPressed: () {
           
           _scan(); 
         },
       ),
-        )
+        
       
     );
   }
@@ -1182,6 +1202,7 @@ class _CreateDecksScreenState extends State<CreateDecksScreen>{
     
     sortChips();
    }
+   
   Widget build(BuildContext context){
     return MaterialApp(
       theme: ThemeData(
@@ -1575,6 +1596,10 @@ class _CustomizeLettersState extends State<CustomizeLettersScreen> {
         DeviceOrientation.landscapeLeft,
     ]);
   }
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
   Widget build(BuildContext context) {
     final double itemWidth = SizeConfig.screenWidth/50;
     final double itemHeight = SizeConfig.screenWidth/50;
@@ -1731,6 +1756,7 @@ class _CustomizeLettersState extends State<CustomizeLettersScreen> {
             setState(() {
               //when text is submitted to the textformfield, the letters are added to lettersToAdd list of the selected letterset
               mid.lettersToAdd.add(input);
+              _controller.clear();
             });
             
             
@@ -1841,7 +1867,7 @@ class _CustomizeLettersState extends State<CustomizeLettersScreen> {
                 child: FittedBox(
                 fit: BoxFit.fitWidth,
                 child: Text(mid.lettersToAdd[index-mid.letters.length],
-                overflow: TextOverflow.visible,
+                overflow: TextOverflow.ellipsis,
                   style: TextStyle(color: !mid.lettersToRemove.contains(mid.letters[index-mid.letters.length]) == true ?  Color(0xFF78cbff): Color(0xFF78c9ff), fontSize: SizeConfig.safeBlockHorizontal * 3, fontWeight: FontWeight.w500),
                     textAlign: TextAlign.center,),
               ),
@@ -2361,7 +2387,7 @@ class _BoardScreenState extends State<BoardScreen> {
   bool isVowelBeginningBool;
   bool isVowelMiddleBool;
   bool isVowelEndBool;
-  List<String> QRStringList = [];
+  //List<String> QRStringList = [];
   
   bool checkVowels(String letter, bool isVowelBoolean){
     if(letter.toLowerCase() == 'a'||letter.toLowerCase() == 'e'||letter.toLowerCase() == 'i'||letter.toLowerCase() == 'o'||letter.toLowerCase() == 'u'){
@@ -2400,7 +2426,7 @@ class _BoardScreenState extends State<BoardScreen> {
     ]);
     //save current letter pack name
     _saveLetterPackName(letterPackName);
-    letterPackMap[letterPackName].dataEncode(QRStringList);
+    //letterPackMap[letterPackName].dataEncode(QRStringList);
     
   }
   Widget build(BuildContext context) {
@@ -2533,9 +2559,14 @@ class _BoardScreenState extends State<BoardScreen> {
         minWidth: SizeConfig.screenWidth * 0.27,
         height: SizeConfig.screenWidth * 0.27,
           child: FlatButton(
-            child: Text(middleCardName,
-              style: TextStyle(fontSize: SizeConfig.safeBlockHorizontal * 10, fontFamily: "DidactGothic", fontWeight: FontWeight.w400),
+            child: FittedBox(
+                fit: BoxFit.fitHeight,
+                child: Text(middleCardName,
+                maxLines: 1,
+              style: TextStyle(fontSize: SizeConfig.safeBlockHorizontal * 10, 
+              fontFamily: "DidactGothic", fontWeight: FontWeight.w400,),
             ),
+          ),
             color: checkVowels(middleCardName, isVowelMiddleBool) ? Color(0xffF7CE46).withOpacity(0.4) : Colors.white,
             textColor: checkVowels(middleCardName, isVowelMiddleBool) ? Color(0xFFb46605) : Colors.black,
             shape: RoundedRectangleBorder(
