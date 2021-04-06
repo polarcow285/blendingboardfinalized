@@ -7,6 +7,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_sfsymbols/flutter_sfsymbols.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:barcode_scan/barcode_scan.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 
 /***********************************************
  * main function to run app
@@ -819,7 +820,7 @@ Future<void> _scan() async {
             child: mainButtonRow(),
             alignment: Alignment.center,
           ),
-          Positioned(
+          /*Positioned(
                 bottom: 20,
                 left: 20,
                     child: IconButton(
@@ -833,7 +834,7 @@ Future<void> _scan() async {
                           );*/
                         },
                 )
-              )
+              )*/
             /*Positioned(
                 bottom: 20,
                 left: 20,
@@ -2515,12 +2516,14 @@ class _BoardScreenState extends State<BoardScreen> {
  ***********************************************/
   Widget beginningCardButton() {
     return Container( 
+      width: SizeConfig.screenWidth * 0.27,
+      height: SizeConfig.screenWidth * 0.27,
       margin: EdgeInsets.only(top: 20, right: 5, left: 20, bottom: 20),
       child: ButtonTheme(
-        minWidth: SizeConfig.screenWidth * 0.27,
-        height: SizeConfig.screenWidth * 0.27,
+        
         child:  FlatButton(
-          child: Text(beginningCardName,
+          child: AutoSizeText(beginningCardName,
+          maxLines: 1,
             style: TextStyle(fontSize: SizeConfig.safeBlockHorizontal * 10, fontFamily: "DidactGothic", fontWeight: FontWeight.w400),
           ),
             color: checkVowels(beginningCardName, isVowelBeginningBool) ? Color(0xFFfdf0b1) : Colors.white,
@@ -2554,19 +2557,18 @@ class _BoardScreenState extends State<BoardScreen> {
   }
   Widget middleCardButton() {
     return Container(
+      width: SizeConfig.screenWidth * 0.27,
+      height: SizeConfig.screenWidth * 0.27,
       margin: EdgeInsets.only(top: 20, right: 5, left: 5, bottom: 20),
       child: ButtonTheme(
-        minWidth: SizeConfig.screenWidth * 0.27,
-        height: SizeConfig.screenWidth * 0.27,
           child: FlatButton(
-            child: FittedBox(
-                fit: BoxFit.fitHeight,
-                child: Text(middleCardName,
+            child: AutoSizeText(middleCardName,
                 maxLines: 1,
+                //minFontSize: 25.0,
               style: TextStyle(fontSize: SizeConfig.safeBlockHorizontal * 10, 
               fontFamily: "DidactGothic", fontWeight: FontWeight.w400,),
             ),
-          ),
+          
             color: checkVowels(middleCardName, isVowelMiddleBool) ? Color(0xffF7CE46).withOpacity(0.4) : Colors.white,
             textColor: checkVowels(middleCardName, isVowelMiddleBool) ? Color(0xFFb46605) : Colors.black,
             shape: RoundedRectangleBorder(
@@ -2597,12 +2599,13 @@ class _BoardScreenState extends State<BoardScreen> {
   }
   Widget endCardButton() {
     return Container(
+      width: SizeConfig.screenWidth * 0.27,
+      height: SizeConfig.screenWidth * 0.27,
       margin: EdgeInsets.only(top: 20, right: 20, left: 5, bottom: 20),
       child: ButtonTheme(
-        minWidth: SizeConfig.screenWidth * 0.27,
-        height: SizeConfig.screenWidth * 0.27,
         child: FlatButton(
-          child: Text(endCardName,
+          child: AutoSizeText(endCardName,
+          maxLines: 1,
             style: TextStyle(fontSize: SizeConfig.safeBlockHorizontal * 10, fontFamily: "DidactGothic", fontWeight: FontWeight.w400),),
           color: checkVowels(endCardName, isVowelEndBool) ? Color(0xffF7CE46).withOpacity(0.4) : Colors.white,
           textColor: checkVowels(endCardName, isVowelEndBool) ? Color(0xFFb46605) : Colors.black,
