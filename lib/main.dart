@@ -8,6 +8,7 @@ import 'package:flutter_sfsymbols/flutter_sfsymbols.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:barcode_scan/barcode_scan.dart';
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 /***********************************************
  * main function to run app
@@ -735,22 +736,58 @@ Future<void> _scan() async {
       });
     }
 }
- void showErrorDialog() async {
-  return showDialog(context: context, child:
+checkCameraPermissions()async {
+  var cameraStatus = await Permission.camera.status;
+  print(cameraStatus);
+  //cameraStatus.isDenied;
+  //if camera is not available -> dialog
+  //if(cameraStatus.is)
+  if(cameraStatus.isUndetermined || cameraStatus.isDenied){
+    //haven't asked for permission yet -> ask for permissions
+    setState(() {
+      showDialog(context: context, child:
        new AlertDialog(
-        //title: new Text("QR Code"),
+        title: Text("Blending Board Would Like to Access the Camera", textAlign: TextAlign.center),
         content: Container(
-         width: SizeConfig.screenHeight - 20,
-            height: SizeConfig.screenHeight - 20,
-             child: Center(
-              child: Text("This is not a blendingboard deck!"),
-                            //size: 100,
-              )
+         width: SizeConfig.screenWidth * 0.15,
+        height: SizeConfig.screenWidth * 0.15,
+          child: Center(
+            child: Text("The camera is only used for scanning QR codes of decks", textAlign: TextAlign.center),
+          )
            ),
-       )
+          actions: <Widget>[
+            FlatButton(
+              child: Text("Don't Allow"),
+              //set status to denied
+              
+              onPressed: (){
+                //Permission.camera.
+                //cameraStatus.isDenied;
+                Navigator.of(context).pop();
+              }
+            ),
+            FlatButton(
+              child: Text("Allow"),
+              
+              onPressed: ()async {
+                await Permission.camera.request();
+                Navigator.of(context).pop();
+                _scan();
+              }
+            ),
+          ],
+       ),
+       barrierDismissible: false,
        
     
-      );
+        );
+      });
+  }
+  if (cameraStatus.isGranted){
+    _scan(); 
+  }
+
+       
 }
 
   @override
@@ -1035,8 +1072,8 @@ Future<void> _scan() async {
         
         //iconSize: SizeConfig.safeBlockHorizontal * 4,
         onPressed: () {
-          
-          _scan(); 
+          checkCameraPermissions();
+          //_scan(); 
         },
       ),
         
