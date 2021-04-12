@@ -339,6 +339,37 @@ class LetterPack{
 
     return encodedLetterPack;
   }
+  static int stringToPositionInt(String s){
+    //because old construcotr had a list of length one that told what the position was
+    //new constructor uses int
+    switch (s){
+      case "beginning":{
+        return 1;
+      }
+      break;
+      case "middle":{
+        return 2;
+      }
+      break;
+      case "end":{
+        return 4;
+      }
+      break;
+      case "sides":{
+        return 5;
+      }
+      break;
+      case "latterHalf":{
+        return 6;
+      }
+      break;
+      case "all":{
+        return 7;
+      }
+      break;
+    }
+    
+  }
   static LetterPack decodeLetterPack(List <String> letterSetList){
     LetterPack tempLP;
     String letterPackName = "";
@@ -365,18 +396,30 @@ class LetterPack{
          count++;
          if(count == 1){
            index1 = i;
-           letterSetName1 = letterSetList[i].substring(1,letterSetList[i].length);
-           position1 = int.parse(letterSetList[i+1]);
+           letterSetName1 = letterSetList[i].substring(1,letterSetList[i].length);         
+           position1 = int.tryParse(letterSetList[i+1]);
+           //if the sets were encoded using old constructor
+           if (position1 == null){
+             position1 = stringToPositionInt(letterSetList[i+1]);
+           }
          }
          if(count == 2){
            index2 = i;
            letterSetName2 = letterSetList[i].substring(1,letterSetList[i].length);
-           position2 = int.parse(letterSetList[i+1]);
+           position2 = int.tryParse(letterSetList[i+1]);
+           //if the sets were encoded using old constructor
+           if (position2 == null){
+             position2 = stringToPositionInt(letterSetList[i+1]);
+           }
          }
          if(count == 3){
            index3 = i;
            letterSetName3 = letterSetList[i].substring(1,letterSetList[i].length);
-           position3 = int.parse(letterSetList[i+1]);
+           position3 = int.tryParse(letterSetList[i+1]);
+           //if the sets were encoded using old constructor
+           if (position3 == null){
+             position3 = stringToPositionInt(letterSetList[i+1]);
+           }
          }
        }
     }
@@ -521,13 +564,17 @@ class _MyHomePageState extends State<MyHomePage> {
     return intValue;
   }
 
-  void readAll() async {
+   void readAll() async {
         await _readInt("numberOfKeys").then((value) {
               numberOfLetterPacks = value;
         });
         print(numberOfLetterPacks);
         if (numberOfLetterPacks == null){
           setState(() { 
+            allPacks.clear();
+            allPacks.add(defaultPacks[0]);
+            allPacks.add(defaultPacks[1]);
+            allPacks.add(defaultPacks[2]);
             numberOfLetterPacks = 3;
           });        
           //print("First time. Default packs will be set");
@@ -742,7 +789,11 @@ checkCameraPermissions()async {
   //cameraStatus.isDenied;
   //if camera is not available -> dialog
   //if(cameraStatus.is)
-  if(cameraStatus.isUndetermined || cameraStatus.isDenied){
+  if (cameraStatus.isGranted){
+    _scan(); 
+  }
+  else{
+    //print("igot here");
     //haven't asked for permission yet -> ask for permissions
     setState(() {
       showDialog(context: context, child:
@@ -783,9 +834,7 @@ checkCameraPermissions()async {
         );
       });
   }
-  if (cameraStatus.isGranted){
-    _scan(); 
-  }
+  
 
        
 }
@@ -2272,7 +2321,52 @@ class _MyDecksScreenState extends State<MyDecksScreen> {
                 iconSize: SizeConfig.screenHeight * 0.05,
                 color: Color(0xFF0690d4)
               ),
-            ),   
+            ), 
+            Positioned(
+              bottom: 20,
+              right:  20,
+              child: IconButton(
+                onPressed: () {
+                  showDialog(context: context, child:
+                    new AlertDialog(
+                      title: Text("Are you sure you want to clear all decks?", textAlign: TextAlign.center),
+                      content: Container(
+                      width: SizeConfig.screenWidth * 0.3,
+                      height: SizeConfig.screenWidth * 0.3,
+                        child: Center(
+                          child: Text("All decks will be deleted except for the default decks.", textAlign: TextAlign.center),
+                        )
+                        ),
+                        actions: <Widget>[
+                          FlatButton(
+                            child: Text("NO"),
+                            onPressed: (){
+                              Navigator.of(context, rootNavigator: true).pop(context);
+                            }
+                          ),
+                          FlatButton(
+                            child: Text("YES"),
+                            onPressed: (){
+                              Navigator.of(context, rootNavigator: true).pop(context);
+                               _reset();
+                              firstBuild = true;
+                              Navigator.push(
+                                context,
+                                FadeRoute(page: MyHomePage()),
+                              );
+                            }
+                          ),
+                        ],
+                    )
+
+      );
+                  
+                },
+                icon: Icon(SFSymbols.trash_fill),
+                iconSize: SizeConfig.screenHeight * 0.05,
+                color: Color(0xFF0690d4)
+              ),
+            ),     
               ]
             )
           ) 
