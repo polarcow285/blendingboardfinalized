@@ -767,19 +767,18 @@ Future<void> _scan() async {
             FlatButton(
               child: Text("OK"),
               onPressed: (){
-                Navigator.of(context).pop();
+                Navigator.push(
+                  context,
+                  FadeRoute(page: MyHomePage()),
+                );
               }
             ),
           ],
-       )
+       ),
        
-    
+      barrierDismissible: false,
       );
-        //ifQRErrorOcurred = true;
-        /*Navigator.push(
-          context,
-          FadeRoute(page: MyHomePage()),
-        );*/
+
       });
     }
 }
