@@ -767,10 +767,11 @@ Future<void> _scan() async {
             FlatButton(
               child: Text("OK"),
               onPressed: (){
-                Navigator.push(
+                /*Navigator.push(
                   context,
                   FadeRoute(page: MyHomePage()),
-                );
+                );*/
+                Navigator.of(context).pop();
               }
             ),
           ],
