@@ -1830,14 +1830,13 @@ class _CustomizeLettersState extends State<CustomizeLettersScreen> {
         if(index == mid.letters.length + mid.lettersToAdd.length){
           return Container(
             margin: EdgeInsets.only(top: 20, right: 5, left: SizeConfig._safeAreaVertical + 10, bottom: 5),
-           //margin: EdgeInsets.all(3),
-            //height: 50,
+         
             decoration: BoxDecoration(
-            //borderRadius: BorderRadius.circular(1)
+          
           ),
             child:TextFormField(
               inputFormatters: [new WhitelistingTextInputFormatter(RegExp("[a-zA-Z]")),],
-              style: TextStyle(color: Color(0xFF559ec3), fontWeight: FontWeight.w600),
+              style: TextStyle(color: Color(0xFF559ec3), fontWeight: FontWeight.w600, fontSize: SizeConfig.safeBlockHorizontal * 3),
               onFieldSubmitted: (String input){
 
             setState(() {
@@ -1861,83 +1860,7 @@ class _CustomizeLettersState extends State<CustomizeLettersScreen> {
             )
           ),
           controller: _controller,
-        ), /*FilterChip(
-              selected: true,
-              label:  Container(
-                margin: EdgeInsets.all(3),
-                width: 50,
-                height: 50,
-                child: Center(
-                  child: TextFormField(
-                     inputFormatters: [new WhitelistingTextInputFormatter(RegExp("[a-zA-Z]")),],
-              style: TextStyle(color: Color(0xFF559ec3), fontWeight: FontWeight.w600),
-              onFieldSubmitted: (String input){
-
-            setState(() {
-              //when text is submitted to the textformfield, the letters are added to lettersToAdd list of the selected letterset
-              mid.lettersToAdd.add(input);
-            });
-            
-            
-          },
-          textAlign: TextAlign.center,
-           decoration: InputDecoration(
-            hintText: "+",
-            hintStyle: TextStyle(color: Color(0xFF559ec3), fontSize: SizeConfig.safeBlockHorizontal * 3),
-            //contentPadding: EdgeInsets.symmetric(vertical: SizeConfig.screenWidth * 0.02,),
-            fillColor: Colors.black.withOpacity(0.3),
-            filled: true,
-            border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10.0),
-            borderSide: BorderSide.none
-            )
-          ),
-          controller: _controller,
-                  ),
-                )
-              ),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15),
-                  side: BorderSide(
-                    color:  Color(0xFF0d45bc) 
-                  ),
-                ),
-              selectedColor: Color(0xFF2250be),
-              backgroundColor: Color(0xFF2b4a5d),
-         
-              showCheckmark: false,
-              onSelected: (bool selected) {
-                setState(() {
-                 
-                });
-              }
-            )*/
-            /*TextFormField(
-              inputFormatters: [new WhitelistingTextInputFormatter(RegExp("[a-zA-Z]")),],
-              style: TextStyle(color: Color(0xFF559ec3), fontWeight: FontWeight.w600),
-              onFieldSubmitted: (String input){
-
-            setState(() {
-              //when text is submitted to the textformfield, the letters are added to lettersToAdd list of the selected letterset
-              mid.lettersToAdd.add(input);
-            });
-            
-            
-          },
-          textAlign: TextAlign.center,
-           decoration: InputDecoration(
-            hintText: "+",
-            hintStyle: TextStyle(color: Color(0xFF559ec3), fontSize: SizeConfig.safeBlockHorizontal * 3),
-            //contentPadding: EdgeInsets.symmetric(vertical: SizeConfig.screenWidth * 0.02,),
-            fillColor: Colors.black.withOpacity(0.3),
-            filled: true,
-            border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10.0),
-            borderSide: BorderSide.none
-            )
-          ),
-          controller: _controller,
-        ),*/
+        ), 
         
       
     );
@@ -1948,13 +1871,13 @@ class _CustomizeLettersState extends State<CustomizeLettersScreen> {
             margin: EdgeInsets.only(top: 5, right: 5, left: SizeConfig._safeAreaVertical + 10, bottom: 5),
             child: FilterChip(
               label: Container(
-                margin: EdgeInsets.all(3),
+                margin: EdgeInsets.all(0),
                 width: 50,
                 height: 50,
-                child: FittedBox(
-                fit: BoxFit.fitWidth,
-                child: Text(mid.lettersToAdd[index-mid.letters.length],
-                overflow: TextOverflow.ellipsis,
+                child: Center(
+                //fit: BoxFit.fitWidth,
+                child: AutoSizeText(mid.lettersToAdd[index-mid.letters.length],
+                overflow: TextOverflow.visible,
                   style: TextStyle(color: !mid.lettersToRemove.contains(mid.letters[index-mid.letters.length]) == true ?  Color(0xFF78cbff): Color(0xFF78c9ff), fontSize: SizeConfig.safeBlockHorizontal * 3, fontWeight: FontWeight.w500),
                     textAlign: TextAlign.center,),
               ),
@@ -1993,11 +1916,11 @@ class _CustomizeLettersState extends State<CustomizeLettersScreen> {
             child: FilterChip(
               selected: !mid.lettersToRemove.contains(mid.letters[index]),
               label:  Container(
-                margin: EdgeInsets.all(3),
+                margin: EdgeInsets.all(0),
                 width: 50,
                 height: 50,
                 child: Center(
-                  child: Text(mid.letters[index],
+                  child: AutoSizeText(mid.letters[index],
                   overflow: TextOverflow.visible,
                   //if the letter is not part of the lettersToRemove list, it should be selected
                   style: TextStyle(color: !mid.lettersToRemove.contains(mid.letters[index]) == true ?  Color(0xFF78cbff): Color(0xFF78c9ff), fontSize: SizeConfig.safeBlockHorizontal * 3, fontWeight: FontWeight.w500),
