@@ -763,7 +763,7 @@ Future<void> _scan() async {
             child: Text("This code contains the data: $qrString, and is not a Blending Board Deck.", textAlign: TextAlign.center),
           )
            ),
-          actions: <Widget>[
+          /*actions: <Widget>[
             FlatButton(
               child: Text("OK"),
               onPressed: (){
@@ -774,10 +774,10 @@ Future<void> _scan() async {
                 Navigator.of(context).pop();
               }
             ),
-          ],
+          ],*/
        ),
        
-      barrierDismissible: false,
+      barrierDismissible: true,
       );
 
       });
@@ -1438,6 +1438,7 @@ class _CreateDecksScreenState extends State<CreateDecksScreen>{
         showCheckmark: false,
         deleteButtonTooltipMessage: "Edit",
         onDeleted: () {
+           _defaultMiddleChoiceIndex = index;
           mid = middleSetsList[index];
             Navigator.push(
               context,
