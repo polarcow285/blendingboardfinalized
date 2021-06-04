@@ -9,6 +9,8 @@ import 'package:qr_flutter/qr_flutter.dart';
 import 'package:barcode_scan/barcode_scan.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'dart:math';
+
 
 /***********************************************
  * main function to run app
@@ -2443,7 +2445,9 @@ class _BoardScreenState extends State<BoardScreen> {
   bool isVowelBeginningBool;
   bool isVowelMiddleBool;
   bool isVowelEndBool;
-  //List<String> QRStringList = [];
+  Random random = new Random();
+  bool isShufflePressed = false;
+
   
   bool checkVowels(String letter, bool isVowelBoolean){
     if(letter.toLowerCase() == 'a'||letter.toLowerCase() == 'e'||letter.toLowerCase() == 'i'||letter.toLowerCase() == 'o'||letter.toLowerCase() == 'u'){
@@ -2556,10 +2560,14 @@ class _BoardScreenState extends State<BoardScreen> {
                         )
                       )
                   );
-                  
                 },
               ),
               )
+            ),
+            Positioned(
+              top: 5 + SizeConfig._safeAreaVertical,
+              left: 20,
+              child: shuffleButton(),
             )
           ]
         )
@@ -2569,6 +2577,46 @@ class _BoardScreenState extends State<BoardScreen> {
   /***********************************************
  * Build Methods for Widgets on Board Screen
  ***********************************************/
+  Widget shuffleButton(){
+    return CircleAvatar(
+      backgroundColor: isShufflePressed == false ? Color(0xFF05334c): Color(0xFF0391d8),
+      radius: (SizeConfig.screenHeight * 0.05),
+      child: IconButton(
+        icon: Icon(SFSymbols.shuffle),
+        iconSize: SizeConfig.screenHeight * 0.05,
+        color: isShufflePressed == false ? Color(0xFF0690d4): Color(0xFF000000),
+        onPressed: () {
+          isShufflePressed = !isShufflePressed;
+          if(isShufflePressed == true){
+            //if shuffle is pressed, randomize
+            setState(() {
+              counter1 = random.nextInt(letterPackMap[letterPackName].beginning.letters.length);
+              beginningCardName = letterPackMap[letterPackName].beginning.letters[counter1];
+              counter2 = random.nextInt(letterPackMap[letterPackName].middle.letters.length);
+              middleCardName = letterPackMap[letterPackName].middle.letters[counter2];
+              counter3 = random.nextInt(letterPackMap[letterPackName].end.letters.length);
+              endCardName = letterPackMap[letterPackName].end.letters[counter3];
+            });
+          }
+          else{
+            //if shuffle is not pressed, set to original
+            setState(() {
+              counter1 = 0;
+              beginningCardName = letterPackMap[letterPackName].beginning.letters[counter1];
+              counter2 = 0;
+              middleCardName = letterPackMap[letterPackName].middle.letters[counter2];
+              counter3 = 0;
+              endCardName = letterPackMap[letterPackName].end.letters[counter3];
+            });
+            
+          }
+          
+          
+       
+          },
+      ),
+    );
+  }
   Widget beginningCardButton() {
     return Container( 
       width: SizeConfig.screenWidth * 0.27,
