@@ -179,6 +179,18 @@ class ScaleRoute extends PageRouteBuilder {
               ),
         );
 }
+bool isDarkMode = false;
+/*class ColorTheme{
+  Color textColor;
+  Color selectionColor;
+  ColorTheme(Color color){
+    textColor = color;
+    selectionColor = color.withOpacity(0.3);
+  }
+}*/
+Color blueC = const Color(0xFF0342dc);
+Color redC = const Color(0xFFEB4D3D);
+Color currentColor; 
 
 /***********************************************
  * Letter Set and Letter Pack Classes and Variables
@@ -960,6 +972,7 @@ checkCameraPermissions()async {
       //crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           missionStatementButton(),
+          settingsButton(),
           qrCamera(),
         ],
     )
@@ -1096,9 +1109,12 @@ checkCameraPermissions()async {
     return Container(
       margin: EdgeInsets.all(20),
       child: IconButton(
-        icon: Icon(Icons.settings),
+        icon: Icon(SFSymbols.gear_alt),
         onPressed: () {
-          
+          Navigator.push(
+            context,
+            SlideUpRoute(page: SettingsScreen())
+          );
         },
       ),
     );
@@ -1129,6 +1145,75 @@ checkCameraPermissions()async {
       ),
         
       
+    );
+  }
+}
+///----Settings Screen----
+
+class SettingsScreen extends StatefulWidget{
+  @override
+  _SettingsScreenState createState() => _SettingsScreenState();
+}
+class _SettingsScreenState extends State<SettingsScreen>{
+  @override
+  void initState(){
+    super.initState();
+    SystemChrome.setPreferredOrientations([
+        DeviceOrientation.landscapeRight,
+        DeviceOrientation.landscapeLeft,
+    ]);
+  }
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Stack(
+        //alignment: Alignment.center,
+        children: <Widget>[
+          Positioned(
+                bottom: 20,
+                left: 20,
+                child: IconButton(
+                  icon: Icon(SFSymbols.house_fill),
+                  iconSize: SizeConfig.screenHeight * 0.05,
+                  color: Color(0xFF0690d4),
+                  onPressed: () {            
+                    Navigator.push(
+                      context,
+                      FadeRoute(page: MyHomePage())
+                    );
+                    
+                  },
+                )
+          ),
+          ListView(
+  // This next line does the trick.
+  scrollDirection: Axis.horizontal,
+  children: <Widget>[
+    Container(
+      width: 160.0,
+      color: Colors.red,
+    ),
+    Container(
+      width: 160.0,
+      color: Colors.blue,
+    ),
+    Container(
+      width: 160.0,
+      color: Colors.green,
+    ),
+    Container(
+      width: 160.0,
+      color: Colors.yellow,
+    ),
+    Container(
+      width: 160.0,
+      color: Colors.orange,
+    ),
+  ],
+)
+
+          
+        ]
+      )
     );
   }
 }
@@ -1396,7 +1481,7 @@ class _CreateDecksScreenState extends State<CreateDecksScreen>{
         },
         deleteIcon: Icon(SFSymbols.pencil,
         size: SizeConfig.safeBlockHorizontal * 2.5,
-        color: Color(0xFF0342dc),),
+        color: currentColor),
         onPressed: () {
           setState(() {
             _defaultBeginningChoiceIndex = index;
@@ -1406,9 +1491,9 @@ class _CreateDecksScreenState extends State<CreateDecksScreen>{
         },
       
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.only(topRight: Radius.circular(10),bottomRight: Radius.circular(10),topLeft: Radius.circular(10),bottomLeft: Radius.circular(10))),
-            selectedColor: Color(0xFF3478F6).withOpacity(0.3),
+            selectedColor: currentColor.withOpacity(0.3),//Color(0xFF3478F6).withOpacity(0.3),
             backgroundColor: Colors.white,
-            labelStyle: TextStyle(color: Color(0xFF0342dc)),
+            labelStyle: TextStyle(color: currentColor),
             )
         );
           
@@ -1449,7 +1534,7 @@ class _CreateDecksScreenState extends State<CreateDecksScreen>{
             );    
         },
           deleteIcon: Icon(SFSymbols.pencil,
-          color: Color(0xFF0342dc),
+          color: currentColor,
           size: SizeConfig.safeBlockHorizontal * 2.5,
         ),
         onPressed: () {
@@ -1461,9 +1546,9 @@ class _CreateDecksScreenState extends State<CreateDecksScreen>{
         },
       
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.only(topRight: Radius.circular(10),bottomRight: Radius.circular(10),topLeft: Radius.circular(10),bottomLeft: Radius.circular(10))),
-            selectedColor: Color(0xFF3478F6).withOpacity(0.3),
+            selectedColor: currentColor.withOpacity(0.3),
             backgroundColor: Colors.white,
-            labelStyle: TextStyle(color: Color(0xFF0342dc)),
+            labelStyle: TextStyle(color: currentColor),
             )
         );
         
@@ -1501,7 +1586,7 @@ class _CreateDecksScreenState extends State<CreateDecksScreen>{
         },
         deleteIcon: Icon(SFSymbols.pencil,
         size: SizeConfig.safeBlockHorizontal * 2.5,
-        color: Color(0xFF0342dc),),
+        color: currentColor),
         onPressed: () {
           setState(() {
             _defaultEndChoiceIndex = index;
@@ -1511,9 +1596,9 @@ class _CreateDecksScreenState extends State<CreateDecksScreen>{
         },
       
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.only(topRight: Radius.circular(10),bottomRight: Radius.circular(10),topLeft: Radius.circular(10),bottomLeft: Radius.circular(10))),
-            selectedColor: Color(0xFF3478F6).withOpacity(0.3),
+            selectedColor: currentColor.withOpacity(0.3),//Color(0xFF3478F6).withOpacity(0.3),
             backgroundColor: Colors.white,
-            labelStyle: TextStyle(color: Color(0xFF0342dc)),
+            labelStyle: TextStyle(color: currentColor),
             )
         );
           
@@ -2190,6 +2275,7 @@ class _MyDecksScreenState extends State<MyDecksScreen> {
         DeviceOrientation.landscapeRight,
         DeviceOrientation.landscapeLeft,
     ]);
+    currentColor = blueC;
   }
   Widget build(BuildContext context) {
     //var size = MediaQuery.of(context).size;
@@ -2355,7 +2441,7 @@ class _MyDecksScreenState extends State<MyDecksScreen> {
                     textAlign: TextAlign.center),
               ),
                 color: Colors.white,
-                textColor: Color(0xFF0342dc),
+                textColor: currentColor,
                 shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10)),
                 onPressed: (){
@@ -2380,7 +2466,7 @@ class _MyDecksScreenState extends State<MyDecksScreen> {
                     textAlign: TextAlign.center),
                   ),
                   color: Colors.white,
-                  textColor: Color(0xFF0342dc),
+                  textColor: currentColor, //Color(0xFF0342dc),
                   shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
                   onPressed: (){
@@ -2407,7 +2493,7 @@ class _MyDecksScreenState extends State<MyDecksScreen> {
                           textAlign: TextAlign.center),
                         ),
                       color: Colors.white,
-                      textColor: Color(0xFF0342dc),
+                      textColor: currentColor,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10)),
                       onPressed: (){
@@ -2574,9 +2660,8 @@ class _BoardScreenState extends State<BoardScreen> {
       )
     );
   }
-  /***********************************************
- * Build Methods for Widgets on Board Screen
- ***********************************************/
+  /// ---- Build Methods for Widgets on Blending Board Screen ----
+  
   Widget shuffleButton(){
     return CircleAvatar(
       backgroundColor: isShufflePressed == false ? Color(0xFF05334c): Color(0xFF0391d8),
