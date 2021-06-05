@@ -179,7 +179,6 @@ class ScaleRoute extends PageRouteBuilder {
               ),
         );
 }
-bool isDarkMode = false;
 /*class ColorTheme{
   Color textColor;
   Color selectionColor;
@@ -188,13 +187,33 @@ bool isDarkMode = false;
     selectionColor = color.withOpacity(0.3);
   }
 }*/
+
+///----Custom Colors----///
 Color blueC = const Color(0xFF0342dc);
 Color redC = const Color(0xFFEB4D3D);
+Color honeyC = const Color(0xFFF7CE46);
+Color greenC = const Color(0xFF64C466);
+Color purpleC = const Color(0xFFA358D7);
+Color pinkC = const Color(0xFFEA455A);
+Color slateC = const Color(0xFF8E8E93);
+Color themeC = const Color(0xFF00E0B8);
 Color currentColor; 
 
-/***********************************************
- * Letter Set and Letter Pack Classes and Variables
- ***********************************************/
+List <Color> themeColorsList = [blueC, honeyC, redC, greenC, purpleC, pinkC, slateC, themeC];
+
+///----Custom Images----///
+AssetImage blueBackgroundImage = AssetImage("assets/water-blue-ocean.jpg");
+AssetImage redBackgroundImage = AssetImage("assets/backgroundRed.jpg");
+AssetImage yellowBackgroundImage = AssetImage("assets/backgroundYellow.jpg");
+AssetImage greenBackgroundImage = AssetImage("assets/backgroundGreen.jpg");
+AssetImage purpleBackgroundImage = AssetImage("assets/backgroundPurple.jpg");
+AssetImage pinkBackgroundImage = AssetImage("assets/backgroundPink.jpg");
+AssetImage grayBackgroundImage = AssetImage("assets/backgroundGray.jpg");
+AssetImage themeBackgroundImage = AssetImage("assets/winterBackground.jpg");
+
+List<AssetImage> backgroundImagesList = [blueBackgroundImage, redBackgroundImage, yellowBackgroundImage, greenBackgroundImage, purpleBackgroundImage, pinkBackgroundImage, grayBackgroundImage, themeBackgroundImage];
+
+///----Letter Set and Letter Pack Classes and Variables----///
 List<String> dataStringList = [];
 List <List> allData = [];
 int numberOfLetterPacks;
@@ -1155,6 +1174,7 @@ class SettingsScreen extends StatefulWidget{
   _SettingsScreenState createState() => _SettingsScreenState();
 }
 class _SettingsScreenState extends State<SettingsScreen>{
+  int colorChipIndex = 0;
   @override
   void initState(){
     super.initState();
@@ -1168,52 +1188,121 @@ class _SettingsScreenState extends State<SettingsScreen>{
       body: Stack(
         //alignment: Alignment.center,
         children: <Widget>[
-          Positioned(
-                bottom: 20,
-                left: 20,
-                child: IconButton(
-                  icon: Icon(SFSymbols.house_fill),
-                  iconSize: SizeConfig.screenHeight * 0.05,
-                  color: Color(0xFF0690d4),
-                  onPressed: () {            
-                    Navigator.push(
-                      context,
-                      FadeRoute(page: MyHomePage())
-                    );
-                    
-                  },
-                )
+          Scaffold(
+            backgroundColor: Colors.transparent,
+            body: Stack(
+              alignment: Alignment.center,
+              children: <Widget>[
+                Positioned(
+                  top: 20,
+                  child: colorColumn(),
           ),
-          ListView(
-  // This next line does the trick.
-  scrollDirection: Axis.horizontal,
-  children: <Widget>[
-    Container(
-      width: 160.0,
-      color: Colors.red,
-    ),
-    Container(
-      width: 160.0,
-      color: Colors.blue,
-    ),
-    Container(
-      width: 160.0,
-      color: Colors.green,
-    ),
-    Container(
-      width: 160.0,
-      color: Colors.yellow,
-    ),
-    Container(
-      width: 160.0,
-      color: Colors.orange,
-    ),
-  ],
-)
-
-          
+              ]
+            )
+            ),
+        
+          Positioned(
+            bottom: 20,
+            left: 20,
+            child: IconButton(
+              icon: Icon(SFSymbols.house_fill),
+              iconSize: SizeConfig.screenHeight * 0.05,
+              color: Color(0xFF0690d4),
+                onPressed: () {            
+                  Navigator.push(
+                    context,
+                    FadeRoute(page: MyHomePage())
+                  );
+                    
+                },
+            )
+          ),
         ]
       )
+    );
+  }
+  Widget colorColumn(){
+    return Container(
+      width: SizeConfig.screenWidth * 0.5,
+      height: SizeConfig.screenHeight,
+      margin: EdgeInsets.only(top: SizeConfig._safeAreaVertical + 20),
+      child: Column(
+        children: [
+          Container( 
+            margin: EdgeInsets.only(bottom: 10),
+            child: Text("Settings",
+              style: TextStyle(
+                fontWeight: FontWeight.w700,
+                color: Colors.blue,
+                fontSize: (SizeConfig.safeBlockHorizontal * 3),
+              )
+            ),
+          ),
+          Container(
+            height: 100,
+            //width: width: SizeConfig.screenWidth * 0.5,,
+            child: colorChipsRow(),
+          )
+          
+
+        ],
+      )
+   );
+  }
+  Widget colorChipsRow(){
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        Text("Theme Color"),
+        Container(
+            height: 100,
+            width: SizeConfig.screenWidth * 0.5,
+            child: colorChips(),
+          )
+        
+      ],
+    );
+  }
+  Widget colorChips(){
+    return ListView.builder(
+      itemCount: themeColorsList.length,
+      scrollDirection: Axis.horizontal,
+      itemBuilder: (BuildContext context, int index) {
+        //if this is the last element, make it a star
+        if(index == themeColorsList.length-1){
+          return Container(
+          child: ChoiceChip(
+            label: Icon(SFSymbols.star_circle_fill, color: themeColorsList[index]),
+            selected: colorChipIndex == index,
+            onSelected: (selected) {
+              setState(() {
+                colorChipIndex = index;
+                currentColor = themeColorsList[index];
+                
+              });
+        },
+          )
+        );
+        }
+        else{
+          return Container(
+          child: ChoiceChip(
+              label: CircleAvatar(
+              backgroundColor: themeColorsList[index],
+            ),
+            selected: colorChipIndex == index,
+            onSelected: (selected) {
+              setState(() {
+                colorChipIndex = index;
+                currentColor = themeColorsList[index];
+              
+              });
+        },
+          )
+        );
+        }
+        
+      }
     );
   }
 }
@@ -1333,9 +1422,6 @@ class CreateDecksScreen extends StatefulWidget {
   _CreateDecksScreenState createState() => _CreateDecksScreenState();
 }
 class _CreateDecksScreenState extends State<CreateDecksScreen>{
-  static int editBeginningIndex = 0;
-  static int editMiddleIndex = 0;
-  static int editEndIndex = 0;
   int _defaultBeginningChoiceIndex = 0;
   int _defaultMiddleChoiceIndex = 1;
   int _defaultEndChoiceIndex = 0;
@@ -2051,18 +2137,15 @@ class _CustomizeLettersState extends State<CustomizeLettersScreen> {
     );
   }
 }
-/***********************************************
- * Save Screen
- ***********************************************/
+///----Save Screen----///
 class SaveScreen extends StatefulWidget {
   @override
   _SaveScreenState createState() => _SaveScreenState();
 }
 class _SaveScreenState extends State<SaveScreen> {
   final _controller = TextEditingController();
-  /***********************************************
- * Saving to Preferences
- ***********************************************/
+
+///---Saving to Preferences----///
   static _saveInt(int numValue) async {
         final prefs = await SharedPreferences.getInstance();
         final key = "numberOfKeys";
@@ -2275,7 +2358,7 @@ class _MyDecksScreenState extends State<MyDecksScreen> {
         DeviceOrientation.landscapeRight,
         DeviceOrientation.landscapeLeft,
     ]);
-    currentColor = blueC;
+    
   }
   Widget build(BuildContext context) {
     //var size = MediaQuery.of(context).size;
@@ -2417,7 +2500,6 @@ class _MyDecksScreenState extends State<MyDecksScreen> {
   Widget gridView(double width, double height) {
     return ConstrainedBox(
       constraints: new BoxConstraints(
-      //minHeight: ,
       maxHeight: SizeConfig.screenWidth,
       maxWidth: SizeConfig.screenWidth - SizeConfig._safeAreaVertical
     ),
@@ -2585,7 +2667,7 @@ class _BoardScreenState extends State<BoardScreen> {
                 constraints: BoxConstraints.expand(),
                 decoration: BoxDecoration(
                 image: DecorationImage(
-                  image: AssetImage("assets/water-blue-ocean.jpg"),
+                  image: blueBackgroundImage,//AssetImage("assets/water-blue-ocean.jpg"),
                 fit: BoxFit.cover)
                 ),
             ),
@@ -2660,7 +2742,7 @@ class _BoardScreenState extends State<BoardScreen> {
       )
     );
   }
-  /// ---- Build Methods for Widgets on Blending Board Screen ----
+  /// ---- Build Methods for Widgets on Blending Board Screen ----///
   
   Widget shuffleButton(){
     return CircleAvatar(

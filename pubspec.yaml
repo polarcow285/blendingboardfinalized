@@ -58,6 +58,7 @@ flutter:
     - assets/blendingBoardLogo.png
     - assets/dyslexiaBrain.png
     - assets/water-blue-ocean.jpg
+    - assets/backgroundRed.jpg
     - assets/outlineDyslexiaBrainLogo.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
