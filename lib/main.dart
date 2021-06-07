@@ -12,9 +12,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'dart:math';
 
 
-/***********************************************
- * main function to run app
- ***********************************************/
+///----main function to run app----///
 void main(){
     WidgetsFlutterBinding.ensureInitialized(); 
     SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeLeft]).then((_){
@@ -49,9 +47,59 @@ class SizeConfig {
  }
 }
 
-/***********************************************
- * Screen Transition classes
- ***********************************************/
+///----Screen Transition Classes----///
+class MyPopupRoute extends PopupRoute {
+  MyPopupRoute({
+    @required this.builder,
+    this.dismissible = true,
+    this.label,
+    this.color,
+    RouteSettings setting,
+  }) : super(settings: setting);
+
+  final WidgetBuilder builder;
+  final bool dismissible;
+  final String label;
+  final Color color;
+  
+  static const String routeName = "/mypopup";
+
+  @override
+  Color get barrierColor => color;
+
+  @override
+  bool get barrierDismissible => dismissible;
+
+  @override
+  String get barrierLabel => label;
+  
+  @override
+  Duration get transitionDuration => const Duration(milliseconds: 400);
+
+  
+
+  @override
+  Widget buildPage(
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+  ) {
+    return builder(context);
+  }
+
+  @override
+  Widget buildTransitions(
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    Widget child,
+  ) {
+    return FadeTransition(
+      opacity:animation,
+      child: child,
+    );
+  }
+ }
 class FadeRoute extends PageRouteBuilder {
   final Widget page;
   FadeRoute({this.page})
@@ -210,6 +258,7 @@ AssetImage purpleBackgroundImage = AssetImage("assets/backgroundPurple.jpg");
 AssetImage pinkBackgroundImage = AssetImage("assets/backgroundPink.jpg");
 AssetImage grayBackgroundImage = AssetImage("assets/backgroundGray.jpg");
 AssetImage themeBackgroundImage = AssetImage("assets/winterBackground.jpg");
+AssetImage currentBackgroundImage;
 
 List<AssetImage> backgroundImagesList = [blueBackgroundImage, redBackgroundImage, yellowBackgroundImage, greenBackgroundImage, purpleBackgroundImage, pinkBackgroundImage, grayBackgroundImage, themeBackgroundImage];
 
@@ -571,9 +620,8 @@ class _MyHomePageState extends State<MyHomePage> {
   String letterPackSubstring = "";
   String middleSubstring = "";
 
-  /***********************************************
- * Reading and Writing to Preferences
- ***********************************************/
+  ///----Reading and Writing to Preferences----///
+  
   Future<List> _read(String keyNumberString) async {
     final prefs = await SharedPreferences.getInstance();
     final key = keyNumberString;
@@ -660,9 +708,7 @@ class _MyHomePageState extends State<MyHomePage> {
      
   }
 
-/***********************************************
- * QR functions
- ***********************************************/
+///---QR Functions----///
 void getBeginningSubstring(){
   print(qrString.indexOf("},"));
   beginningSubstring = qrString.substring(1, qrString.indexOf("},"));
@@ -879,7 +925,7 @@ checkCameraPermissions()async {
         DeviceOrientation.landscapeRight,
         DeviceOrientation.landscapeLeft,
     ]);
-    
+    currentBackgroundImage = blueBackgroundImage;
     if (firstBuild == true){
       //_reset();
       readAll();
@@ -907,7 +953,7 @@ checkCameraPermissions()async {
       ),
       debugShowCheckedModeBanner: false,
       home: Stack(children: <Widget>[ 
-        Container(
+        /*Container(
           height: SizeConfig.screenHeight,
           width: SizeConfig.screenWidth,
           decoration: BoxDecoration(
@@ -924,7 +970,7 @@ checkCameraPermissions()async {
                   ),
                 )
             )
-        ),
+        ),*/
         
         Scaffold(
           backgroundColor: Colors.transparent,
@@ -1278,7 +1324,7 @@ class _SettingsScreenState extends State<SettingsScreen>{
               setState(() {
                 colorChipIndex = index;
                 currentColor = themeColorsList[index];
-                
+                currentBackgroundImage = backgroundImagesList[index];
               });
         },
           )
@@ -1482,7 +1528,7 @@ class _CreateDecksScreenState extends State<CreateDecksScreen>{
             filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
               child: Container(
                 decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.4),
+                color: Colors.black.withOpacity(0.5),
                 ),
               )
             )
@@ -2596,9 +2642,8 @@ class _MyDecksScreenState extends State<MyDecksScreen> {
   }
 }
 
- /***********************************************
- * Board Screen
- ***********************************************/
+ ///----Board Screen----///
+ 
 class BoardScreen extends StatefulWidget {
   @override
   _BoardScreenState createState() => _BoardScreenState();
@@ -2615,7 +2660,7 @@ class _BoardScreenState extends State<BoardScreen> {
   bool isVowelEndBool;
   Random random = new Random();
   bool isShufflePressed = false;
-
+  bool isHomePressed = true;
   
   bool checkVowels(String letter, bool isVowelBoolean){
     if(letter.toLowerCase() == 'a'||letter.toLowerCase() == 'e'||letter.toLowerCase() == 'i'||letter.toLowerCase() == 'o'||letter.toLowerCase() == 'u'){
@@ -2667,37 +2712,29 @@ class _BoardScreenState extends State<BoardScreen> {
                 constraints: BoxConstraints.expand(),
                 decoration: BoxDecoration(
                 image: DecorationImage(
-                  image: blueBackgroundImage,//AssetImage("assets/water-blue-ocean.jpg"),
+                  image: currentBackgroundImage,//AssetImage("assets/water-blue-ocean.jpg"),
                 fit: BoxFit.cover)
                 ),
             ),
-            Align(
-              alignment: Alignment.center,
-              child: cardBackgroundRow(),
+            Visibility(
+              visible: isHomePressed,
+              child: Align(
+                alignment: Alignment.center,
+                child: cardBackgroundRow(),
+              ), 
             ),
-            Align(
-              alignment: Alignment.center,
-              child: cardButtonRow(),
+            Visibility(
+              visible: isHomePressed,
+              child: Align(
+                alignment: Alignment.center,
+                child: cardButtonRow(),
+              ),
             ),
             
             Positioned(
               bottom: 20,
               left: 20,
-              child: CircleAvatar(
-                backgroundColor: Color(0xFF05334c),
-                radius: (SizeConfig.screenHeight * 0.05),
-                child: IconButton(
-                icon: Icon(SFSymbols.house_fill),
-                iconSize: SizeConfig.screenHeight * 0.05,
-                color: Color(0xFF0690d4),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    FadeRoute(page: MyApp()),
-                  );
-                },
-              ),
-              )
+              child: homeButton(),
             ),
             Positioned(
               top: 5 + SizeConfig._safeAreaVertical,
@@ -2736,14 +2773,57 @@ class _BoardScreenState extends State<BoardScreen> {
               top: 5 + SizeConfig._safeAreaVertical,
               left: 20,
               child: shuffleButton(),
+            ),
+            Visibility(
+              visible: !isHomePressed,
+              child: Container(
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.4),
+                  ),
+                )
+              )
+            ),
             )
+            
           ]
         )
       )
     );
   }
   /// ---- Build Methods for Widgets on Blending Board Screen ----///
-  
+  Widget homeButton(){
+    return CircleAvatar(
+                backgroundColor: Color(0xFF05334c),
+                radius: (SizeConfig.screenHeight * 0.05),
+                child: IconButton(
+                icon: Icon(SFSymbols.house_fill),
+                iconSize: SizeConfig.screenHeight * 0.05,
+                color: Color(0xFF0690d4),
+                onPressed: () {
+                  //PopupRoute(settings: RouteSettings(), filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0));
+                  
+                    Navigator.push(
+                    context,
+                    MyPopupRoute(
+                      builder: (BuildContext context){
+                        return MyHomePage();
+                      }
+                    ),
+                  );
+                
+                
+                  print(isHomePressed);
+                  setState(() {
+                    isHomePressed = !isHomePressed;
+                  });
+                  
+                },
+              ),
+              );
+  }
   Widget shuffleButton(){
     return CircleAvatar(
       backgroundColor: isShufflePressed == false ? Color(0xFF05334c): Color(0xFF0391d8),
