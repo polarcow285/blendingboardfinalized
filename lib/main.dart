@@ -10,6 +10,7 @@ import 'package:barcode_scan/barcode_scan.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'dart:math';
+import 'package:flutter/cupertino.dart';
 
 
 ///----main function to run app----///
@@ -247,7 +248,7 @@ Color slateC = const Color(0xFF8E8E93);
 Color themeC = const Color(0xFF00E0B8);
 Color currentColor; 
 
-List <Color> themeColorsList = [blueC, honeyC, redC, greenC, purpleC, pinkC, slateC, themeC];
+List <Color> themeColorsList = [blueC, redC, honeyC, greenC, purpleC, pinkC, slateC, themeC];
 
 ///----Custom Images----///
 AssetImage blueBackgroundImage = AssetImage("assets/water-blue-ocean.jpg");
@@ -259,6 +260,7 @@ AssetImage pinkBackgroundImage = AssetImage("assets/backgroundPink.jpg");
 AssetImage grayBackgroundImage = AssetImage("assets/backgroundGray.jpg");
 AssetImage themeBackgroundImage = AssetImage("assets/winterBackground.jpg");
 AssetImage currentBackgroundImage;
+
 
 List<AssetImage> backgroundImagesList = [blueBackgroundImage, redBackgroundImage, yellowBackgroundImage, greenBackgroundImage, purpleBackgroundImage, pinkBackgroundImage, grayBackgroundImage, themeBackgroundImage];
 
@@ -572,6 +574,9 @@ LetterSet selectedEndSet;
 bool firstBuild = true;
 bool ifQRErrorOcurred = false;
 bool isLargeScreen;
+//bool isHomePressed = true;
+bool isDarkModeOn = false;
+int colorChipIndex = 0;
 
 //change variable name
 LetterSet mid;
@@ -645,6 +650,19 @@ class _MyHomePageState extends State<MyHomePage> {
     return intValue;
   }
 
+  Future <bool>_readMode(String key) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    //Return bool
+    bool boolValue = prefs.getBool(key);
+    return boolValue;
+  }
+  Future <int>_readColorIndex(String key) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    //Return int
+    int intValue = prefs.getInt("colorIndexKey");
+    return intValue;
+  }
+
    void readAll() async {
         await _readInt("numberOfKeys").then((value) {
               numberOfLetterPacks = value;
@@ -679,6 +697,28 @@ class _MyHomePageState extends State<MyHomePage> {
           print("Read and decoded all packs");
         }
         print(numberOfLetterPacks);
+        await _readMode("mode").then((value){
+          if(value == null){
+            isDarkModeOn = false;
+          }
+          else{
+            isDarkModeOn = value;
+          }
+        });
+        print(isDarkModeOn);
+
+        await _readColorIndex("colorIndexKey").then((value){
+          if(value == null){
+            value = 0;
+            colorChipIndex = value;
+            currentColor = blueC;
+            currentBackgroundImage = blueBackgroundImage;
+          }
+          else{
+            currentColor = themeColorsList[value];
+            currentBackgroundImage = backgroundImagesList[value];
+          }
+        });
       }
   Future <String>_readLetterPackName(String key) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -925,15 +965,14 @@ checkCameraPermissions()async {
         DeviceOrientation.landscapeRight,
         DeviceOrientation.landscapeLeft,
     ]);
-    currentBackgroundImage = blueBackgroundImage;
     if (firstBuild == true){
       //_reset();
       readAll();
+      isDarkModeOn = false;
       firstBuild = false;
+      currentColor = blueC;
+      currentBackgroundImage = blueBackgroundImage;
     }
-    
-      
- //ifQRErrorOcurred = false;
     
 
   }
@@ -953,25 +992,66 @@ checkCameraPermissions()async {
       ),
       debugShowCheckedModeBanner: false,
       home: Stack(children: <Widget>[ 
-        /*Container(
+        
+        Container(
           height: SizeConfig.screenHeight,
           width: SizeConfig.screenWidth,
           decoration: BoxDecoration(
               image: DecorationImage(
-                image: AssetImage("assets/water-blue-ocean.jpg"), 
+                image: currentBackgroundImage, 
                 fit: BoxFit.cover
               )
             ),
-            child: BackdropFilter(
+            /*child: BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
                 child: Container(
                   decoration: BoxDecoration(
                     color: Colors.black.withOpacity(0.4),
                   ),
                 )
+            )*/
+        ),
+        /*Positioned(
+          child: circleAvatar(),
+          bottom: 20,
+          left: 20, 
+        ),
+        Positioned(
+          child: circleAvatar(),
+          top: 5 + SizeConfig._safeAreaVertical,
+          right: 20, 
+        ),
+        Positioned(
+          child: circleAvatar(),
+          top: 5 + SizeConfig._safeAreaVertical,
+          left: 20,
+        ),*/
+        Container(
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.4),
+                  ),
+                )
+              )
+            ),
+        /*Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage("assets/water-blue-ocean.jpg"), 
+                fit: BoxFit.cover
+            )
+          ),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+              child: Container(
+                decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.5),
+                ),
+              )
             )
         ),*/
-        
         Scaffold(
           backgroundColor: Colors.transparent,
           body: Stack(
@@ -1012,16 +1092,19 @@ checkCameraPermissions()async {
       )
     );
   }
-  /***********************************************
- * Build methods for widgets in homescreen
- ***********************************************/
+  ///----Build methods for widgets in homescreen----///
+  Widget circleAvatar(){
+    return CircleAvatar(
+      backgroundColor: Color(0xFF05334c),
+      radius: (SizeConfig.screenHeight * 0.05),
+    );
+  }
   Widget mainButtonRow(){
     return Container(
     child: Row(
       //crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          //CustomListItem(),
           createDeckButton(),
           logoButton(),
           myDecksButton()
@@ -1031,7 +1114,7 @@ checkCameraPermissions()async {
   }
   Widget miscButtonRow(){
     return Container(
-      margin: EdgeInsets.only(bottom: SizeConfig._safeAreaVertical + 5, top: 5),
+      margin: EdgeInsets.only(top: 5, bottom: SizeConfig._safeAreaVertical),
     child: Row(
       mainAxisAlignment: MainAxisAlignment.center,
       //crossAxisAlignment: CrossAxisAlignment.center,
@@ -1063,7 +1146,7 @@ checkCameraPermissions()async {
           Text(
             "Create Deck",
             style: TextStyle(
-              color: Colors.blue,
+              color: Colors.white.withOpacity(0.6),
               fontFamily: 'SF-Pro-Rounded',
               fontWeight: FontWeight.w600,
               fontSize: (isLargeScreen == true) ? SizeConfig.safeBlockVertical * 3 : SizeConfig.safeBlockVertical * 4,
@@ -1103,6 +1186,7 @@ checkCameraPermissions()async {
               letterPackMap["discardPack"] = discardPack;
             });
       }
+          //isHomePressed = true;
           Navigator.push(
             context,
             FadeRoute(page: BoardScreen()),
@@ -1142,7 +1226,7 @@ checkCameraPermissions()async {
   }
   Widget missionStatementButton() {
     return Container(
-      //margin: EdgeInsets.only(bottom: SizeConfig.safeBlockHorizontal),
+      margin: EdgeInsets.only(right: 5),
       height: SizeConfig.screenWidth * (0.05),
       width: SizeConfig.screenWidth * (0.05),
       decoration: BoxDecoration( 
@@ -1172,7 +1256,12 @@ checkCameraPermissions()async {
   }
   Widget settingsButton() {
     return Container(
-      margin: EdgeInsets.all(20),
+      height: SizeConfig.screenWidth * (0.05),
+      width: SizeConfig.screenWidth * (0.05),
+      decoration: BoxDecoration( 
+        color: Colors.white.withOpacity(0.2),
+        borderRadius: BorderRadius.all(Radius.circular(10)),
+      ),
       child: IconButton(
         icon: Icon(SFSymbols.gear_alt),
         onPressed: () {
@@ -1186,7 +1275,7 @@ checkCameraPermissions()async {
   }
   Widget qrCamera() {
     return Container(
-      margin: EdgeInsets.only(left: 5,),
+      margin: EdgeInsets.only(left: 5),
       height: SizeConfig.screenWidth * (0.05),
       width: SizeConfig.screenWidth * (0.05),
       decoration: BoxDecoration( 
@@ -1213,14 +1302,20 @@ checkCameraPermissions()async {
     );
   }
 }
-///----Settings Screen----
+///----Settings Screen----///
 
 class SettingsScreen extends StatefulWidget{
   @override
   _SettingsScreenState createState() => _SettingsScreenState();
 }
 class _SettingsScreenState extends State<SettingsScreen>{
-  int colorChipIndex = 0;
+  //colorChipIndex = 0;
+  int modesPickerValue = 0;
+  Map <int, Widget> modesMap = <int, Widget>{
+    0: Text("Light"),
+    1: Text("Auto"),
+    2: Text("Dark")
+  };
   @override
   void initState(){
     super.initState();
@@ -1234,6 +1329,22 @@ class _SettingsScreenState extends State<SettingsScreen>{
       body: Stack(
         //alignment: Alignment.center,
         children: <Widget>[
+          Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: currentBackgroundImage,
+                fit: BoxFit.cover
+            )
+          ),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+              child: Container(
+                decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.5),
+                ),
+              )
+            )
+        ),
           Scaffold(
             backgroundColor: Colors.transparent,
             body: Stack(
@@ -1241,7 +1352,7 @@ class _SettingsScreenState extends State<SettingsScreen>{
               children: <Widget>[
                 Positioned(
                   top: 20,
-                  child: colorColumn(),
+                  child: settingsColumn(),
           ),
               ]
             )
@@ -1254,7 +1365,14 @@ class _SettingsScreenState extends State<SettingsScreen>{
               icon: Icon(SFSymbols.house_fill),
               iconSize: SizeConfig.screenHeight * 0.05,
               color: Color(0xFF0690d4),
-                onPressed: () {            
+                onPressed: () async {  
+
+                  //save mode to preferences
+                  await _saveMode(isDarkModeOn);
+
+                  //save color to index (use to get background image and color)
+                  await _saveColorIndex(colorChipIndex);
+
                   Navigator.push(
                     context,
                     FadeRoute(page: MyHomePage())
@@ -1267,15 +1385,50 @@ class _SettingsScreenState extends State<SettingsScreen>{
       )
     );
   }
-  Widget colorColumn(){
+  static _saveMode(bool mode) async {
+        final prefs = await SharedPreferences.getInstance();
+        final key = "mode";
+        final value = mode;
+        prefs.setBool(key, value);
+        //print('saved $value');
+  }
+  static _saveColorIndex(int numValue) async {
+        final prefs = await SharedPreferences.getInstance();
+        final key = "colorIndexKey";
+        final value = numValue;
+        prefs.setInt(key, value);
+        //print('saved $value');
+  }
+  Widget modePicker(){
+    return CupertinoSlidingSegmentedControl(
+      groupValue: modesPickerValue,
+      children: modesMap, 
+      onValueChanged: (i)  {
+        setState(()  {
+          modesPickerValue = i;
+          if(i == 0){
+            //light mode is selected
+            isDarkModeOn = false;
+            
+          }
+          else if(i == 2){
+            //dark mode is selected
+            isDarkModeOn = true;
+          }
+          
+        });
+      }
+    );  
+  }
+  Widget settingsColumn(){
     return Container(
-      width: SizeConfig.screenWidth * 0.5,
+      width: SizeConfig.screenWidth * 0.6,
       height: SizeConfig.screenHeight,
-      margin: EdgeInsets.only(top: SizeConfig._safeAreaVertical + 20),
+      //margin: EdgeInsets.only(top: SizeConfig._safeAreaVertical + 20),
       child: Column(
         children: [
           Container( 
-            margin: EdgeInsets.only(bottom: 10),
+            margin: EdgeInsets.only(top: 10, bottom: 50),
             child: Text("Settings",
               style: TextStyle(
                 fontWeight: FontWeight.w700,
@@ -1284,11 +1437,11 @@ class _SettingsScreenState extends State<SettingsScreen>{
               )
             ),
           ),
+          modePicker(),
           Container(
-            height: 100,
-            //width: width: SizeConfig.screenWidth * 0.5,,
+            height: 100,         
             child: colorChipsRow(),
-          )
+          ),
           
 
         ],
@@ -1299,10 +1452,12 @@ class _SettingsScreenState extends State<SettingsScreen>{
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        Text("Theme Color"),
-        Container(
-            height: 100,
-            width: SizeConfig.screenWidth * 0.5,
+        Text("Theme Color",
+          style: TextStyle(color: Colors.white
+          )
+        ),
+        Flexible(
+            //height: 100,
             child: colorChips(),
           )
         
@@ -1325,6 +1480,7 @@ class _SettingsScreenState extends State<SettingsScreen>{
                 colorChipIndex = index;
                 currentColor = themeColorsList[index];
                 currentBackgroundImage = backgroundImagesList[index];
+                //save color and backgroundimage to preferences
               });
         },
           )
@@ -1341,7 +1497,8 @@ class _SettingsScreenState extends State<SettingsScreen>{
               setState(() {
                 colorChipIndex = index;
                 currentColor = themeColorsList[index];
-              
+                currentBackgroundImage = backgroundImagesList[index];
+
               });
         },
           )
@@ -1352,9 +1509,8 @@ class _SettingsScreenState extends State<SettingsScreen>{
     );
   }
 }
- /***********************************************
- * Mission Statement Screen
- ***********************************************/
+ ///----Mission Statement Screen----///
+ 
 class MissionStatementScreen extends StatefulWidget {
   @override
   _MissionStatementScreenState createState() => _MissionStatementScreenState();
@@ -1417,9 +1573,8 @@ class _MissionStatementScreenState extends State<MissionStatementScreen>{
       
     );
   }
-  /***********************************************
- * Build methods for Mission Statement Screen
- ***********************************************/
+  ///----Build methods for Mission Statement Screen----///
+  
   Widget missionStatementImage() {
    
     return GestureDetector(
@@ -1460,9 +1615,7 @@ class _MissionStatementScreenState extends State<MissionStatementScreen>{
     );
   }
 }
- /***********************************************
- * Create Decks Screen
- ***********************************************/
+ ///----Create Decks Screen----///
 class CreateDecksScreen extends StatefulWidget {
   @override
   _CreateDecksScreenState createState() => _CreateDecksScreenState();
@@ -1520,7 +1673,7 @@ class _CreateDecksScreenState extends State<CreateDecksScreen>{
         Container(
           decoration: BoxDecoration(
             image: DecorationImage(
-              image: AssetImage("assets/water-blue-ocean.jpg"), 
+              image: currentBackgroundImage,
                 fit: BoxFit.cover
             )
           ),
@@ -1577,9 +1730,7 @@ class _CreateDecksScreenState extends State<CreateDecksScreen>{
     }
     return isLongName;
   }
-  /***********************************************
- * Build methods for widgets in Create Decks Screen
- ***********************************************/
+  ///----Build methods for widgets in Create Decks Screen----///
   Widget beginningChoiceChips() {
     return ListView.builder(
       itemCount: beginningSetsList.length,
@@ -1624,7 +1775,7 @@ class _CreateDecksScreenState extends State<CreateDecksScreen>{
       
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.only(topRight: Radius.circular(10),bottomRight: Radius.circular(10),topLeft: Radius.circular(10),bottomLeft: Radius.circular(10))),
             selectedColor: currentColor.withOpacity(0.3),//Color(0xFF3478F6).withOpacity(0.3),
-            backgroundColor: Colors.white,
+            backgroundColor: isDarkModeOn ? Colors.black: Colors.white,
             labelStyle: TextStyle(color: currentColor),
             )
         );
@@ -1679,7 +1830,7 @@ class _CreateDecksScreenState extends State<CreateDecksScreen>{
       
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.only(topRight: Radius.circular(10),bottomRight: Radius.circular(10),topLeft: Radius.circular(10),bottomLeft: Radius.circular(10))),
             selectedColor: currentColor.withOpacity(0.3),
-            backgroundColor: Colors.white,
+            backgroundColor: isDarkModeOn ? Colors.black: Colors.white,
             labelStyle: TextStyle(color: currentColor),
             )
         );
@@ -1729,7 +1880,7 @@ class _CreateDecksScreenState extends State<CreateDecksScreen>{
       
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.only(topRight: Radius.circular(10),bottomRight: Radius.circular(10),topLeft: Radius.circular(10),bottomLeft: Radius.circular(10))),
             selectedColor: currentColor.withOpacity(0.3),//Color(0xFF3478F6).withOpacity(0.3),
-            backgroundColor: Colors.white,
+            backgroundColor: isDarkModeOn ? Colors.black: Colors.white,
             labelStyle: TextStyle(color: currentColor),
             )
         );
@@ -1884,9 +2035,8 @@ class _CreateDecksScreenState extends State<CreateDecksScreen>{
   }
   
 }
-/***********************************************
- * Customize Letters Screen
- ***********************************************/
+///----Customize Letters Screen----///
+
  class CustomizeLettersScreen extends StatefulWidget {
   @override
   _CustomizeLettersState createState() => _CustomizeLettersState();
@@ -1919,7 +2069,7 @@ class _CustomizeLettersState extends State<CustomizeLettersScreen> {
             Container(
           decoration: BoxDecoration(
             image: DecorationImage(
-              image: AssetImage("assets/water-blue-ocean.jpg"), 
+              image: currentBackgroundImage,
                 fit: BoxFit.cover
             )
           ),
@@ -1961,8 +2111,9 @@ class _CustomizeLettersState extends State<CustomizeLettersScreen> {
                     onDeleted: () {
                     },
                     deleteIcon: Icon(SFSymbols.pencil,
-                    size: SizeConfig.safeBlockHorizontal * 3,
-                    color: Color(0xFF0342dc),),
+                      size: SizeConfig.safeBlockHorizontal * 3,
+                      color: currentColor
+                    ),
                     onPressed: () {
                       setState(() {
                         //_defaultEndChoiceIndex = index;
@@ -1972,9 +2123,9 @@ class _CustomizeLettersState extends State<CustomizeLettersScreen> {
                     },
       
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.only(topRight: Radius.circular(10),bottomRight: Radius.circular(10),topLeft: Radius.circular(10),bottomLeft: Radius.circular(10))),
-            selectedColor: Color(0xFF3478F6).withOpacity(0.3),
+            selectedColor: currentColor.withOpacity(0.3),
             backgroundColor: Colors.white,
-            labelStyle: TextStyle(color: Color(0xFF0342dc)),
+            labelStyle: TextStyle(color: currentColor),
             )
         ),
                     ],
@@ -2005,9 +2156,7 @@ class _CustomizeLettersState extends State<CustomizeLettersScreen> {
       )
     );
   }
-/***********************************************
- * Build methods for widgets in Customize Letters Screen
- ***********************************************/
+///----Build methods for widgets in Customize Letters Screen----///
   Widget textFormField(){
     return Container(
       width: SizeConfig.screenWidth * 0.3,
@@ -2153,6 +2302,7 @@ class _CustomizeLettersState extends State<CustomizeLettersScreen> {
                     color: !mid.lettersToRemove.contains(mid.letters[index]) == true ? Color(0xFF0d45bc) : Color(0xFF2b4a5d),
                   ),
                 ),
+             
               selectedColor: Color(0xFF2250be),
               backgroundColor: Color(0xFF2b4a5d),
          
@@ -2245,7 +2395,7 @@ class _SaveScreenState extends State<SaveScreen> {
         Container(
           decoration: BoxDecoration(
               image: DecorationImage(
-                image: AssetImage("assets/water-blue-ocean.jpg"), 
+                image: currentBackgroundImage, 
                 fit: BoxFit.cover
               )
             ),
@@ -2278,9 +2428,7 @@ class _SaveScreenState extends State<SaveScreen> {
       )
     );
   }
-  /***********************************************
- * Build methods for widgets in Save Screen
- ***********************************************/
+  ///----Build methods for widgets in Save Screen----///
   Widget textSaveRow(){
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -2388,9 +2536,8 @@ class _SaveScreenState extends State<SaveScreen> {
 }
 
 
- /***********************************************
- * My Decks Screen
- ***********************************************/
+ ///----My Decks Screen----///
+ 
 class MyDecksScreen extends StatefulWidget {
   @override
   _MyDecksScreenState createState() => _MyDecksScreenState();
@@ -2425,7 +2572,7 @@ class _MyDecksScreenState extends State<MyDecksScreen> {
         Container(
           decoration: BoxDecoration(
             image: DecorationImage(
-              image: AssetImage("assets/water-blue-ocean.jpg"), 
+              image: currentBackgroundImage, 
                 fit: BoxFit.cover
             )
           ),
@@ -2517,9 +2664,8 @@ class _MyDecksScreenState extends State<MyDecksScreen> {
       )
     );
   }
-  /***********************************************
- * Build methods for My Decks Screen
- ***********************************************/
+  ///----Build methods for My Decks Screen----///
+
   Widget myDecksColumn(double width, double height){
     return Container(
       margin: EdgeInsets.only(top: SizeConfig.safeBlockHorizontal),
@@ -2568,7 +2714,7 @@ class _MyDecksScreenState extends State<MyDecksScreen> {
                   style: TextStyle(fontSize: SizeConfig.safeBlockHorizontal * 2, fontWeight: FontWeight.w500),
                     textAlign: TextAlign.center),
               ),
-                color: Colors.white,
+                color: isDarkModeOn ? Colors.black: Colors.white,
                 textColor: currentColor,
                 shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10)),
@@ -2593,7 +2739,7 @@ class _MyDecksScreenState extends State<MyDecksScreen> {
                     style: TextStyle(fontSize: SizeConfig.safeBlockHorizontal * 2, fontWeight: FontWeight.w500),
                     textAlign: TextAlign.center),
                   ),
-                  color: Colors.white,
+                  color: isDarkModeOn ? Colors.black: Colors.white,
                   textColor: currentColor, //Color(0xFF0342dc),
                   shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
@@ -2620,7 +2766,7 @@ class _MyDecksScreenState extends State<MyDecksScreen> {
                         style: TextStyle(fontSize: SizeConfig.safeBlockHorizontal * 2, fontWeight: FontWeight.w500),
                           textAlign: TextAlign.center),
                         ),
-                      color: Colors.white,
+                      color: isDarkModeOn ? Colors.black: Colors.white,
                       textColor: currentColor,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10)),
@@ -2642,8 +2788,7 @@ class _MyDecksScreenState extends State<MyDecksScreen> {
   }
 }
 
- ///----Board Screen----///
- 
+ ///----Blending Board Screen----///
 class BoardScreen extends StatefulWidget {
   @override
   _BoardScreenState createState() => _BoardScreenState();
@@ -2655,21 +2800,44 @@ class _BoardScreenState extends State<BoardScreen> {
   String beginningCardName = letterPackMap[letterPackName].beginning.letters[0];
   String middleCardName = letterPackMap[letterPackName].middle.letters[0];
   String endCardName = letterPackMap[letterPackName].end.letters[0];
-  bool isVowelBeginningBool;
-  bool isVowelMiddleBool;
-  bool isVowelEndBool;
-  Random random = new Random();
   bool isShufflePressed = false;
-  bool isHomePressed = true;
+
+  Random random = new Random();
+
   
-  bool checkVowels(String letter, bool isVowelBoolean){
+  Color checkTextColor(String letter){
+    if(checkVowels(letter) == true){
+      return Color(0xFFb46605);
+    }
+    else{
+      if(isDarkModeOn == true){
+        return(Colors.white);
+      }
+      else{
+        return(Colors.black);
+      }
+    }
+  }
+  Color checkBackgroundColor(String letter){
+    if(checkVowels(letter) == true){
+      return Color(0xFFfdf0b1);
+    }
+    else{
+      if(isDarkModeOn == true){
+        return(Colors.black);
+      }
+      else{
+        return(Colors.white);
+      }
+    }
+  }
+  bool checkVowels(String letter){
     if(letter.toLowerCase() == 'a'||letter.toLowerCase() == 'e'||letter.toLowerCase() == 'i'||letter.toLowerCase() == 'o'||letter.toLowerCase() == 'u'){
-      isVowelBoolean = true;
+      return true;
     }
     else{
       return false;
     }
-    return isVowelBoolean;
   }
   
   _saveLetterPackName(String stringValue) async {
@@ -2716,7 +2884,7 @@ class _BoardScreenState extends State<BoardScreen> {
                 fit: BoxFit.cover)
                 ),
             ),
-            Visibility(
+            /*Visibility(
               visible: isHomePressed,
               child: Align(
                 alignment: Alignment.center,
@@ -2730,7 +2898,9 @@ class _BoardScreenState extends State<BoardScreen> {
                 child: cardButtonRow(),
               ),
             ),
+            */
             
+
             Positioned(
               bottom: 20,
               left: 20,
@@ -2774,7 +2944,16 @@ class _BoardScreenState extends State<BoardScreen> {
               left: 20,
               child: shuffleButton(),
             ),
-            Visibility(
+            Align(
+              alignment: Alignment.center,
+              child: cardBackgroundRow(),
+            ),
+            Align(
+              alignment: Alignment.center,
+              child: cardButtonRow(),
+            )
+            
+            /*Visibility(
               visible: !isHomePressed,
               child: Container(
               child: BackdropFilter(
@@ -2786,7 +2965,7 @@ class _BoardScreenState extends State<BoardScreen> {
                 )
               )
             ),
-            )
+            )*/
             
           ]
         )
@@ -2802,24 +2981,23 @@ class _BoardScreenState extends State<BoardScreen> {
                 icon: Icon(SFSymbols.house_fill),
                 iconSize: SizeConfig.screenHeight * 0.05,
                 color: Color(0xFF0690d4),
-                onPressed: () {
-                  //PopupRoute(settings: RouteSettings(), filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0));
-                  
+                onPressed: () {                  
                     Navigator.push(
                     context,
-                    MyPopupRoute(
+                    FadeRoute(page: MyHomePage())
+                    /*MyPopupRoute(
                       builder: (BuildContext context){
                         return MyHomePage();
                       }
-                    ),
+                    ),*/
                   );
                 
                 
-                  print(isHomePressed);
+                  /*print(isHomePressed);
                   setState(() {
                     isHomePressed = !isHomePressed;
                   });
-                  
+                  */
                 },
               ),
               );
@@ -2874,10 +3052,16 @@ class _BoardScreenState extends State<BoardScreen> {
         child:  FlatButton(
           child: AutoSizeText(beginningCardName,
           maxLines: 1,
-            style: TextStyle(fontSize: SizeConfig.safeBlockHorizontal * 10, fontFamily: "DidactGothic", fontWeight: FontWeight.w400),
+            style: TextStyle(
+              fontSize: SizeConfig.safeBlockHorizontal * 10, 
+              fontFamily: "DidactGothic", 
+              fontWeight: FontWeight.w400
+              ),
           ),
-            color: checkVowels(beginningCardName, isVowelBeginningBool) ? Color(0xFFfdf0b1) : Colors.white,
-            textColor: checkVowels(beginningCardName, isVowelBeginningBool) ? Color(0xFFb46605) : Colors.black,
+          color: checkBackgroundColor(beginningCardName),
+          textColor: checkTextColor(beginningCardName),
+            //color: checkVowels(beginningCardName) ? Color(0xFFfdf0b1) : Colors.white,
+            //textColor: checkVowels(beginningCardName) ? Color(0xFFb46605) : Colors.black,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10)),
             onPressed: (){  
@@ -2900,7 +3084,7 @@ class _BoardScreenState extends State<BoardScreen> {
       height: SizeConfig.screenWidth * 0.27,
       margin: EdgeInsets.only(top: 20, right: 5, left: 20, bottom: 20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDarkModeOn ? Colors.black: Colors.white,
         borderRadius: BorderRadius.circular(10)
       )
     );
@@ -2919,8 +3103,8 @@ class _BoardScreenState extends State<BoardScreen> {
               fontFamily: "DidactGothic", fontWeight: FontWeight.w400,),
             ),
           
-            color: checkVowels(middleCardName, isVowelMiddleBool) ? Color(0xffF7CE46).withOpacity(0.4) : Colors.white,
-            textColor: checkVowels(middleCardName, isVowelMiddleBool) ? Color(0xFFb46605) : Colors.black,
+            color: checkVowels(middleCardName) ? Color(0xffF7CE46).withOpacity(0.4) : Colors.white,
+            textColor: checkVowels(middleCardName) ? Color(0xFFb46605) : Colors.black,
             shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10)),
             onPressed: (){
@@ -2957,8 +3141,8 @@ class _BoardScreenState extends State<BoardScreen> {
           child: AutoSizeText(endCardName,
           maxLines: 1,
             style: TextStyle(fontSize: SizeConfig.safeBlockHorizontal * 10, fontFamily: "DidactGothic", fontWeight: FontWeight.w400),),
-          color: checkVowels(endCardName, isVowelEndBool) ? Color(0xffF7CE46).withOpacity(0.4) : Colors.white,
-          textColor: checkVowels(endCardName, isVowelEndBool) ? Color(0xFFb46605) : Colors.black,
+          color: checkVowels(endCardName) ? Color(0xffF7CE46).withOpacity(0.4) : Colors.white,
+          textColor: checkVowels(endCardName) ? Color(0xFFb46605) : Colors.black,
           shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10)),
           onPressed: (){
