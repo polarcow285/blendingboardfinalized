@@ -249,7 +249,7 @@ Color themeC = const Color(0xFF00E0B8);
 Color currentColor; 
 
 List <Color> themeColorsList = [blueC, redC, honeyC, greenC, purpleC, pinkC, slateC, themeC];
-
+List <Color> colorsList = [Colors.blue, Colors.red, Colors.yellow, Colors.green, Colors.purpleAccent, Colors.pink, Colors.grey, Colors.lightBlue];
 ///----Custom Images----///
 AssetImage blueBackgroundImage = AssetImage("assets/water-blue-ocean.jpg");
 AssetImage redBackgroundImage = AssetImage("assets/backgroundRed.jpg");
@@ -257,7 +257,7 @@ AssetImage yellowBackgroundImage = AssetImage("assets/backgroundYellow.jpg");
 AssetImage greenBackgroundImage = AssetImage("assets/backgroundGreen.jpg");
 AssetImage purpleBackgroundImage = AssetImage("assets/backgroundPurple.jpg");
 AssetImage pinkBackgroundImage = AssetImage("assets/backgroundPink.jpg");
-AssetImage grayBackgroundImage = AssetImage("assets/backgroundGray.jpg");
+AssetImage grayBackgroundImage = AssetImage("assets/backgroundGrey.jpg");
 AssetImage themeBackgroundImage = AssetImage("assets/winterBackground.jpg");
 AssetImage currentBackgroundImage;
 
@@ -974,7 +974,7 @@ checkCameraPermissions()async {
       currentBackgroundImage = blueBackgroundImage;
     }
     
-
+    print(colorChipIndex);
   }
 
   @override
@@ -1146,7 +1146,7 @@ checkCameraPermissions()async {
           Text(
             "Create Deck",
             style: TextStyle(
-              color: Colors.white.withOpacity(0.6),
+              color: colorsList[colorChipIndex],
               fontFamily: 'SF-Pro-Rounded',
               fontWeight: FontWeight.w600,
               fontSize: (isLargeScreen == true) ? SizeConfig.safeBlockVertical * 3 : SizeConfig.safeBlockVertical * 4,
@@ -1217,7 +1217,7 @@ checkCameraPermissions()async {
             style: TextStyle(
               fontWeight: FontWeight.w600,
               fontSize: (isLargeScreen == true) ? SizeConfig.safeBlockVertical * 3 : SizeConfig.safeBlockVertical * 4,
-              color: Colors.lightBlue
+              color: colorsList[colorChipIndex]
             ),
           )
         ],
@@ -1283,11 +1283,10 @@ checkCameraPermissions()async {
         borderRadius: BorderRadius.all(Radius.circular(10)),
       ),
       
-      
         child: FlatButton(
           padding: EdgeInsets.only(left: 1, right: 0),
           child: Icon(SFSymbols.qrcode_viewfinder,
-          color: Color(0xFF00a8df),
+          color: colorsList[colorChipIndex],//Color(0xFF00a8df),
           size: SizeConfig.safeBlockHorizontal * 4
           ),
         
@@ -1437,7 +1436,10 @@ class _SettingsScreenState extends State<SettingsScreen>{
               )
             ),
           ),
-          modePicker(),
+          Container(
+            height: 100,
+            child: modeRow(),
+          ),
           Container(
             height: 100,         
             child: colorChipsRow(),
@@ -1448,12 +1450,33 @@ class _SettingsScreenState extends State<SettingsScreen>{
       )
    );
   }
+  Widget modeRow(){
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        Text("Dark Mode",
+          style: TextStyle (
+            color: Colors.white, 
+            fontWeight: FontWeight.w600, 
+            fontSize: SizeConfig.safeBlockHorizontal * 2
+          )
+        ),
+        Flexible(
+          child: modePicker(),
+        )
+        
+      ]
+    );
+  }
   Widget colorChipsRow(){
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         Text("Theme Color",
-          style: TextStyle(color: Colors.white
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.w600, 
+            fontSize: SizeConfig.safeBlockHorizontal * 2
           )
         ),
         Flexible(
@@ -1473,7 +1496,9 @@ class _SettingsScreenState extends State<SettingsScreen>{
         if(index == themeColorsList.length-1){
           return Container(
           child: ChoiceChip(
-            label: Icon(SFSymbols.star_circle_fill, color: themeColorsList[index]),
+            label:  Icon(SFSymbols.star_circle_fill, color: themeColorsList[index], size: 30),
+            
+            
             selected: colorChipIndex == index,
             onSelected: (selected) {
               setState(() {
@@ -1490,6 +1515,7 @@ class _SettingsScreenState extends State<SettingsScreen>{
           return Container(
           child: ChoiceChip(
               label: CircleAvatar(
+                maxRadius: 15,
               backgroundColor: themeColorsList[index],
             ),
             selected: colorChipIndex == index,
