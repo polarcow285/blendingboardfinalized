@@ -66,6 +66,15 @@ flutter:
     - assets/backgroundGrey.jpg
     - assets/winterBackground.jpg
     - assets/outlineDyslexiaBrainLogo.png
+    - assets/outlineDyslexiaBrainLogoRed.png
+    - assets/outlineDyslexiaBrainLogoBlue.png
+    - assets/outlineDyslexiaBrainLogoYellow.png
+    - assets/outlineDyslexiaBrainLogoGreen.png
+    - assets/outlineDyslexiaBrainLogoPurple.png
+    - assets/outlineDyslexiaBrainLogoPink.png
+    - assets/outlineDyslexiaBrainLogoGray.png
+    - assets/outlineDyslexiaBrainLogoTheme.png
+
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

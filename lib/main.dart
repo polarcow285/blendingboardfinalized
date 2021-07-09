@@ -249,8 +249,8 @@ Color themeC = const Color(0xFF00E0B8);
 Color currentColor; 
 
 List <Color> themeColorsList = [blueC, redC, honeyC, greenC, purpleC, pinkC, slateC, themeC];
-List <Color> colorsList = [Colors.blue, Colors.red, Colors.yellow, Colors.green, Colors.purpleAccent, Colors.pink, Colors.grey, Colors.lightBlue];
-///----Custom Images----///
+List <Color> colorsList = [Colors.blue, Colors.redAccent[100], Colors.yellow[700], Colors.green, Color(0xFFa056a5), Color(0xFFff9ee2), Color(0xFFfffffe), Color(0xFF84ffff)];
+///----Custom Background Images----///
 AssetImage blueBackgroundImage = AssetImage("assets/water-blue-ocean.jpg");
 AssetImage redBackgroundImage = AssetImage("assets/backgroundRed.jpg");
 AssetImage yellowBackgroundImage = AssetImage("assets/backgroundYellow.jpg");
@@ -261,9 +261,20 @@ AssetImage grayBackgroundImage = AssetImage("assets/backgroundGrey.jpg");
 AssetImage themeBackgroundImage = AssetImage("assets/winterBackground.jpg");
 AssetImage currentBackgroundImage;
 
-
 List<AssetImage> backgroundImagesList = [blueBackgroundImage, redBackgroundImage, yellowBackgroundImage, greenBackgroundImage, purpleBackgroundImage, pinkBackgroundImage, grayBackgroundImage, themeBackgroundImage];
 
+///---- Outline Dyslexia Brain Logo Images ----///
+AssetImage blueBrainLogoImage = AssetImage("assets/outlineDyslexiaBrainLogoBlue.png");
+AssetImage redBrainLogoImage = AssetImage("assets/outlineDyslexiaBrainLogoRed.png");
+AssetImage yellowBrainLogoImage = AssetImage("assets/outlineDyslexiaBrainLogoYellow.png");
+AssetImage greenBrainLogoImage = AssetImage("assets/outlineDyslexiaBrainLogoGreen.png");
+AssetImage purpleBrainLogoImage = AssetImage("assets/outlineDyslexiaBrainLogoPurple.png");
+AssetImage pinkBrainLogoImage = AssetImage("assets/outlineDyslexiaBrainLogoPink.png");
+AssetImage grayBrainLogoImage = AssetImage("assets/outlineDyslexiaBrainLogoGray.png");
+AssetImage themeBrainLogoImage = AssetImage("assets/outlineDyslexiaBrainLogoTheme.png");
+AssetImage currentBrainLogoImage;
+
+List brainLogoImagesList = [blueBrainLogoImage, redBrainLogoImage, yellowBrainLogoImage, greenBrainLogoImage, purpleBrainLogoImage, pinkBrainLogoImage, grayBrainLogoImage, themeBrainLogoImage];
 ///----Letter Set and Letter Pack Classes and Variables----///
 List<String> dataStringList = [];
 List <List> allData = [];
@@ -572,7 +583,6 @@ LetterSet selectedBeginningSet;
 LetterSet selectedMiddleSet;
 LetterSet selectedEndSet;
 bool firstBuild = true;
-bool ifQRErrorOcurred = false;
 bool isLargeScreen;
 //bool isHomePressed = true;
 bool isDarkModeOn = false;
@@ -708,6 +718,7 @@ class _MyHomePageState extends State<MyHomePage> {
         print(isDarkModeOn);
 
         await _readColorIndex("colorIndexKey").then((value){
+          print("value = $value");
           if(value == null){
             value = 0;
             colorChipIndex = value;
@@ -715,8 +726,10 @@ class _MyHomePageState extends State<MyHomePage> {
             currentBackgroundImage = blueBackgroundImage;
           }
           else{
+            colorChipIndex = value;
             currentColor = themeColorsList[value];
             currentBackgroundImage = backgroundImagesList[value];
+            currentBrainLogoImage = brainLogoImagesList[value];
           }
         });
       }
@@ -968,10 +981,13 @@ checkCameraPermissions()async {
     if (firstBuild == true){
       //_reset();
       readAll();
+      print(colorChipIndex);
       isDarkModeOn = false;
       firstBuild = false;
       currentColor = blueC;
       currentBackgroundImage = blueBackgroundImage;
+      currentBrainLogoImage = blueBrainLogoImage;
+      colorChipIndex = 0;
     }
     
     print(colorChipIndex);
@@ -1239,7 +1255,7 @@ checkCameraPermissions()async {
         borderRadius: BorderRadius.all(Radius.circular(5)),
         image: DecorationImage(
           fit: BoxFit.scaleDown,
-            image: AssetImage('assets/outlineDyslexiaBrainLogo.png'),
+            image: currentBrainLogoImage,
         ),
       ),
         child: FlatButton(
@@ -1263,7 +1279,9 @@ checkCameraPermissions()async {
         borderRadius: BorderRadius.all(Radius.circular(10)),
       ),
       child: IconButton(
-        icon: Icon(SFSymbols.gear_alt),
+        icon: Icon(SFSymbols.gear_alt,
+          color: colorsList[colorChipIndex],
+        ),
         onPressed: () {
           Navigator.push(
             context,
@@ -1363,9 +1381,9 @@ class _SettingsScreenState extends State<SettingsScreen>{
             child: IconButton(
               icon: Icon(SFSymbols.house_fill),
               iconSize: SizeConfig.screenHeight * 0.05,
-              color: Color(0xFF0690d4),
+              color: colorsList[colorChipIndex], //Color(0xFF0690d4),
                 onPressed: () async {  
-
+                  //print(currentBrainLogoImage);
                   //save mode to preferences
                   await _saveMode(isDarkModeOn);
 
@@ -1402,17 +1420,23 @@ class _SettingsScreenState extends State<SettingsScreen>{
     return CupertinoSlidingSegmentedControl(
       groupValue: modesPickerValue,
       children: modesMap, 
+      thumbColor: isDarkModeOn ? Colors.grey.withOpacity(0.3): Colors.white,
       onValueChanged: (i)  {
         setState(()  {
           modesPickerValue = i;
           if(i == 0){
             //light mode is selected
             isDarkModeOn = false;
-            
+            modesMap.update(0, (var val) => val = Text("Light", style: TextStyle(color: Colors.black)));
+            modesMap.update(1, (var val) => val = Text("Auto", style: TextStyle(color: Colors.black)));
+            modesMap.update(2, (var val) => val = Text("Dark", style: TextStyle(color: Colors.black)));
           }
           else if(i == 2){
             //dark mode is selected
             isDarkModeOn = true;
+            modesMap.update(0, (var val) => val = Text("Light", style: TextStyle(color: Colors.white)));
+            modesMap.update(1, (var val) => val = Text("Auto", style: TextStyle(color: Colors.white)));
+            modesMap.update(2, (var val) => val = Text("Dark", style: TextStyle(color: Colors.white)));
           }
           
         });
@@ -1431,13 +1455,14 @@ class _SettingsScreenState extends State<SettingsScreen>{
             child: Text("Settings",
               style: TextStyle(
                 fontWeight: FontWeight.w700,
-                color: Colors.blue,
+                color: colorsList[colorChipIndex],
                 fontSize: (SizeConfig.safeBlockHorizontal * 3),
               )
             ),
           ),
           Container(
-            height: 100,
+            color: Colors.grey.withOpacity(0.5),
+            height: SizeConfig.screenHeight * 0.1,
             child: modeRow(),
           ),
           Container(
@@ -1454,14 +1479,19 @@ class _SettingsScreenState extends State<SettingsScreen>{
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        Text("Dark Mode",
-          style: TextStyle (
-            color: Colors.white, 
-            fontWeight: FontWeight.w600, 
-            fontSize: SizeConfig.safeBlockHorizontal * 2
-          )
+        Container(
+          margin: EdgeInsets.only(right: 20),
+          child: Text("Dark Mode",
+            style: TextStyle (
+              color: Colors.white, 
+              fontWeight: FontWeight.w600, 
+              fontSize: SizeConfig.safeBlockHorizontal * 2
+            )
+          ),
         ),
-        Flexible(
+          
+        Container(
+          width: SizeConfig.screenWidth * 0.4,
           child: modePicker(),
         )
         
@@ -1472,15 +1502,19 @@ class _SettingsScreenState extends State<SettingsScreen>{
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        Text("Theme Color",
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w600, 
-            fontSize: SizeConfig.safeBlockHorizontal * 2
-          )
+        Container(
+          margin: EdgeInsets.only(right: 20),
+          child: Text("Theme Color",
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w600, 
+              fontSize: SizeConfig.safeBlockHorizontal * 2
+            )
+          ),
         ),
-        Flexible(
-            //height: 100,
+        
+        Container(
+            width: SizeConfig.screenWidth * 0.4,
             child: colorChips(),
           )
         
@@ -1505,7 +1539,8 @@ class _SettingsScreenState extends State<SettingsScreen>{
                 colorChipIndex = index;
                 currentColor = themeColorsList[index];
                 currentBackgroundImage = backgroundImagesList[index];
-                //save color and backgroundimage to preferences
+                currentBrainLogoImage = brainLogoImagesList[index];
+                
               });
         },
           )
@@ -1524,7 +1559,7 @@ class _SettingsScreenState extends State<SettingsScreen>{
                 colorChipIndex = index;
                 currentColor = themeColorsList[index];
                 currentBackgroundImage = backgroundImagesList[index];
-
+                currentBrainLogoImage = brainLogoImagesList[index];
               });
         },
           )
@@ -1725,10 +1760,12 @@ class _CreateDecksScreenState extends State<CreateDecksScreen>{
                 child: IconButton(
                   icon: Icon(SFSymbols.house_fill),
                   iconSize: SizeConfig.screenHeight * 0.05,
-                  color: Color(0xFF0690d4),
+                  color: colorsList[colorChipIndex], //Color(0xFF0690d4),
                   onPressed: () {
                   setState(() {
                       sortChips();
+                      mid.lettersToAdd.clear();
+                      mid.lettersToRemove.clear();
                     });
                     
                     Navigator.push(
@@ -1920,7 +1957,7 @@ class _CreateDecksScreenState extends State<CreateDecksScreen>{
       //margin: EdgeInsets.only(right: SizeConfig._safeAreaVertical + 20, left: SizeConfig._safeAreaVertical + 20),
       child: IconButton(
           icon: Icon(SFSymbols.checkmark_circle_fill),
-          color: Color(0xFF00cbfb),
+          color: colorsList[colorChipIndex], //Color(0xFF00cbfb),
           iconSize: SizeConfig.screenHeight * 0.08,
           onPressed: () {
             setState(() {
@@ -1984,7 +2021,7 @@ class _CreateDecksScreenState extends State<CreateDecksScreen>{
           child: Text("Column 1",
             style: TextStyle(
               fontWeight: FontWeight.w700,
-              color: Colors.blue,
+              color: colorsList[colorChipIndex],
               fontSize: SizeConfig.safeBlockHorizontal * 3,
             )
           ), 
@@ -2010,7 +2047,7 @@ class _CreateDecksScreenState extends State<CreateDecksScreen>{
             child: Text("Column 2",
               style: TextStyle(
                 fontWeight: FontWeight.w700,
-                color: Colors.blue,
+                color: colorsList[colorChipIndex],
                 fontSize: (SizeConfig.safeBlockHorizontal * 3)
               )
             ),
@@ -2035,7 +2072,7 @@ class _CreateDecksScreenState extends State<CreateDecksScreen>{
             child: Text("Column 3",
               style: TextStyle(
                 fontWeight: FontWeight.w700,
-                color: Colors.blue,
+                color: colorsList[colorChipIndex],
                 fontSize: (SizeConfig.safeBlockHorizontal * 3),
               )
             ),
@@ -2069,8 +2106,7 @@ class _CreateDecksScreenState extends State<CreateDecksScreen>{
 }
 class _CustomizeLettersState extends State<CustomizeLettersScreen> {
   final _controller = TextEditingController();
-  static List<String> removeMiddleLetterList = [];
-  static List<String> addMiddleLetterList = [];
+  List<Color> selectedColorsList = [Color(0xFF2250be), Color(0xffe0353a), Colors.orange, Color(0xFF315d3a), Color(0xFF553777), Color(0xFFf13850), Color(0xFF6d6e71), Color(0xFF217b82)];
   @override
   void initState(){
     super.initState();
@@ -2138,7 +2174,7 @@ class _CustomizeLettersState extends State<CustomizeLettersScreen> {
                     },
                     deleteIcon: Icon(SFSymbols.pencil,
                       size: SizeConfig.safeBlockHorizontal * 3,
-                      color: currentColor
+                      color: currentColor,
                     ),
                     onPressed: () {
                       setState(() {
@@ -2170,7 +2206,7 @@ class _CustomizeLettersState extends State<CustomizeLettersScreen> {
                   },
                   icon: Icon(SFSymbols.checkmark_circle_fill),
                   iconSize: SizeConfig.screenHeight * 0.08,
-                  color: Color(0xFF77b9c7)
+                  color: colorsList[colorChipIndex],
                 ),
              
             
@@ -2183,35 +2219,6 @@ class _CustomizeLettersState extends State<CustomizeLettersScreen> {
     );
   }
 ///----Build methods for widgets in Customize Letters Screen----///
-  Widget textFormField(){
-    return Container(
-      width: SizeConfig.screenWidth * 0.3,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10)
-      ),
-      child: Form(
-        child: TextFormField(
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
-          inputFormatters: [new WhitelistingTextInputFormatter(RegExp("[a-zA-Z]")),],
-          textAlign: TextAlign.center,
-          controller: _controller,
-          decoration: InputDecoration(
-            
-            contentPadding: EdgeInsets.symmetric(vertical: SizeConfig.screenWidth * 0.02,),
-            fillColor: Colors.white.withOpacity(0.3),
-            filled: true,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10.0),
-              borderSide: BorderSide.none
-            ),
-            
-            hintText: 'Deck Name',
-            hintStyle: TextStyle(color: Color(0xFF373737), fontWeight: FontWeight.w500, fontSize: SizeConfig.safeBlockHorizontal * 2.5),
-        ),
-        )
-      )
-    );
-  }
  Widget gridView(double width, double height) {
     return  GridView.count(
       // Create a grid with 3 columns. If you change the scrollDirection to
@@ -2231,7 +2238,7 @@ class _CustomizeLettersState extends State<CustomizeLettersScreen> {
           ),
             child:TextFormField(
               inputFormatters: [new WhitelistingTextInputFormatter(RegExp("[a-zA-Z]")),],
-              style: TextStyle(color: Color(0xFF559ec3), fontWeight: FontWeight.w600, fontSize: SizeConfig.safeBlockHorizontal * 3),
+              style: TextStyle(color: colorsList[colorChipIndex], fontWeight: FontWeight.w600, fontSize: SizeConfig.safeBlockHorizontal * 3),
               onFieldSubmitted: (String input){
 
             setState(() {
@@ -2245,7 +2252,7 @@ class _CustomizeLettersState extends State<CustomizeLettersScreen> {
           textAlign: TextAlign.center,
            decoration: InputDecoration(
             hintText: "+",
-            hintStyle: TextStyle(color: Color(0xFF559ec3), fontSize: SizeConfig.safeBlockHorizontal * 3),
+            hintStyle: TextStyle(color: colorsList[colorChipIndex], fontSize: SizeConfig.safeBlockHorizontal * 3),
             contentPadding: EdgeInsets.symmetric(vertical: SizeConfig.screenWidth * 0.02,),
             fillColor: Colors.black.withOpacity(0.3),
             filled: true,
@@ -2273,19 +2280,20 @@ class _CustomizeLettersState extends State<CustomizeLettersScreen> {
                 //fit: BoxFit.fitWidth,
                 child: AutoSizeText(mid.lettersToAdd[index-mid.letters.length],
                 overflow: TextOverflow.visible,
-                  style: TextStyle(color: !mid.lettersToRemove.contains(mid.letters[index-mid.letters.length]) == true ?  Color(0xFF78cbff): Color(0xFF78c9ff), fontSize: SizeConfig.safeBlockHorizontal * 3, fontWeight: FontWeight.w500),
+                  style: TextStyle(color: colorsList[colorChipIndex], 
+                  fontSize: SizeConfig.safeBlockHorizontal * 3, fontWeight: FontWeight.w500),
                     textAlign: TextAlign.center,),
               ),
               ),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(15),
                   side: BorderSide(
-                    color: !mid.lettersToRemove.contains(mid.letters[index-mid.letters.length]) == true ? Color(0xFF0d45bc) : Color(0xFF2b4a5d),
+                    color: !mid.lettersToRemove.contains(mid.letters[index-mid.letters.length]) == true ? colorsList[colorChipIndex] : Colors.transparent,
                   ),
                 ),
               selected: !mid.lettersToRemove.contains(mid.lettersToAdd[index-mid.letters.length]),
-              selectedColor: Color(0xFF2250be),
-              backgroundColor: Color(0xFF2b4a5d),
+              selectedColor: selectedColorsList[colorChipIndex],
+              backgroundColor: Color(0xFF5c6464),
               showCheckmark: false,
               onSelected: (bool selected) {
                 setState(() {
@@ -2318,19 +2326,22 @@ class _CustomizeLettersState extends State<CustomizeLettersScreen> {
                   child: AutoSizeText(mid.letters[index],
                   overflow: TextOverflow.visible,
                   //if the letter is not part of the lettersToRemove list, it should be selected
-                  style: TextStyle(color: !mid.lettersToRemove.contains(mid.letters[index]) == true ?  Color(0xFF78cbff): Color(0xFF78c9ff), fontSize: SizeConfig.safeBlockHorizontal * 3, fontWeight: FontWeight.w500),
+                  style: TextStyle(
+                    color: colorsList[colorChipIndex],
+                    //color: !mid.lettersToRemove.contains(mid.letters[index]) == true ?  Color(0xFF78cbff): Color(0xFF78c9ff), 
+                  fontSize: SizeConfig.safeBlockHorizontal * 3, fontWeight: FontWeight.w500),
                     textAlign: TextAlign.center,),
                 )
               ),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(15),
                   side: BorderSide(
-                    color: !mid.lettersToRemove.contains(mid.letters[index]) == true ? Color(0xFF0d45bc) : Color(0xFF2b4a5d),
+                    color: !mid.lettersToRemove.contains(mid.letters[index]) == true ? colorsList[colorChipIndex] : Colors.transparent,
                   ),
                 ),
              
-              selectedColor: Color(0xFF2250be),
-              backgroundColor: Color(0xFF2b4a5d),
+              selectedColor: selectedColorsList[colorChipIndex], //Colors.orange,//Color(0xFF2250be),
+              backgroundColor: Color(0xFF5c6464),
          
               showCheckmark: false,
               onSelected: (bool selected) {
@@ -2442,7 +2453,8 @@ class _SaveScreenState extends State<SaveScreen> {
               Container( 
                 margin: EdgeInsets.only(top: SizeConfig._safeAreaVertical + 20, bottom: 5),
                 child: Text("Save Your Deck?",
-                style: TextStyle(color: Color(0xFF1079c4), fontWeight: FontWeight.w700, fontSize: SizeConfig.safeBlockHorizontal * 4),
+                style: TextStyle(color: colorsList[colorChipIndex], //Color(0xFF1079c4), 
+                fontWeight: FontWeight.w700, fontSize: SizeConfig.safeBlockHorizontal * 4),
                 ),
               ),
               textSaveRow(),
@@ -2511,7 +2523,7 @@ class _SaveScreenState extends State<SaveScreen> {
       child:IconButton(
           icon: Icon(SFSymbols.checkmark_circle_fill),
           iconSize: SizeConfig.screenWidth * 0.05,
-        color: Colors.blue,
+        color: colorsList[colorChipIndex],
         onPressed: (){
  
           if (_formKey.currentState.validate()) {
@@ -2536,7 +2548,9 @@ class _SaveScreenState extends State<SaveScreen> {
       margin: EdgeInsets.all(20),
       child: FlatButton(
         child: Text("Skip, Don't Save Deck",
-          style: TextStyle(decoration: TextDecoration.underline, color: Color(0xFF0094c8), fontWeight: FontWeight.w500, fontSize: SizeConfig.safeBlockHorizontal * 2),
+          style: TextStyle(decoration: TextDecoration.underline, 
+          color: colorsList[colorChipIndex], //Color(0xFF0094c8), 
+          fontWeight: FontWeight.w500, fontSize: SizeConfig.safeBlockHorizontal * 2),
         ),
         color: Colors.transparent,
         textColor: Colors.black,
@@ -2633,7 +2647,7 @@ class _MyDecksScreenState extends State<MyDecksScreen> {
                 },
                 icon: Icon(SFSymbols.house_fill),
                 iconSize: SizeConfig.screenHeight * 0.05,
-                color: Color(0xFF0690d4)
+                color: colorsList[colorChipIndex],//Color(0xFF0690d4)
               ),
             ), 
             Positioned(
@@ -2678,7 +2692,7 @@ class _MyDecksScreenState extends State<MyDecksScreen> {
                 },
                 icon: Icon(SFSymbols.trash_fill),
                 iconSize: SizeConfig.screenHeight * 0.05,
-                color: Color(0xFF0690d4)
+                color: colorsList[colorChipIndex],//Color(0xFF0690d4)
               ),
             ),     
               ]
@@ -2701,7 +2715,7 @@ class _MyDecksScreenState extends State<MyDecksScreen> {
             margin: EdgeInsets.all(10),
             child: Text("My Decks",
               style: TextStyle(
-                color: Colors.blue,
+                color: colorsList[colorChipIndex],
                 fontWeight: FontWeight.w500,
                 fontSize: SizeConfig.safeBlockHorizontal * 2.5,
               )
@@ -2832,20 +2846,36 @@ class _BoardScreenState extends State<BoardScreen> {
 
   
   Color checkTextColor(String letter){
-    if(checkVowels(letter) == true){
-      return Color(0xFFb46605);
+    if(isDarkModeOn == true){
+      return Colors.white;
     }
     else{
-      if(isDarkModeOn == true){
-        return(Colors.white);
+      if(checkVowels(letter) == true){
+        return Color(0xFFb46605);
       }
       else{
-        return(Colors.black);
+        return Colors.black;
       }
     }
   }
   Color checkBackgroundColor(String letter){
-    if(checkVowels(letter) == true){
+    Color backgroundColor;
+    if(isDarkModeOn){
+      backgroundColor = (Colors.black);
+    }
+    else{
+      backgroundColor = (Colors.white);
+    }
+    if(isDarkModeOn && checkVowels(letter)){
+      backgroundColor =  Color(0xFF4d4003);
+    }
+    else if (!isDarkModeOn && checkVowels(letter)){
+      backgroundColor = Color(0xFFfdf0b1);
+    }
+    return backgroundColor;
+  }
+   
+    /*if(checkVowels(letter) == true){
       return Color(0xFFfdf0b1);
     }
     else{
@@ -2855,8 +2885,9 @@ class _BoardScreenState extends State<BoardScreen> {
       else{
         return(Colors.white);
       }
-    }
-  }
+    }*/
+    
+  
   bool checkVowels(String letter){
     if(letter.toLowerCase() == 'a'||letter.toLowerCase() == 'e'||letter.toLowerCase() == 'i'||letter.toLowerCase() == 'o'||letter.toLowerCase() == 'u'){
       return true;
@@ -2936,12 +2967,12 @@ class _BoardScreenState extends State<BoardScreen> {
               top: 5 + SizeConfig._safeAreaVertical,
               right: 20,
               child: CircleAvatar(
-                backgroundColor: Color(0xFF05334c),
+                backgroundColor: Colors.black54,
                 radius: (SizeConfig.screenHeight * 0.05),
                 child: IconButton(
                 icon: Icon(SFSymbols.qrcode),
                 iconSize: SizeConfig.screenHeight * 0.05,
-                color: Color(0xFF0690d4),
+                color: colorsList[colorChipIndex],
                 onPressed: () {
                   print(letterPackMap[letterPackName].dataEncodeiOS());
                   //print(listToStringConverter(QRStringList));
@@ -2970,10 +3001,10 @@ class _BoardScreenState extends State<BoardScreen> {
               left: 20,
               child: shuffleButton(),
             ),
-            Align(
+            /*Align(
               alignment: Alignment.center,
               child: cardBackgroundRow(),
-            ),
+            ),*/
             Align(
               alignment: Alignment.center,
               child: cardButtonRow(),
@@ -3001,12 +3032,12 @@ class _BoardScreenState extends State<BoardScreen> {
   /// ---- Build Methods for Widgets on Blending Board Screen ----///
   Widget homeButton(){
     return CircleAvatar(
-                backgroundColor: Color(0xFF05334c),
+                backgroundColor: Colors.black54,
                 radius: (SizeConfig.screenHeight * 0.05),
                 child: IconButton(
                 icon: Icon(SFSymbols.house_fill),
                 iconSize: SizeConfig.screenHeight * 0.05,
-                color: Color(0xFF0690d4),
+                color: colorsList[colorChipIndex], //Color(0xFF0690d4),
                 onPressed: () {                  
                     Navigator.push(
                     context,
@@ -3030,12 +3061,12 @@ class _BoardScreenState extends State<BoardScreen> {
   }
   Widget shuffleButton(){
     return CircleAvatar(
-      backgroundColor: isShufflePressed == false ? Color(0xFF05334c): Color(0xFF0391d8),
+      backgroundColor: isShufflePressed == false ? Colors.black54: colorsList[colorChipIndex],
       radius: (SizeConfig.screenHeight * 0.05),
       child: IconButton(
         icon: Icon(SFSymbols.shuffle),
         iconSize: SizeConfig.screenHeight * 0.05,
-        color: isShufflePressed == false ? Color(0xFF0690d4): Color(0xFF000000),
+        color: isShufflePressed == false ? colorsList[colorChipIndex] : Colors.black,//isShufflePressed == false ? Color(0xFF0690d4): Color(0xFF000000),
         onPressed: () {
           isShufflePressed = !isShufflePressed;
           if(isShufflePressed == true){
@@ -3129,8 +3160,8 @@ class _BoardScreenState extends State<BoardScreen> {
               fontFamily: "DidactGothic", fontWeight: FontWeight.w400,),
             ),
           
-            color: checkVowels(middleCardName) ? Color(0xffF7CE46).withOpacity(0.4) : Colors.white,
-            textColor: checkVowels(middleCardName) ? Color(0xFFb46605) : Colors.black,
+            color: checkBackgroundColor(middleCardName),
+            textColor: checkTextColor(middleCardName),
             shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10)),
             onPressed: (){
@@ -3152,7 +3183,7 @@ class _BoardScreenState extends State<BoardScreen> {
       height: SizeConfig.screenWidth * 0.27,
       margin: EdgeInsets.only(top: 20, right: 5, left: 5, bottom: 20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: checkBackgroundColor(middleCardName),
         borderRadius: BorderRadius.circular(10)
       )
     );
@@ -3167,8 +3198,8 @@ class _BoardScreenState extends State<BoardScreen> {
           child: AutoSizeText(endCardName,
           maxLines: 1,
             style: TextStyle(fontSize: SizeConfig.safeBlockHorizontal * 10, fontFamily: "DidactGothic", fontWeight: FontWeight.w400),),
-          color: checkVowels(endCardName) ? Color(0xffF7CE46).withOpacity(0.4) : Colors.white,
-          textColor: checkVowels(endCardName) ? Color(0xFFb46605) : Colors.black,
+          color: checkBackgroundColor(endCardName),
+          textColor: checkTextColor(endCardName),
           shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10)),
           onPressed: (){
