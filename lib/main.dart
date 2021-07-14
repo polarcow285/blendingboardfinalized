@@ -1025,52 +1025,31 @@ checkCameraPermissions()async {
     else{
       isDarkModeOn = true;
     }
-    return MaterialApp(
-      theme: ThemeData(
-        fontFamily: 'SF-Pro-Rounded',
-      ),
-      debugShowCheckedModeBanner: false,
-      home: Stack(children: <Widget>[ 
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: MaterialApp(
+        theme: ThemeData(
+          fontFamily: 'SF-Pro-Rounded',
+        ),
+        debugShowCheckedModeBanner: false,
+        home: Stack(children: <Widget>[ 
         
-        Container(
-          height: SizeConfig.screenHeight,
-          width: SizeConfig.screenWidth,
-          decoration: BoxDecoration(
+          Container(
+            height: SizeConfig.screenHeight,
+            width: SizeConfig.screenWidth,
+            decoration: BoxDecoration(
               image: DecorationImage(
                 image: currentBackgroundImage, 
                 fit: BoxFit.cover
               )
             ),
-            /*child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.4),
-                  ),
-                )
-            )*/
         ),
-        /*Positioned(
-          child: circleAvatar(),
-          bottom: 20,
-          left: 20, 
-        ),
-        Positioned(
-          child: circleAvatar(),
-          top: 5 + SizeConfig._safeAreaVertical,
-          right: 20, 
-        ),
-        Positioned(
-          child: circleAvatar(),
-          top: 5 + SizeConfig._safeAreaVertical,
-          left: 20,
-        ),*/
         Container(
               child: BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.4),
+                    color: isDarkModeOn ? Colors.black.withOpacity(0.65): Colors.black.withOpacity(0.4),
                   ),
                 )
               )
@@ -1129,15 +1108,10 @@ checkCameraPermissions()async {
       )
         ],
       )
+      )
     );
   }
   ///----Build methods for widgets in homescreen----///
-  Widget circleAvatar(){
-    return CircleAvatar(
-      backgroundColor: Color(0xFF05334c),
-      radius: (SizeConfig.screenHeight * 0.05),
-    );
-  }
   Widget mainButtonRow(){
     return Container(
     child: Row(
@@ -1301,10 +1275,16 @@ checkCameraPermissions()async {
         color: Colors.white.withOpacity(0.2),
         borderRadius: BorderRadius.all(Radius.circular(10)),
       ),
-      child: IconButton(
+      /*child: IconButton(
         icon: Icon(SFSymbols.gear_alt,
           color: colorsList[colorChipIndex],
-        ),
+        ),*/
+      child: FlatButton(
+          padding: EdgeInsets.only(left: 0, right: 0),
+          child: Icon(SFSymbols.gear_alt,
+          color: colorsList[colorChipIndex],//Color(0xFF00a8df),
+          size: SizeConfig.safeBlockHorizontal * 3
+          ),
         onPressed: () {
           Navigator.push(
             context,
@@ -1388,7 +1368,7 @@ class _SettingsScreenState extends State<SettingsScreen>{
             filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
               child: Container(
                 decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.5),
+                color: isDarkModeOn ? Colors.black.withOpacity(0.65): Colors.black.withOpacity(0.4),
                 ),
               )
             )
@@ -1578,7 +1558,7 @@ class _SettingsScreenState extends State<SettingsScreen>{
         if(index == themeColorsList.length-1){
           return Container(
           child: ChoiceChip(
-            label:  Icon(SFSymbols.star_circle_fill, color: themeColorsList[index], size: 30),
+            label:  Icon(SFSymbols.star_circle_fill, color: themeColorsList[index], size: SizeConfig.safeBlockHorizontal * 4),
             
             
             selected: colorChipIndex == index,
@@ -1597,10 +1577,11 @@ class _SettingsScreenState extends State<SettingsScreen>{
         else{
           return Container(
           child: ChoiceChip(
-              label: CircleAvatar(
-                maxRadius: 15,
+              label: Icon(SFSymbols.circle_fill, color: themeColorsList[index], size: SizeConfig.safeBlockHorizontal * 4),
+              /*CircleAvatar(
+                maxRadius: SizeConfig.safeBlockHorizontal ,
               backgroundColor: themeColorsList[index],
-            ),
+            ),*/
             selected: colorChipIndex == index,
             onSelected: (selected) {
               setState(() {
@@ -1643,7 +1624,9 @@ class _MissionStatementScreenState extends State<MissionStatementScreen>{
 }
 
   Widget build(BuildContext context) {
-    return Scaffold(
+    return WillPopScope(
+      onWillPop: () async => false,
+        child: Scaffold(
       body: Stack(
         //alignment: Alignment.center,
         children: <Widget>[
@@ -1679,7 +1662,7 @@ class _MissionStatementScreenState extends State<MissionStatementScreen>{
           )
         ],
       )
-      
+    )
     );
   }
   ///----Build methods for Mission Statement Screen----///
@@ -1748,8 +1731,7 @@ class _CreateDecksScreenState extends State<CreateDecksScreen>{
     //go through all the sets, take the ones that are beginning, and put them into a list
     for(int i = 0; i<allSets.length; i++){
       //using bit masking
-       if(allSets[i].positionBinary & 1 > 0){
-        
+       if(allSets[i].positionBinary & 1 > 0){ 
         beginningSetsList.add(allSets[i]);
        } 
        if (allSets[i].positionBinary & 2 > 0){
@@ -1772,7 +1754,9 @@ class _CreateDecksScreenState extends State<CreateDecksScreen>{
    }
    
   Widget build(BuildContext context){
-    return MaterialApp(
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: MaterialApp(
       theme: ThemeData(
         fontFamily: 'SF-Pro-Rounded',
       ),
@@ -1790,7 +1774,7 @@ class _CreateDecksScreenState extends State<CreateDecksScreen>{
             filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
               child: Container(
                 decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.5),
+                color: isDarkModeOn ? Colors.black.withOpacity(0.65): Colors.black.withOpacity(0.4),
                 ),
               )
             )
@@ -1829,6 +1813,7 @@ class _CreateDecksScreenState extends State<CreateDecksScreen>{
         )   
       ],
       )
+      )
     );
   }
   bool isLongName (String name){
@@ -1866,6 +1851,10 @@ class _CreateDecksScreenState extends State<CreateDecksScreen>{
         showCheckmark: false,
         deleteButtonTooltipMessage: "Edit",
         onDeleted: () {
+          setState(() {
+            _defaultBeginningChoiceIndex = index;
+          });
+          
           mid = beginningSetsList[index];
             Navigator.push(
               context,
@@ -1919,7 +1908,9 @@ class _CreateDecksScreenState extends State<CreateDecksScreen>{
         showCheckmark: false,
         deleteButtonTooltipMessage: "Edit",
         onDeleted: () {
-           _defaultMiddleChoiceIndex = index;
+          setState(() {
+            _defaultMiddleChoiceIndex = index;
+          });
           mid = middleSetsList[index];
             Navigator.push(
               context,
@@ -1934,8 +1925,6 @@ class _CreateDecksScreenState extends State<CreateDecksScreen>{
         onPressed: () {
           setState(() {
             _defaultMiddleChoiceIndex = index;
-           // print("defaultindex: $defaultIndex");
-           // print("listbuilder: $listBuilderIndex");
           });
         },
       
@@ -1971,6 +1960,9 @@ class _CreateDecksScreenState extends State<CreateDecksScreen>{
         showCheckmark: false,
         deleteButtonTooltipMessage: "Edit",
         onDeleted: () {
+          setState(() {
+            _defaultEndChoiceIndex = index;
+          });
           mid = endSetsList[index];
             Navigator.push(
               context,
@@ -1984,8 +1976,6 @@ class _CreateDecksScreenState extends State<CreateDecksScreen>{
         onPressed: () {
           setState(() {
             _defaultEndChoiceIndex = index;
-           // print("defaultindex: $defaultIndex");
-           // print("listbuilder: $listBuilderIndex");
           });
         },
       
@@ -2170,7 +2160,9 @@ class _CustomizeLettersState extends State<CustomizeLettersScreen> {
   Widget build(BuildContext context) {
     final double itemWidth = SizeConfig.screenWidth/50;
     final double itemHeight = SizeConfig.screenWidth/50;
-    return MaterialApp(
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         backgroundColor: Color(0xFF1b454f),
@@ -2187,7 +2179,7 @@ class _CustomizeLettersState extends State<CustomizeLettersScreen> {
             filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
               child: Container(
                 decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.4),
+                color: isDarkModeOn ? Colors.black.withOpacity(0.65): Colors.black.withOpacity(0.4),
                 ),
               )
             )
@@ -2263,6 +2255,7 @@ class _CustomizeLettersState extends State<CustomizeLettersScreen> {
         )
           ]
         )
+      )
       )
     );
   }
@@ -2471,7 +2464,9 @@ class _SaveScreenState extends State<SaveScreen> {
   }
 
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: MaterialApp(
       theme: ThemeData(
         fontFamily: 'SF-Pro-Rounded',
       ),
@@ -2488,7 +2483,7 @@ class _SaveScreenState extends State<SaveScreen> {
                 filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.4),
+                    color: isDarkModeOn ? Colors.black.withOpacity(0.65): Colors.black.withOpacity(0.4),
                   ),
                 )
             )
@@ -2511,6 +2506,7 @@ class _SaveScreenState extends State<SaveScreen> {
           )
         )
       ],
+      )
       )
     );
   }
@@ -2650,7 +2646,9 @@ class _MyDecksScreenState extends State<MyDecksScreen> {
     final double itemWidth = SizeConfig.screenWidth;
     final double itemHeight = itemWidth/5;
   
-    return MaterialApp(
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: MaterialApp(
       theme: ThemeData(
         fontFamily: 'SF-Pro-Rounded',
       ),
@@ -2668,7 +2666,7 @@ class _MyDecksScreenState extends State<MyDecksScreen> {
             filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
               child: Container(
                 decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.4),
+                color: isDarkModeOn ? Colors.black.withOpacity(0.65): Colors.black.withOpacity(0.4),
                 ),
               )
             )
@@ -2749,6 +2747,7 @@ class _MyDecksScreenState extends State<MyDecksScreen> {
             
           ],
         
+      )
       )
     );
   }
@@ -2976,7 +2975,9 @@ class _BoardScreenState extends State<BoardScreen> {
     
   }
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         body: Stack(
@@ -2985,27 +2986,10 @@ class _BoardScreenState extends State<BoardScreen> {
                 constraints: BoxConstraints.expand(),
                 decoration: BoxDecoration(
                 image: DecorationImage(
-                  image: currentBackgroundImage,//AssetImage("assets/water-blue-ocean.jpg"),
+                  image: currentBackgroundImage,
                 fit: BoxFit.cover)
                 ),
             ),
-            /*Visibility(
-              visible: isHomePressed,
-              child: Align(
-                alignment: Alignment.center,
-                child: cardBackgroundRow(),
-              ), 
-            ),
-            Visibility(
-              visible: isHomePressed,
-              child: Align(
-                alignment: Alignment.center,
-                child: cardButtonRow(),
-              ),
-            ),
-            */
-            
-
             Positioned(
               bottom: 20,
               left: 20,
@@ -3023,10 +3007,8 @@ class _BoardScreenState extends State<BoardScreen> {
                 color: colorsList[colorChipIndex],
                 onPressed: () {
                   print(letterPackMap[letterPackName].dataEncodeiOS());
-                  //print(listToStringConverter(QRStringList));
                   showDialog(context: context, child:
                       new AlertDialog(
-                        //title: new Text("QR Code"),
                         content: Container(
                           width: SizeConfig.screenHeight - 20,
                           height: SizeConfig.screenHeight - 20,
@@ -3049,31 +3031,15 @@ class _BoardScreenState extends State<BoardScreen> {
               left: 20,
               child: shuffleButton(),
             ),
-            /*Align(
-              alignment: Alignment.center,
-              child: cardBackgroundRow(),
-            ),*/
+           
             Align(
               alignment: Alignment.center,
               child: cardButtonRow(),
             )
             
-            /*Visibility(
-              visible: !isHomePressed,
-              child: Container(
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.4),
-                  ),
-                )
-              )
-            ),
-            )*/
-            
           ]
         )
+      )
       )
     );
   }
