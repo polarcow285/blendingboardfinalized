@@ -11,6 +11,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'dart:math';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/scheduler.dart';
 
 
 ///----main function to run app----///
@@ -584,9 +585,19 @@ LetterSet selectedMiddleSet;
 LetterSet selectedEndSet;
 bool firstBuild = true;
 bool isLargeScreen;
-//bool isHomePressed = true;
-bool isDarkModeOn = false;
+bool isDarkModeOn;
 int colorChipIndex = 0;
+
+
+//binary representation of mode
+const int light = 4;
+const int auto = 2;
+const int dark = 1;
+
+int currentMode = 2;
+//light (4): 100
+//auto  (2): 010
+//dark  (1): 001
 
 //change variable name
 LetterSet mid;
@@ -660,13 +671,13 @@ class _MyHomePageState extends State<MyHomePage> {
     return intValue;
   }
 
-  Future <bool>_readMode(String key) async {
+  Future <int>_readMode() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    //Return bool
-    bool boolValue = prefs.getBool(key);
-    return boolValue;
+    //Return int
+    int intValue = prefs.getInt("currentMode");
+    return intValue;
   }
-  Future <int>_readColorIndex(String key) async {
+  Future <int>_readColorIndex() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     //Return int
     int intValue = prefs.getInt("colorIndexKey");
@@ -707,17 +718,17 @@ class _MyHomePageState extends State<MyHomePage> {
           print("Read and decoded all packs");
         }
         print(numberOfLetterPacks);
-        await _readMode("mode").then((value){
+        await _readMode().then((value){
           if(value == null){
-            isDarkModeOn = false;
+            currentMode = auto;
           }
           else{
-            isDarkModeOn = value;
+            currentMode = value;
           }
         });
-        print(isDarkModeOn);
+        //print(isDarkModeOn);
 
-        await _readColorIndex("colorIndexKey").then((value){
+        await _readColorIndex().then((value){
           print("value = $value");
           if(value == null){
             value = 0;
@@ -979,15 +990,17 @@ checkCameraPermissions()async {
         DeviceOrientation.landscapeLeft,
     ]);
     if (firstBuild == true){
-      //_reset();
+      _reset();
       readAll();
       print(colorChipIndex);
-      isDarkModeOn = false;
+      //var brightness = SchedulerBinding.instance.window.platformBrightness;
+      //print(isDarkModeOn);
       firstBuild = false;
-      currentColor = blueC;
-      currentBackgroundImage = blueBackgroundImage;
-      currentBrainLogoImage = blueBrainLogoImage;
-      colorChipIndex = 0;
+      //currentMode = 2;
+      currentColor = themeColorsList[colorChipIndex];
+      currentBackgroundImage = backgroundImagesList[colorChipIndex];
+      currentBrainLogoImage = brainLogoImagesList[colorChipIndex];
+      //colorChipIndex = 0;
     }
     
     print(colorChipIndex);
@@ -1001,6 +1014,16 @@ checkCameraPermissions()async {
     } 
     else {
       isLargeScreen = false;
+    }
+    var brightness = MediaQuery.of(context).platformBrightness;
+    if (currentMode == auto){
+      isDarkModeOn = brightness == Brightness.dark;
+    }
+    else if (currentMode == light){
+      isDarkModeOn = false;
+    }
+    else{
+      isDarkModeOn = true;
     }
     return MaterialApp(
       theme: ThemeData(
@@ -1326,12 +1349,11 @@ class SettingsScreen extends StatefulWidget{
   _SettingsScreenState createState() => _SettingsScreenState();
 }
 class _SettingsScreenState extends State<SettingsScreen>{
-  //colorChipIndex = 0;
   int modesPickerValue = 0;
   Map <int, Widget> modesMap = <int, Widget>{
-    0: Text("Light"),
-    1: Text("Auto"),
-    2: Text("Dark")
+    light: Text("Light"),
+    auto: Text("Auto"),
+    dark: Text("Dark")
   };
   @override
   void initState(){
@@ -1340,8 +1362,17 @@ class _SettingsScreenState extends State<SettingsScreen>{
         DeviceOrientation.landscapeRight,
         DeviceOrientation.landscapeLeft,
     ]);
+    if(isDarkModeOn){
+      modesPickerValue = dark;
+    }
+    else{
+      modesPickerValue = light;
+    }
   }
   Widget build(BuildContext context) {
+    //var brightness = MediaQuery.of(context).platformBrightness;
+    //if auto is selected
+    //isDarkModeOn = brightness == Brightness.dark;
     return Scaffold(
       body: Stack(
         //alignment: Alignment.center,
@@ -1385,7 +1416,8 @@ class _SettingsScreenState extends State<SettingsScreen>{
                 onPressed: () async {  
                   //print(currentBrainLogoImage);
                   //save mode to preferences
-                  await _saveMode(isDarkModeOn);
+                  print(isDarkModeOn);
+                  await _saveMode(currentMode);
 
                   //save color to index (use to get background image and color)
                   await _saveColorIndex(colorChipIndex);
@@ -1402,11 +1434,11 @@ class _SettingsScreenState extends State<SettingsScreen>{
       )
     );
   }
-  static _saveMode(bool mode) async {
+  static _saveMode(int mode) async {
         final prefs = await SharedPreferences.getInstance();
-        final key = "mode";
+        final key = "currentMode";
         final value = mode;
-        prefs.setBool(key, value);
+        prefs.setInt(key, value);
         //print('saved $value');
   }
   static _saveColorIndex(int numValue) async {
@@ -1418,25 +1450,41 @@ class _SettingsScreenState extends State<SettingsScreen>{
   }
   Widget modePicker(){
     return CupertinoSlidingSegmentedControl(
-      groupValue: modesPickerValue,
+      groupValue: currentMode,
       children: modesMap, 
       thumbColor: isDarkModeOn ? Colors.grey.withOpacity(0.3): Colors.white,
       onValueChanged: (i)  {
         setState(()  {
-          modesPickerValue = i;
-          if(i == 0){
+          currentMode = i;
+          if(i == light){
             //light mode is selected
             isDarkModeOn = false;
-            modesMap.update(0, (var val) => val = Text("Light", style: TextStyle(color: Colors.black)));
-            modesMap.update(1, (var val) => val = Text("Auto", style: TextStyle(color: Colors.black)));
-            modesMap.update(2, (var val) => val = Text("Dark", style: TextStyle(color: Colors.black)));
+            modesMap.update(light, (var val) => val = Text("Light", style: TextStyle(color: Colors.black)));
+            modesMap.update(auto, (var val) => val = Text("Auto", style: TextStyle(color: Colors.black)));
+            modesMap.update(dark, (var val) => val = Text("Dark", style: TextStyle(color: Colors.black)));
           }
-          else if(i == 2){
+          else if (i == auto){
+            //auto mode is selected
+            var brightness = SchedulerBinding.instance.window.platformBrightness;
+            isDarkModeOn = brightness == Brightness.dark;
+            if(isDarkModeOn){
+              modesMap.update(light, (var val) => val = Text("Light", style: TextStyle(color: Colors.white)));
+              modesMap.update(auto, (var val) => val = Text("Auto", style: TextStyle(color: Colors.white)));
+              modesMap.update(dark, (var val) => val = Text("Dark", style: TextStyle(color: Colors.white)));
+            }
+            else{
+              modesMap.update(light, (var val) => val = Text("Light", style: TextStyle(color: Colors.black)));
+              modesMap.update(auto, (var val) => val = Text("Auto", style: TextStyle(color: Colors.black)));
+              modesMap.update(dark, (var val) => val = Text("Dark", style: TextStyle(color: Colors.black)));
+            }
+            
+          }
+          else if(i == dark){
             //dark mode is selected
             isDarkModeOn = true;
-            modesMap.update(0, (var val) => val = Text("Light", style: TextStyle(color: Colors.white)));
-            modesMap.update(1, (var val) => val = Text("Auto", style: TextStyle(color: Colors.white)));
-            modesMap.update(2, (var val) => val = Text("Dark", style: TextStyle(color: Colors.white)));
+            modesMap.update(light, (var val) => val = Text("Light", style: TextStyle(color: Colors.white)));
+            modesMap.update(auto, (var val) => val = Text("Auto", style: TextStyle(color: Colors.white)));
+            modesMap.update(dark, (var val) => val = Text("Dark", style: TextStyle(color: Colors.white)));
           }
           
         });
@@ -1764,8 +1812,8 @@ class _CreateDecksScreenState extends State<CreateDecksScreen>{
                   onPressed: () {
                   setState(() {
                       sortChips();
-                      mid.lettersToAdd.clear();
-                      mid.lettersToRemove.clear();
+                      
+                      
                     });
                     
                     Navigator.push(
