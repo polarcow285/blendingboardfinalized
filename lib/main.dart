@@ -5,13 +5,12 @@ import 'dart:ui';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_sfsymbols/flutter_sfsymbols.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-import 'package:barcode_scan/barcode_scan.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/scheduler.dart';
-
+import 'package:barcode_scan2/barcode_scan2.dart';
 
 ///----main function to run app----///
 void main(){
