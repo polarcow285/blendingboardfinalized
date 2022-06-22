@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:ui';
-import 'package:flutter/widgets.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_sfsymbols/flutter_sfsymbols.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -896,8 +895,9 @@ Future<void> _scan() async {
       print("$e");
       
       setState(() {
-        showDialog(context: context, child:
-       new AlertDialog(
+        showDialog(context: context, 
+        builder: (BuildContext context) {
+       return AlertDialog(
         title: Text("Not a Blending Board Deck", textAlign: TextAlign.center),
         content: Container(
          width: SizeConfig.screenWidth * 0.3,
@@ -918,7 +918,8 @@ Future<void> _scan() async {
               }
             ),
           ],*/
-       ),
+       );
+        },
        
       barrierDismissible: true,
       );
@@ -939,8 +940,9 @@ checkCameraPermissions()async {
     //print("igot here");
     //haven't asked for permission yet -> ask for permissions
     setState(() {
-      showDialog(context: context, child:
-       new AlertDialog(
+      showDialog(context: context, 
+      builder: (BuildContext context) {
+       return AlertDialog(
         title: Text("Blending Board Would Like to Access the Camera", textAlign: TextAlign.center),
         content: Container(
          width: SizeConfig.screenWidth * 0.15,
@@ -950,7 +952,7 @@ checkCameraPermissions()async {
           )
            ),
           actions: <Widget>[
-            FlatButton(
+            TextButton(
               child: Text("Don't Allow"),
               //set status to denied
               
@@ -960,7 +962,7 @@ checkCameraPermissions()async {
                 Navigator.of(context).pop();
               }
             ),
-            FlatButton(
+            TextButton(
               child: Text("Allow"),
               
               onPressed: ()async {
@@ -970,7 +972,9 @@ checkCameraPermissions()async {
               }
             ),
           ],
-       ),
+       );
+
+      },
        barrierDismissible: false,
        
     
@@ -1255,7 +1259,7 @@ checkCameraPermissions()async {
             image: currentBrainLogoImage,
         ),
       ),
-        child: FlatButton(
+        child: TextButton(
           child: Text(""),
         onPressed: () {
           Navigator.push(
@@ -1279,8 +1283,8 @@ checkCameraPermissions()async {
         icon: Icon(SFSymbols.gear_alt,
           color: colorsList[colorChipIndex],
         ),*/
-      child: FlatButton(
-          padding: EdgeInsets.only(left: 0, right: 0),
+      child: TextButton(
+          //padding: EdgeInsets.only(left: 0, right: 0),
           child: Icon(SFSymbols.gear_alt,
           color: colorsList[colorChipIndex],//Color(0xFF00a8df),
           size: SizeConfig.safeBlockHorizontal * 3
@@ -1304,8 +1308,10 @@ checkCameraPermissions()async {
         borderRadius: BorderRadius.all(Radius.circular(10)),
       ),
       
-        child: FlatButton(
-          padding: EdgeInsets.only(left: 1, right: 0),
+        child: TextButton(
+          style: TextButton.styleFrom(
+            padding: EdgeInsets.only(left: 1, right: 0),
+          ), 
           child: Icon(SFSymbols.qrcode_viewfinder,
           color: colorsList[colorChipIndex],//Color(0xFF00a8df),
           size: SizeConfig.safeBlockHorizontal * 4
@@ -1732,10 +1738,10 @@ class _CreateDecksScreenState extends State<CreateDecksScreen>{
     for(int i = 0; i<allSets.length; i++){
       //using bit masking
        if(allSets[i].positionBinary & 1 > 0){ 
-        beginningSetsList.add(allSets[i]);
+          beginningSetsList.add(allSets[i]);
        } 
        if (allSets[i].positionBinary & 2 > 0){
-         middleSetsList.add(allSets[i]);
+          middleSetsList.add(allSets[i]);
        }
        if (allSets[i].positionBinary & 4 > 0){
          endSetsList.add(allSets[i]);
@@ -2278,7 +2284,7 @@ class _CustomizeLettersState extends State<CustomizeLettersScreen> {
           
           ),
             child:TextFormField(
-              inputFormatters: [new WhitelistingTextInputFormatter(RegExp("[a-zA-Z]")),],
+              inputFormatters: [FilteringTextInputFormatter.allow(RegExp('[a-zA-Z]')),],
               style: TextStyle(color: colorsList[colorChipIndex], fontWeight: FontWeight.w600, fontSize: SizeConfig.safeBlockHorizontal * 3),
               onFieldSubmitted: (String input){
 
@@ -2489,7 +2495,7 @@ class _SaveScreenState extends State<SaveScreen> {
             )
         ),
         Scaffold(
-          resizeToAvoidBottomPadding: false,
+          resizeToAvoidBottomInset: false,
           backgroundColor: Colors.transparent,
           body: Column(
             children: <Widget>[
@@ -2590,14 +2596,16 @@ class _SaveScreenState extends State<SaveScreen> {
   Widget skipSaveButton() {
     return Container(
       margin: EdgeInsets.all(20),
-      child: FlatButton(
+      child: TextButton(
+        style: TextButton.styleFrom(
+          primary: Colors.black,
+          backgroundColor: Colors.transparent,
+        ),
         child: Text("Skip, Don't Save Deck",
           style: TextStyle(decoration: TextDecoration.underline, 
           color: colorsList[colorChipIndex], //Color(0xFF0094c8), 
           fontWeight: FontWeight.w500, fontSize: SizeConfig.safeBlockHorizontal * 2),
         ),
-        color: Colors.transparent,
-        textColor: Colors.black,
         onPressed: ()async {
             //Load the discard pack to the blending board
             discardPack = LetterPack("discardPack", _CreateDecksScreenState.tempBeginningSet, _CreateDecksScreenState.tempMiddleSet, _CreateDecksScreenState.tempEndSet);
@@ -2701,8 +2709,9 @@ class _MyDecksScreenState extends State<MyDecksScreen> {
               right:  20,
               child: IconButton(
                 onPressed: () {
-                  showDialog(context: context, child:
-                    new AlertDialog(
+                  showDialog(context: context, 
+                  builder: (BuildContext context) {
+                    return AlertDialog(
                       title: Text("Are you sure you want to clear all decks?", textAlign: TextAlign.center),
                       content: Container(
                       width: SizeConfig.screenWidth * 0.3,
@@ -2712,13 +2721,13 @@ class _MyDecksScreenState extends State<MyDecksScreen> {
                         )
                         ),
                         actions: <Widget>[
-                          FlatButton(
+                          TextButton(
                             child: Text("NO"),
                             onPressed: (){
                               Navigator.of(context, rootNavigator: true).pop(context);
                             }
                           ),
-                          FlatButton(
+                          TextButton(
                             child: Text("YES"),
                             onPressed: (){
                               Navigator.of(context, rootNavigator: true).pop(context);
@@ -2731,9 +2740,10 @@ class _MyDecksScreenState extends State<MyDecksScreen> {
                             }
                           ),
                         ],
-                    )
+                    );
+                  }
 
-      );
+                );
                   
                 },
                 icon: Icon(SFSymbols.trash_fill),
@@ -2794,17 +2804,21 @@ class _MyDecksScreenState extends State<MyDecksScreen> {
         if (index % 3 == 0){
           return Container(
             margin: EdgeInsets.only(top: 5, right: 5, left: SizeConfig._safeAreaVertical + 30, bottom: 5),
-            child: FlatButton(
+            child: TextButton(
+              style: TextButton.styleFrom(
+                primary: currentColor,
+                backgroundColor: isDarkModeOn ? Colors.black: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)
+                ),
+              ),
               child: FittedBox(
                 fit: BoxFit.fitWidth,
                 child: Text(allPacks[index].name,
                   style: TextStyle(fontSize: SizeConfig.safeBlockHorizontal * 2, fontWeight: FontWeight.w500),
                     textAlign: TextAlign.center),
               ),
-                color: isDarkModeOn ? Colors.black: Colors.white,
-                textColor: currentColor,
-                shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10)),
+                
                 onPressed: (){
                   letterPackName = allPacks[index].name;
                   Navigator.push(
@@ -2819,17 +2833,21 @@ class _MyDecksScreenState extends State<MyDecksScreen> {
           else if ((index-2) % 3 == 0){
             return Container(
               margin: EdgeInsets.only(top: 5, right: SizeConfig._safeAreaVertical + 30, left: 5, bottom: 5),
-              child: FlatButton(
+              child: TextButton(
+                style: TextButton.styleFrom(
+                  primary: currentColor, //Color(0xFF0342dc),
+                  backgroundColor: isDarkModeOn ? Colors.black: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)
+                  ),
+
+                ),
                 child: FittedBox(
                   fit: BoxFit.fitWidth,
                   child: Text(allPacks[index].name,
                     style: TextStyle(fontSize: SizeConfig.safeBlockHorizontal * 2, fontWeight: FontWeight.w500),
                     textAlign: TextAlign.center),
-                  ),
-                  color: isDarkModeOn ? Colors.black: Colors.white,
-                  textColor: currentColor, //Color(0xFF0342dc),
-                  shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
+                  ), 
                   onPressed: (){
                     letterPackName = allPacks[index].name;
                     Navigator.push(
@@ -2846,17 +2864,23 @@ class _MyDecksScreenState extends State<MyDecksScreen> {
                     //width: width,
                     //height: height,
                     margin: EdgeInsets.only(top: 5, right: 20, left: 20, bottom: 5),
-                    child: FlatButton(
-                      child: FittedBox(
-                          fit: BoxFit.fitWidth,
-                          child: Text(allPacks[index].name,
-                        style: TextStyle(fontSize: SizeConfig.safeBlockHorizontal * 2, fontWeight: FontWeight.w500),
-                          textAlign: TextAlign.center),
+                    child: TextButton(
+                      style: TextButton.styleFrom(
+                        primary: currentColor,
+                        backgroundColor: isDarkModeOn ? Colors.black: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)
                         ),
-                      color: isDarkModeOn ? Colors.black: Colors.white,
-                      textColor: currentColor,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10)),
+                      ),
+                      child: FittedBox(
+                        fit: BoxFit.fitWidth,
+                        child: Text(allPacks[index].name,
+                          style: TextStyle(
+                            fontSize: SizeConfig.safeBlockHorizontal * 2, fontWeight: FontWeight.w500
+                          ),
+                          textAlign: TextAlign.center
+                        ),
+                      ), 
                       onPressed: (){
                         letterPackName = allPacks[index].name;
                         Navigator.push(
@@ -3007,8 +3031,9 @@ class _BoardScreenState extends State<BoardScreen> {
                 color: colorsList[colorChipIndex],
                 onPressed: () {
                   print(letterPackMap[letterPackName].dataEncodeiOS());
-                  showDialog(context: context, child:
-                      new AlertDialog(
+                  showDialog(context: context, 
+                  builder: (BuildContext context) {
+                      return AlertDialog(
                         content: Container(
                           width: SizeConfig.screenHeight - 20,
                           height: SizeConfig.screenHeight - 20,
@@ -3020,7 +3045,8 @@ class _BoardScreenState extends State<BoardScreen> {
                             )
                           ),
                         )
-                      )
+                      );
+                  }
                   );
                 },
               ),
@@ -3120,7 +3146,14 @@ class _BoardScreenState extends State<BoardScreen> {
       margin: EdgeInsets.only(top: 20, right: 5, left: 20, bottom: 20),
       child: ButtonTheme(
         
-        child:  FlatButton(
+        child:  TextButton(
+          style: TextButton.styleFrom(
+            primary: checkTextColor(beginningCardName),
+            backgroundColor: checkBackgroundColor(beginningCardName),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10)
+            ),
+          ),
           child: AutoSizeText(beginningCardName,
           maxLines: 1,
             style: TextStyle(
@@ -3129,12 +3162,11 @@ class _BoardScreenState extends State<BoardScreen> {
               fontWeight: FontWeight.w400
               ),
           ),
-          color: checkBackgroundColor(beginningCardName),
-          textColor: checkTextColor(beginningCardName),
+          
+          
             //color: checkVowels(beginningCardName) ? Color(0xFFfdf0b1) : Colors.white,
             //textColor: checkVowels(beginningCardName) ? Color(0xFFb46605) : Colors.black,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10)),
+            
             onPressed: (){  
               setState(() {
                 counter1++;
@@ -3166,29 +3198,31 @@ class _BoardScreenState extends State<BoardScreen> {
       height: SizeConfig.screenWidth * 0.27,
       margin: EdgeInsets.only(top: 20, right: 5, left: 5, bottom: 20),
       child: ButtonTheme(
-          child: FlatButton(
-            child: AutoSizeText(middleCardName,
-                maxLines: 1,
-                //minFontSize: 25.0,
-              style: TextStyle(fontSize: SizeConfig.safeBlockHorizontal * 10, 
-              fontFamily: "DidactGothic", fontWeight: FontWeight.w400,),
-            ),
-          
-            color: checkBackgroundColor(middleCardName),
-            textColor: checkTextColor(middleCardName),
+        child: TextButton(
+          style: TextButton.styleFrom(
+            backgroundColor: checkBackgroundColor(middleCardName),
+            primary: checkTextColor(middleCardName),
             shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10)),
-            onPressed: (){
-              setState(() {
-                counter2++;
-                if(counter2 >= letterPackMap[letterPackName].middle.letters.length){
-                  counter2 = 0;
-                }
-                middleCardName = letterPackMap[letterPackName].middle.letters[counter2];
-              });
-            },
+              borderRadius: BorderRadius.circular(10)
+            ),
           ),
-        )
+          child: AutoSizeText(middleCardName,
+            maxLines: 1,
+            //minFontSize: 25.0,
+            style: TextStyle(fontSize: SizeConfig.safeBlockHorizontal * 10, 
+            fontFamily: "DidactGothic", fontWeight: FontWeight.w400,),
+          ),
+          onPressed: (){
+            setState(() {
+              counter2++;
+              if(counter2 >= letterPackMap[letterPackName].middle.letters.length){
+                counter2 = 0;
+              }
+              middleCardName = letterPackMap[letterPackName].middle.letters[counter2];
+            });
+          },
+        ),
+      )
     );
   }
   Widget middleCardBackground() {
@@ -3208,14 +3242,17 @@ class _BoardScreenState extends State<BoardScreen> {
       height: SizeConfig.screenWidth * 0.27,
       margin: EdgeInsets.only(top: 20, right: 20, left: 5, bottom: 20),
       child: ButtonTheme(
-        child: FlatButton(
+        child: TextButton(
+          style: TextButton.styleFrom(
+            primary: checkTextColor(endCardName),
+            backgroundColor: checkBackgroundColor(endCardName),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10)
+            ),
+          ),
           child: AutoSizeText(endCardName,
           maxLines: 1,
-            style: TextStyle(fontSize: SizeConfig.safeBlockHorizontal * 10, fontFamily: "DidactGothic", fontWeight: FontWeight.w400),),
-          color: checkBackgroundColor(endCardName),
-          textColor: checkTextColor(endCardName),
-          shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10)),
+          style: TextStyle(fontSize: SizeConfig.safeBlockHorizontal * 10, fontFamily: "DidactGothic", fontWeight: FontWeight.w400),), 
           onPressed: (){
             setState(() {
               counter3++;
