@@ -281,7 +281,7 @@ int numberOfLetterPacks;
 LetterPack discardPack;
 class LetterSet{
   String name;
-  int positionBinary; //for 3 collumns
+  int positionBinary; //for 3 columns
   //List <String> position;
   List<String> letters;
   List<String> lettersToRemove;
@@ -557,7 +557,7 @@ LetterSet endingBlends = LetterSet("Ending Blends", end, ["sk", "sp", "st", "ct"
 LetterSet magicEEnding = LetterSet("Magic E", end, ["be", "ce", "de", "fe", "ge", "ke", "le", "me", "ne", "pe", "se", "te"]);
 LetterSet closedSyllable = LetterSet("Closed Syllable", middle, ["a", "e", "i", "o", "u"]);
 LetterSet openSyllable = LetterSet("Open Syllable", middle, ["a", "e", "i", "o", "u"]);
-LetterSet magicEMiddle = LetterSet("Magic E", middle, ["a", "e", "i", "o", "u"]);
+LetterSet magicEMiddle = LetterSet("Magic E", middle, ["a", "e", "i", "o", "u", "y"]);
 LetterSet controlledR = LetterSet("Controlled R", middle, ["ar", "er", "ir", "or", "ur"]);
 LetterSet shortVowelExceptions = LetterSet("Short Vowel Exceptions", middle, ["ang", "ank", "ild", "ind", "ing", "ink", "old", "oll", "olt", "ong", "onk", "ost", "ung", "unk"]);
 LetterSet vowelTeamBasic = LetterSet("Vowel Team Basic", middle, ["ai", "ay", "ea", "ee", "igh", "oa", "oy"]);
@@ -597,8 +597,9 @@ int currentMode = 2;
 //auto  (2): 010
 //dark  (1): 001
 
-//change variable name
-LetterSet mid;
+//selected LetterSet
+LetterSet selLS;
+List <LetterSet> letterSetsFromSelectedColumn = [];
 
 
 _reset() async{
@@ -1733,6 +1734,7 @@ class _CreateDecksScreenState extends State<CreateDecksScreen>{
     beginningSetsList.clear();
     middleSetsList.clear();
     endSetsList.clear();
+    letterSetsFromSelectedColumn.clear();
     //go through all the sets, take the ones that are beginning, and put them into a list
     for(int i = 0; i<allSets.length; i++){
       //using bit masking
@@ -1859,8 +1861,10 @@ class _CreateDecksScreenState extends State<CreateDecksScreen>{
           setState(() {
             _defaultBeginningChoiceIndex = index;
           });
-          
-          mid = beginningSetsList[index];
+          for(int i = 0; i < beginningSetsList.length; i++){
+            letterSetsFromSelectedColumn.add(beginningSetsList[i]);
+          }
+          selLS = beginningSetsList[index];
             Navigator.push(
               context,
               //pass letterset index
@@ -1916,12 +1920,15 @@ class _CreateDecksScreenState extends State<CreateDecksScreen>{
           setState(() {
             _defaultMiddleChoiceIndex = index;
           });
-          mid = middleSetsList[index];
-            Navigator.push(
-              context,
-              //pass letterset index
-              MaterialPageRoute(builder: (context) => CustomizeLettersScreen()),
-            );    
+
+          selLS = middleSetsList[index];
+          for(int i = 0; i < middleSetsList.length; i++){
+            letterSetsFromSelectedColumn.add(middleSetsList[i]);
+          }   
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => CustomizeLettersScreen()),
+          );    
         },
           deleteIcon: Icon(SFSymbols.pencil,
           color: currentColor,
@@ -1968,7 +1975,10 @@ class _CreateDecksScreenState extends State<CreateDecksScreen>{
           setState(() {
             _defaultEndChoiceIndex = index;
           });
-          mid = endSetsList[index];
+          for(int i = 0; i < endSetsList.length; i++){
+            letterSetsFromSelectedColumn.add(endSetsList[i]);
+          }
+          selLS = endSetsList[index];
             Navigator.push(
               context,
               //pass letterset index
@@ -2157,11 +2167,31 @@ class _CustomizeLettersState extends State<CustomizeLettersScreen> {
         DeviceOrientation.landscapeRight,
         DeviceOrientation.landscapeLeft,
     ]);
+    print(letterSetsFromSelectedColumn);
   }
   void dispose() {
     _controller.dispose();
     super.dispose();
   }
+  bool isSelectedChecker(LetterSet lset){
+    bool isAdded = true;
+    if(selLS.lettersToAdd.length == 0){
+      isAdded = false;
+    }
+    else{
+      for(int i = 0; i < lset.letters.length; i++){
+        //if the pack u are making does not have the letters from the set then
+        //that set is not selected
+        if(!selLS.lettersToAdd.contains(lset.letters[i]) && !selLS.letters.contains(lset.letters[i])){
+          print(lset.letters[i]);
+          isAdded = false;
+          break;
+        }
+      }
+    }
+    return isAdded;
+  }
+
   Widget build(BuildContext context) {
     final double itemWidth = SizeConfig.screenWidth/50;
     final double itemHeight = SizeConfig.screenWidth/50;
@@ -2195,49 +2225,7 @@ class _CustomizeLettersState extends State<CustomizeLettersScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Container(
-                  margin: EdgeInsets.all(30),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Container(
-                        margin: EdgeInsets.only(bottom: 10,),
-                        child: InputChip(
-                    selected: true,
-                    label: Container(
-                      width: SizeConfig.screenHeight * 0.4,
-                      margin: EdgeInsets.all(10),
-                      child:  
-                        Text(mid.name,
-                            style: TextStyle(fontSize: SizeConfig.safeBlockHorizontal * 2, fontWeight: FontWeight.w500),
-                          textAlign: TextAlign.center,
-                        ),
-                    ),
-                    showCheckmark: false,
-                    deleteButtonTooltipMessage: "Edit",
-                    onDeleted: () {
-                    },
-                    deleteIcon: Icon(SFSymbols.pencil,
-                      size: SizeConfig.safeBlockHorizontal * 3,
-                      color: currentColor,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        //_defaultEndChoiceIndex = index;
-                      // print("defaultindex: $defaultIndex");
-                      // print("listbuilder: $listBuilderIndex");
-                      });
-                    },
-      
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.only(topRight: Radius.circular(10),bottomRight: Radius.circular(10),topLeft: Radius.circular(10),bottomLeft: Radius.circular(10))),
-            selectedColor: currentColor.withOpacity(0.3),
-            backgroundColor: Colors.white,
-            labelStyle: TextStyle(color: currentColor),
-            )
-        ),
-                    ],
-                  ),
-                ),
+                selectedColumn(),
                 Container(
                   margin: EdgeInsets.all(30),
                   width: SizeConfig.screenWidth * 0.35,
@@ -2248,6 +2236,9 @@ class _CustomizeLettersState extends State<CustomizeLettersScreen> {
                 IconButton(
                   onPressed: () {
                     Navigator.pop(context);
+                    setState(() {
+                      letterSetsFromSelectedColumn.clear();
+                    });
                   },
                   icon: Icon(SFSymbols.checkmark_circle_fill),
                   iconSize: SizeConfig.screenHeight * 0.08,
@@ -2265,56 +2256,167 @@ class _CustomizeLettersState extends State<CustomizeLettersScreen> {
     );
   }
 ///----Build methods for widgets in Customize Letters Screen----///
- Widget gridView(double width, double height) {
+  bool isLongName (String name){
+    bool isLongName;
+    if(name.length > 18){
+      isLongName = true;
+    }
+    else{
+      isLongName = false;
+    }
+    return isLongName;
+  }
+  Widget selectedColumn(){
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Container(
+          child:selectedColumnChips(),
+          width: SizeConfig.screenWidth * 0.5,
+          height: SizeConfig.screenHeight * 0.9
+        )
+        
+      ],
+    );
+  }
+  Widget selectedColumnChips(){
+    return ListView.builder(
+      itemCount: letterSetsFromSelectedColumn.length,
+      scrollDirection: Axis.vertical,
+      itemBuilder: (BuildContext context, int index) {
+        //if this is the selected element, make return it
+        if(index == letterSetsFromSelectedColumn.indexWhere((element) => element == selLS)){
+          return Container(
+            margin: EdgeInsets.only(bottom: 10,),
+            child: InputChip(
+            selected: true,
+            label: Container(
+              width: SizeConfig.screenHeight * 0.4,
+              margin: EdgeInsets.all(10),
+              child:  Text(selLS.name,
+                        style: TextStyle(fontSize: isLongName(selLS.name) ? SizeConfig.safeBlockHorizontal * 1.6 : SizeConfig.safeBlockHorizontal * 2, fontWeight: FontWeight.w500),
+                        textAlign: TextAlign.center,
+                      ),
+            ),
+            showCheckmark: false,
+            deleteButtonTooltipMessage: "Edit",
+            onDeleted: () {
+
+            },
+            deleteIcon: Icon(SFSymbols.pencil,
+              size: SizeConfig.safeBlockHorizontal * 3,
+              color: currentColor,
+            ),
+            onPressed: () {
+              setState(() {
+              });
+            },
+      
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.only(topRight: Radius.circular(10),bottomRight: Radius.circular(10),topLeft: Radius.circular(10),bottomLeft: Radius.circular(10))),
+            selectedColor: currentColor.withOpacity(0.3),
+            backgroundColor: Colors.white,
+            labelStyle: TextStyle(color: currentColor),
+            )
+          );
+        }
+        else{
+          return Container(
+            margin: EdgeInsets.only(bottom: 10,),
+            child: InputChip(
+            label: Container(
+              width: SizeConfig.screenHeight * 0.4,
+              margin: EdgeInsets.all(10),
+              child:  Text(letterSetsFromSelectedColumn[index].name,
+                        style: TextStyle(fontSize: isLongName(letterSetsFromSelectedColumn[index].name) ? SizeConfig.safeBlockHorizontal * 1.6 : SizeConfig.safeBlockHorizontal * 2, fontWeight: FontWeight.w500),
+                        textAlign: TextAlign.center,
+                      ),
+            ),
+            showCheckmark: false,
+            deleteButtonTooltipMessage: "Edit",
+            onDeleted: () {
+
+            },
+            deleteIcon: Icon(SFSymbols.plus,
+              size: SizeConfig.safeBlockHorizontal * 3,
+              color: currentColor,
+            ),
+            selected: isSelectedChecker(letterSetsFromSelectedColumn[index]),
+            
+            onSelected: (bool selected){
+              setState(() {
+                  if(selected){
+                    //not selected yet, you are selecting now
+                    //adding the letters
+                    for(int i = 0; i < letterSetsFromSelectedColumn[index].letters.length; i++){
+                      //no repeat letters
+                      if(!selLS.letters.contains(letterSetsFromSelectedColumn[index].letters[i])){
+                        selLS.lettersToAdd.add(letterSetsFromSelectedColumn[index].letters[i]);
+                      }
+                    }
+                  }
+                  else{
+                    //already selected, you are deselecting now
+                    for(int i = 0; i < letterSetsFromSelectedColumn[index].letters.length; i++){
+                      selLS.lettersToAdd.remove(letterSetsFromSelectedColumn[index].letters[i]);
+                    } 
+                  }
+                });
+            },
+      
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.only(topRight: Radius.circular(10),bottomRight: Radius.circular(10),topLeft: Radius.circular(10),bottomLeft: Radius.circular(10))),
+            selectedColor: currentColor.withOpacity(0.3),
+            backgroundColor: Colors.white,
+            labelStyle: TextStyle(color: currentColor),
+            )
+          );
+        }
+        
+      }
+    );
+  }
+  Widget gridView(double width, double height) {
     return  GridView.count(
       // Create a grid with 3 columns. If you change the scrollDirection to
       // horizontal, this produces 3 rows.
       crossAxisCount: 3,
       childAspectRatio: (width / height),
       // Generate allPacks.length amount widgets that display their index in the List.
-      children: List.generate(mid.letters.length + 1 + mid.lettersToAdd.length, (index) {
+      children: List.generate(selLS.letters.length + 1 + selLS.lettersToAdd.length, (index) {
+        
        
         //last element of gridview should be a textformfield
-        if(index == mid.letters.length + mid.lettersToAdd.length){
+        if(index == selLS.letters.length + selLS.lettersToAdd.length){
           return Container(
             margin: EdgeInsets.only(top: 20, right: 5, left: SizeConfig._safeAreaVertical + 10, bottom: 5),
-         
-            decoration: BoxDecoration(
-          
-          ),
+            decoration: BoxDecoration(),
             child:TextFormField(
               inputFormatters: [FilteringTextInputFormatter.allow(RegExp('[a-zA-Z]')),],
               style: TextStyle(color: colorsList[colorChipIndex], fontWeight: FontWeight.w600, fontSize: SizeConfig.safeBlockHorizontal * 3),
               onFieldSubmitted: (String input){
-
-            setState(() {
-              //when text is submitted to the textformfield, the letters are added to lettersToAdd list of the selected letterset
-              mid.lettersToAdd.add(input);
-              _controller.clear();
-            });
-            
-            
-          },
-          textAlign: TextAlign.center,
-           decoration: InputDecoration(
-            hintText: "+",
-            hintStyle: TextStyle(color: colorsList[colorChipIndex], fontSize: SizeConfig.safeBlockHorizontal * 3),
-            contentPadding: EdgeInsets.symmetric(vertical: SizeConfig.screenWidth * 0.02,),
-            fillColor: Colors.black.withOpacity(0.3),
-            filled: true,
-            border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10.0),
-            borderSide: BorderSide.none
-            )
-          ),
-          controller: _controller,
-        ), 
-        
-      
-    );
+                setState(() {
+                  //when text is submitted to the textformfield, the letters are added to lettersToAdd list of the selected letterset
+                  selLS.lettersToAdd.add(input);
+                  _controller.clear();
+                });        
+              },
+              textAlign: TextAlign.center,
+              decoration: InputDecoration(
+                hintText: "+",
+                hintStyle: TextStyle(color: colorsList[colorChipIndex], fontSize: SizeConfig.safeBlockHorizontal * 3),
+                contentPadding: EdgeInsets.symmetric(vertical: SizeConfig.screenWidth * 0.02,),
+                fillColor: Colors.black.withOpacity(0.3),
+                filled: true,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                  borderSide: BorderSide.none
+                )
+              ),
+              controller: _controller,
+            ), 
+          );
         }
         //sorting letters that were manually added, putting their filterchips after original letters 
-        else if(mid.letters.length-1<index && index <mid.letters.length + mid.lettersToAdd.length){
+        else if(selLS.letters.length-1<index && index < selLS.letters.length + selLS.lettersToAdd.length){
           return Container(
             margin: EdgeInsets.only(top: 5, right: 5, left: SizeConfig._safeAreaVertical + 10, bottom: 5),
             child: FilterChip(
@@ -2324,20 +2426,20 @@ class _CustomizeLettersState extends State<CustomizeLettersScreen> {
                 height: 50,
                 child: Center(
                 //fit: BoxFit.fitWidth,
-                child: AutoSizeText(mid.lettersToAdd[index-mid.letters.length],
-                overflow: TextOverflow.visible,
+                child: AutoSizeText(selLS.lettersToAdd[index-selLS.letters.length],
+                  overflow: TextOverflow.visible,
                   style: TextStyle(color: colorsList[colorChipIndex], 
                   fontSize: SizeConfig.safeBlockHorizontal * 3, fontWeight: FontWeight.w500),
                     textAlign: TextAlign.center,),
-              ),
+                ),
               ),
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15),
-                  side: BorderSide(
-                    color: !mid.lettersToRemove.contains(mid.letters[index-mid.letters.length]) == true ? colorsList[colorChipIndex] : Colors.transparent,
-                  ),
+                borderRadius: BorderRadius.circular(15),
+                side: BorderSide(
+                  color: !selLS.lettersToRemove.contains(selLS.lettersToAdd[index-selLS.letters.length]) == true ? colorsList[colorChipIndex] : Colors.transparent,
                 ),
-              selected: !mid.lettersToRemove.contains(mid.lettersToAdd[index-mid.letters.length]),
+              ),
+              selected: !selLS.lettersToRemove.contains(selLS.lettersToAdd[index-selLS.letters.length]),
               selectedColor: selectedColorsList[colorChipIndex],
               backgroundColor: Color(0xFF5c6464),
               showCheckmark: false,
@@ -2346,30 +2448,30 @@ class _CustomizeLettersState extends State<CustomizeLettersScreen> {
                   if(selected){
                     //not selected yet, you are selecting now
                     //(undoing the remove) you do not want to remove this letter from the letter set, so remove it form removeMiddleLetterList
-                    mid.lettersToRemove.remove(mid.lettersToAdd[index-mid.letters.length]);
+                    selLS.lettersToRemove.remove(selLS.lettersToAdd[index-selLS.letters.length]);
                   }
                   else{
                     //already selected, you are deselecting now
                     //adding letter you want to remove into removeMiddleLetterList
-                    mid.lettersToRemove.add(mid.lettersToAdd[index-mid.letters.length]); 
+                    selLS.lettersToRemove.add(selLS.lettersToAdd[index-selLS.letters.length]); 
                   }
                 });
               }
             )
-            );
+          );
         }
         else{
+          print("current index (original): " + index.toString());
           return Container(
-            
             margin: EdgeInsets.only(top: 5, right: 5, left: SizeConfig._safeAreaVertical + 10, bottom: 5),
             child: FilterChip(
-              selected: !mid.lettersToRemove.contains(mid.letters[index]),
+              selected: !selLS.lettersToRemove.contains(selLS.letters[index]),
               label:  Container(
                 margin: EdgeInsets.all(0),
                 width: 50,
                 height: 50,
                 child: Center(
-                  child: AutoSizeText(mid.letters[index],
+                  child: AutoSizeText(selLS.letters[index],
                   overflow: TextOverflow.visible,
                   //if the letter is not part of the lettersToRemove list, it should be selected
                   style: TextStyle(
@@ -2382,7 +2484,7 @@ class _CustomizeLettersState extends State<CustomizeLettersScreen> {
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(15),
                   side: BorderSide(
-                    color: !mid.lettersToRemove.contains(mid.letters[index]) == true ? colorsList[colorChipIndex] : Colors.transparent,
+                    color: !selLS.lettersToRemove.contains(selLS.letters[index]) == true ? colorsList[colorChipIndex] : Colors.transparent,
                   ),
                 ),
              
@@ -2395,11 +2497,11 @@ class _CustomizeLettersState extends State<CustomizeLettersScreen> {
                   if(selected){
                     //not selected yet, you are selecting now
                     //undoing the remove
-                    mid.lettersToRemove.remove(mid.letters[index]);
+                    selLS.lettersToRemove.remove(selLS.letters[index]);
                   }
                   else{
                     //already selected, you are deselecting now
-                    mid.lettersToRemove.add(mid.letters[index]);
+                    selLS.lettersToRemove.add(selLS.letters[index]);
                    
                   }
                 });
