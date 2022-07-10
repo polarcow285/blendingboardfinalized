@@ -11,6 +11,8 @@ import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:barcode_scan2/barcode_scan2.dart';
+import 'package:collection/collection.dart';
+
 
 ///----main function to run app----///
 void main(){
@@ -563,7 +565,7 @@ LetterSet shortVowelExceptions = LetterSet("Short Vowel Exceptions", middle, ["a
 LetterSet vowelTeamBasic = LetterSet("Vowel Team Basic", middle, ["ai", "ay", "ea", "ee", "igh", "oa", "oy"]);
 LetterSet vowelTeamIntermediate = LetterSet("Vowel Team Intermediate", middle, ["aw", "eigh", "ew", "ey", "ie", "oe", "oi", "oo", "ou", "ow"]);
 LetterSet vowelTeamAdvanced = LetterSet("Vowel Team Advanced", middle, ["aw", "eigh", "ew", "ey", "ie", "oe", "oi", "oo", "ou", "ow"]);
-LetterSet vowelA = LetterSet("Vowel A", middle, ["al", "all", "wa", "al", "all", "wa"]);
+LetterSet vowelA = LetterSet("Vowel A", middle, ["al", "all", "wa"]);
 LetterSet empty = LetterSet("Empty", all, [" ", " ", " ", " "]);
   
 List<LetterSet> allSets = [singleConsonantsBeginning, singleConsonantsEnding,  hBrothers, beginningBlends, endingBlends, magicEEnding, closedSyllable, openSyllable, magicEMiddle, shortVowelPointers,  controlledR, shortVowelExceptions, vowelTeamBasic, vowelTeamIntermediate, vowelTeamAdvanced, vowelA, empty];
@@ -2057,8 +2059,7 @@ class _CreateDecksScreenState extends State<CreateDecksScreen>{
       height: SizeConfig.screenHeight,
       margin: EdgeInsets.only(top: SizeConfig._safeAreaVertical + 20, right: 5,),
       child: Column(
-      children: [
-      ],
+        children: [],
       )
     );
   }
@@ -2068,23 +2069,21 @@ class _CreateDecksScreenState extends State<CreateDecksScreen>{
       height: SizeConfig.screenHeight,
       margin: EdgeInsets.only(top: SizeConfig._safeAreaVertical + 20, right: 5,),
       child: Column(
-      children: [
-        Container( 
-          margin: EdgeInsets.only(bottom: 10),
-          child: Text("Column 1",
-            style: TextStyle(
-              fontWeight: FontWeight.w700,
-              color: colorsList[colorChipIndex],
-              fontSize: SizeConfig.safeBlockHorizontal * 3,
-            )
-          ), 
-        ),
-        Flexible(
-          child: beginningChoiceChips(),
-        )
-
-        
-      ],
+        children: [
+          Container( 
+            margin: EdgeInsets.only(bottom: 10),
+            child: Text("Column 1",
+              style: TextStyle(
+                fontWeight: FontWeight.w700,
+                color: colorsList[colorChipIndex],
+                fontSize: SizeConfig.safeBlockHorizontal * 3,
+              )
+            ), 
+          ),
+          Flexible(
+            child: beginningChoiceChips(),
+          )     
+        ],
       )
     );
   }
@@ -2107,8 +2106,7 @@ class _CreateDecksScreenState extends State<CreateDecksScreen>{
           ),
           Flexible(
             child: middleChoiceChips(),
-          )
-          
+          )  
         ],
       )
     );
@@ -2132,21 +2130,20 @@ class _CreateDecksScreenState extends State<CreateDecksScreen>{
           ),
           Flexible(
             child: endChoiceChips(),
-          )
-          
+          )  
         ],
       )
-   );
+    );
   }
   Widget choiceChipRow(){
     return Row(
-        children: [
-          emptyColumn(),
-          column1(),
-          column2(),
-          column3(),
-          checkmarkButton(),
-        ],
+      children: [
+        emptyColumn(),
+        column1(),
+        column2(),
+        column3(),
+        checkmarkButton(),
+      ],
     );
   }
   
@@ -2174,8 +2171,10 @@ class _CustomizeLettersState extends State<CustomizeLettersScreen> {
     super.dispose();
   }
   bool isSelectedChecker(LetterSet lset){
+    //check equality of two lists
+    Function eq = const ListEquality().equals;
     bool isAdded = true;
-    if(selLS.lettersToAdd.length == 0){
+    if(selLS.lettersToAdd.length == 0 || eq(selLS.letters, lset.letters)){
       isAdded = false;
     }
     else{
