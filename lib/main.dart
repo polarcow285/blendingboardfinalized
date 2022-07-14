@@ -1622,14 +1622,12 @@ class _MissionStatementScreenState extends State<MissionStatementScreen>{
         DeviceOrientation.landscapeLeft,
     ]);
   }
-  Future<void> _launchURL() async {
-  const url = 'http://www.dyslexicmindset.com';
-  if (await canLaunch(url)) {
-    await launch(url);
-  } else {
-    throw 'Could not launch $url';
+  
+  final Uri _url = Uri.parse('http://www.dyslexicmindset.com');
+  void _launchUrl() async {
+    if (!await launchUrl(_url)) throw 'Could not launch $_url';
   }
-}
+
 
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -1679,7 +1677,7 @@ class _MissionStatementScreenState extends State<MissionStatementScreen>{
    
     return GestureDetector(
       onTap: () {
-        _launchURL(); 
+        _launchUrl(); 
       },
       child: Image(
             image: AssetImage('assets/dyslexiaBrain.png'),
