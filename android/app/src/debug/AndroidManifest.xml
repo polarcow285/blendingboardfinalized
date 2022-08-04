@@ -11,4 +11,5 @@
     <uses-feature
         android:name="android.hardware.camera.autofocus"
         android:required="false" />
+    <application android:usesCleartextTraffic="true" />
 </manifest>

@@ -563,8 +563,8 @@ LetterSet magicEMiddle = LetterSet("Magic E", middle, ["a", "e", "i", "o", "u", 
 LetterSet controlledR = LetterSet("Controlled R", middle, ["ar", "er", "ir", "or", "ur"]);
 LetterSet shortVowelExceptions = LetterSet("Short Vowel Exceptions", middle, ["ang", "ank", "ild", "ind", "ing", "ink", "old", "oll", "olt", "ong", "onk", "ost", "ung", "unk"]);
 LetterSet vowelTeamBasic = LetterSet("Vowel Team Basic", middle, ["ai", "ay", "ea", "ee", "igh", "oa", "oy"]);
-LetterSet vowelTeamIntermediate = LetterSet("Vowel Team Intermediate", middle, ["aw", "eigh", "ew", "ey", "ie", "oe", "oi", "oo", "ou", "ow"]);
-LetterSet vowelTeamAdvanced = LetterSet("Vowel Team Advanced", middle, ["aw", "eigh", "ew", "ey", "ie", "oe", "oi", "oo", "ou", "ow"]);
+LetterSet vowelTeamIntermediate = LetterSet("Vowel Team Intermediate", middle, ["aw", "ei", "eigh", "ew", "ey", "ie", "oe", "oi", "oo", "ou", "ow"]);
+LetterSet vowelTeamAdvanced = LetterSet("Vowel Team Advanced", middle, ["aw", "ei", "eigh", "ew", "ey", "ie", "oe", "oi", "oo", "ou", "ow"]);
 LetterSet vowelA = LetterSet("Vowel A", middle, ["al", "all", "wa"]);
 LetterSet empty = LetterSet("Empty", all, [" ", " ", " ", " "]);
   
@@ -1623,7 +1623,7 @@ class _MissionStatementScreenState extends State<MissionStatementScreen>{
     ]);
   }
   
-  final Uri _url = Uri.parse('http://www.dyslexicmindset.com');
+  final Uri _url = Uri.parse('https://dyslexicmindset.weebly.com/');
   void _launchUrl() async {
     if (!await launchUrl(_url)) throw 'Could not launch $_url';
   }
