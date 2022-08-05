@@ -2309,7 +2309,7 @@ class _CustomizeLettersState extends State<CustomizeLettersScreen> {
                       ),
             ),
             showCheckmark: false,
-            deleteButtonTooltipMessage: "Edit",
+            deleteButtonTooltipMessage: "Add",
             onDeleted: () {
 
             },
@@ -2342,7 +2342,7 @@ class _CustomizeLettersState extends State<CustomizeLettersScreen> {
                       ),
             ),
             showCheckmark: false,
-            deleteButtonTooltipMessage: "Edit",
+            deleteButtonTooltipMessage: "Add",
             onDeleted: () {
 
             },
