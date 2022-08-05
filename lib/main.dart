@@ -12,6 +12,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:barcode_scan2/barcode_scan2.dart';
 import 'package:collection/collection.dart';
+import 'package:msix/msix.dart';
+import 'dart:io' show Platform;
 
 
 ///----main function to run app----///
@@ -895,39 +897,50 @@ Future<void> _scan() async {
       });
     } */catch (e){
       print("$e");
-      
-      setState(() {
-        showDialog(context: context, 
-        builder: (BuildContext context) {
-       return AlertDialog(
-        title: Text("Not a Blending Board Deck", textAlign: TextAlign.center),
-        content: Container(
-         width: SizeConfig.screenWidth * 0.3,
-        height: SizeConfig.screenWidth * 0.3,
-          child: Center(
-            child: Text("This code contains the data: $qrString, and is not a Blending Board Deck.", textAlign: TextAlign.center),
-          )
-           ),
-          /*actions: <Widget>[
-            FlatButton(
-              child: Text("OK"),
-              onPressed: (){
-                /*Navigator.push(
-                  context,
-                  FadeRoute(page: MyHomePage()),
-                );*/
-                Navigator.of(context).pop();
-              }
-            ),
-          ],*/
-       );
-        },
-       
-      barrierDismissible: true,
-      );
-
-      });
+      String os = Platform.operatingSystem;
+      print(os);
+      /*if (Platform.isWindows) {
+        print('is a Windows');
+        setState(() {
+          showDialog(context: context, 
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text("No Camera Found", textAlign: TextAlign.center),
+                content: Container(
+                width: SizeConfig.screenWidth * 0.3,
+                height: SizeConfig.screenWidth * 0.3,
+                  child: Center(
+                    child: Text("Unable to detect camera for QR scanning", textAlign: TextAlign.center),
+                  )
+                ),
+              );
+            },
+            barrierDismissible: true,
+          );
+        });
+      } */
+      //else {
+        setState(() {
+          showDialog(context: context, 
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text("Not a Blending Board Deck", textAlign: TextAlign.center),
+                content: Container(
+                width: SizeConfig.screenWidth * 0.3,
+                height: SizeConfig.screenWidth * 0.3,
+                  child: Center(
+                    child: Text("This code contains the data: $qrString, and is not a Blending Board Deck.", textAlign: TextAlign.center),
+                  )
+                ),
+              );
+            },
+            barrierDismissible: true,
+          );
+        });
+      //}
     }
+      
+      
 }
 checkCameraPermissions()async {
   var cameraStatus = await Permission.camera.status;
@@ -1623,7 +1636,7 @@ class _MissionStatementScreenState extends State<MissionStatementScreen>{
     ]);
   }
   
-  final Uri _url = Uri.parse('https://dyslexicmindset.weebly.com/');
+  final Uri _url = Uri.parse('http://dyslexicmindset.weebly.com/');
   void _launchUrl() async {
     if (!await launchUrl(_url)) throw 'Could not launch $_url';
   }
