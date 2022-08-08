@@ -899,18 +899,18 @@ Future<void> _scan() async {
       print("$e");
       String os = Platform.operatingSystem;
       print(os);
-      /*if (Platform.isWindows) {
+      if (os == "windows") {
         print('is a Windows');
         setState(() {
           showDialog(context: context, 
             builder: (BuildContext context) {
               return AlertDialog(
-                title: Text("No Camera Found", textAlign: TextAlign.center),
+                title: Text("QR Scanning Not Supported", textAlign: TextAlign.center),
                 content: Container(
                 width: SizeConfig.screenWidth * 0.3,
                 height: SizeConfig.screenWidth * 0.3,
                   child: Center(
-                    child: Text("Unable to detect camera for QR scanning", textAlign: TextAlign.center),
+                    child: Text("Unfortunately, Windows devices do not support the ability to scan Blending Board QR codes.", textAlign: TextAlign.center),
                   )
                 ),
               );
@@ -918,8 +918,8 @@ Future<void> _scan() async {
             barrierDismissible: true,
           );
         });
-      } */
-      //else {
+      } 
+      else {
         setState(() {
           showDialog(context: context, 
             builder: (BuildContext context) {
@@ -937,7 +937,7 @@ Future<void> _scan() async {
             barrierDismissible: true,
           );
         });
-      //}
+      }
     }
       
       
