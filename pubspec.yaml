@@ -11,7 +11,7 @@ description: A new Flutter project.
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.0.2+23
+version: 1.0.2+24
 
 environment:
   sdk: ">=2.1.0 <3.0.0"
@@ -125,6 +125,7 @@ msix_config:
   publisher_display_name: N Leung
   identity_name: 4075NLeung.BlendingBoard
   publisher: CN=8280DB5D-E63C-4331-A0C4-1B4EB047BACC
-  logo_path: C:\Users\debor\Downloads\NatalieCode\blendingboardfinalized\android\app\src\main\res\mipmap-hdpi\blendingboardlogo.png
-  msix_version: 1.0.0.0
+  logo_path: C:\Users\debor\Downloads\NatalieCode\blendingboardfinalized\assets\blendingBoardLogo.png
+  capabilities: "internetClient"
+  msix_version: 1.0.3.0
   store: true

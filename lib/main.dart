@@ -1117,11 +1117,11 @@ checkCameraPermissions()async {
                         },
                 )
               )*/
-            /*Positioned(
+            Positioned(
                 bottom: 20,
                 left: 20,
-                    //child: Text("Version 1.0")
-              )*/
+                    child: Text("Version 1.0")
+              )
         ],
       )
       )
