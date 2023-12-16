@@ -16,6 +16,14 @@ allprojects {
         google()
         jcenter()
     }
+    afterEvaluate {
+        // Set the Java home for the Gradle build process
+        if (project.hasProperty("javaHome")) {
+            tasks.withType(JavaCompile) {
+                options.forkOptions.javaHome = file(project.javaHome)
+            }
+        }
+    }
 }
 
 rootProject.buildDir = '../build'
