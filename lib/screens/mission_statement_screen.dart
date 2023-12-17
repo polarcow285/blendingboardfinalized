@@ -94,7 +94,7 @@ class _MissionStatementScreenState extends State<MissionStatementScreen> {
             ),
             ConstrainedBox(
                 constraints: BoxConstraints(
-                  maxWidth: SizeConfig.screenHeight / 2,
+                  maxWidth: SizeConfig.screenHeight / 1.5,
                   maxHeight: SizeConfig.screenWidth,
                 ),
                 child: Text(
