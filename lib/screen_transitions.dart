@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 /**
  * Contains classes controlling screen transitions.
  */
@@ -16,7 +17,7 @@ class MyPopupRoute extends PopupRoute {
   final bool dismissible;
   final String label;
   final Color color;
-  
+
   static const String routeName = "/mypopup";
 
   @override
@@ -27,11 +28,9 @@ class MyPopupRoute extends PopupRoute {
 
   @override
   String get barrierLabel => label;
-  
+
   @override
   Duration get transitionDuration => const Duration(milliseconds: 400);
-
-  
 
   @override
   Widget buildPage(
@@ -50,11 +49,12 @@ class MyPopupRoute extends PopupRoute {
     Widget child,
   ) {
     return FadeTransition(
-      opacity:animation,
+      opacity: animation,
       child: child,
     );
   }
- }
+}
+
 class FadeRoute extends PageRouteBuilder {
   final Widget page;
   FadeRoute({this.page})
@@ -72,11 +72,12 @@ class FadeRoute extends PageRouteBuilder {
             Widget child,
           ) =>
               FadeTransition(
-                opacity: animation,
-                child: child,
-              ),
+            opacity: animation,
+            child: child,
+          ),
         );
 }
+
 class SlideLeftRoute extends PageRouteBuilder {
   final Widget page;
   SlideLeftRoute({this.page})
@@ -94,14 +95,15 @@ class SlideLeftRoute extends PageRouteBuilder {
             Widget child,
           ) =>
               SlideTransition(
-                position: Tween<Offset>(
-                  begin: const Offset(1, 0),
-                  end: Offset.zero,
-                ).animate(animation),
-                child: child,
-              ),
+            position: Tween<Offset>(
+              begin: const Offset(1, 0),
+              end: Offset.zero,
+            ).animate(animation),
+            child: child,
+          ),
         );
 }
+
 class SlideRightRoute extends PageRouteBuilder {
   final Widget page;
   SlideRightRoute({this.page})
@@ -119,14 +121,15 @@ class SlideRightRoute extends PageRouteBuilder {
             Widget child,
           ) =>
               SlideTransition(
-                position: Tween<Offset>(
-                  begin: const Offset(-1, 0),
-                  end: Offset.zero,
-                ).animate(animation),
-                child: child,
-              ),
+            position: Tween<Offset>(
+              begin: const Offset(-1, 0),
+              end: Offset.zero,
+            ).animate(animation),
+            child: child,
+          ),
         );
 }
+
 class SlideUpRoute extends PageRouteBuilder {
   final Widget page;
   SlideUpRoute({this.page})
@@ -144,14 +147,15 @@ class SlideUpRoute extends PageRouteBuilder {
             Widget child,
           ) =>
               SlideTransition(
-                position: Tween<Offset>(
-                  begin: const Offset(0, 1),
-                  end: Offset.zero,
-                ).animate(animation),
-                child: child,
-              ),
+            position: Tween<Offset>(
+              begin: const Offset(0, 1),
+              end: Offset.zero,
+            ).animate(animation),
+            child: child,
+          ),
         );
 }
+
 class ScaleRoute extends PageRouteBuilder {
   final Widget page;
   ScaleRoute({this.page})
@@ -169,16 +173,16 @@ class ScaleRoute extends PageRouteBuilder {
             Widget child,
           ) =>
               ScaleTransition(
-                scale: Tween<double>(
-                  begin: -1.0,
-                  end: 1.0,
-                ).animate(
-                  CurvedAnimation(
-                    parent: animation,
-                    curve: Curves.fastOutSlowIn,
-                  ),
-                ),
-                child: child,
+            scale: Tween<double>(
+              begin: -1.0,
+              end: 1.0,
+            ).animate(
+              CurvedAnimation(
+                parent: animation,
+                curve: Curves.fastOutSlowIn,
               ),
+            ),
+            child: child,
+          ),
         );
 }

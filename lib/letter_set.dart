@@ -2,19 +2,28 @@
  * LetterSet class representing a set of letters. In a Blending Board, when three letter sets are 
  * placed side by side, the letters form a word. 
  */
-class LetterSet{
+class LetterSet {
+  //The name of the letter set. Eg "Single Consonants".
   String name;
+
+  //The placement of the letter set represented in the numerical value of its binary form.
   int positionBinary; //for 3 columns
   //List <String> position;
+
+  //The letters in the letter set.
   List<String> letters;
+
+  //The letters to be removed from the letter set during user customization.
   List<String> lettersToRemove;
+
+  //The letters to be added from the letter set during user customization.
   List<String> lettersToAdd;
-  
+
   /**
    * Create a new LetterSet with the name `nameString`, the position given by `positionInt`, and
    * the letters in `letterList`.
    */
-  LetterSet(String nameString, int positionInt, List<String> letterList){
+  LetterSet(String nameString, int positionInt, List<String> letterList) {
     name = nameString;
     positionBinary = positionInt;
     /*position = positionList;
@@ -38,41 +47,40 @@ class LetterSet{
   /**
    * Return a list of user-edited letters
    */
-  List<String> generateCustomLetters(){
+  List<String> generateCustomLetters() {
     List<String> tempList = [];
 
     //copy letters from original letter set to edited one
-    for(int i = 0; i<letters.length; i++){
+    for (int i = 0; i < letters.length; i++) {
       tempList.add(letters[i]);
     }
 
     //removing letters
-    for(int j = 0; j<lettersToRemove.length; j++){
+    for (int j = 0; j < lettersToRemove.length; j++) {
       tempList.remove(lettersToRemove[j]);
     }
 
     //adding letters
-    for(int k = 0; k<lettersToAdd.length; k++){
+    for (int k = 0; k < lettersToAdd.length; k++) {
       tempList.add(lettersToAdd[k]);
     }
     //if the user has deleted all the letters, input a blank space into the list
     //this prevents a crash when the BoardScreen tries to load
-    if(tempList.length == 0){
+    if (tempList.length == 0) {
       tempList.add(" ");
     }
     return tempList;
   }
-  
-  
-  void dataEncode(List<String> stringList){
+
+  void dataEncode(List<String> stringList) {
     stringList.add("#" + name);
     stringList.add("$positionBinary");
-    for(int i=0; i<letters.length; i++){
+    for (int i = 0; i < letters.length; i++) {
       stringList.add(letters[i]);
     }
   }
 
-  String dataEncodeiOS(){
+  String dataEncodeiOS() {
     String encodedLetterSet = "";
     //stringList.add("{\"$position\":");
     encodedLetterSet += ("{\"name\":");
@@ -82,15 +90,13 @@ class LetterSet{
     encodedLetterSet += (",");
     encodedLetterSet += ("\"letters\":");
     encodedLetterSet += ("[");
-    
-    for(int i=0; i<letters.length; i++){
-      if(i == letters.length - 1){
+
+    for (int i = 0; i < letters.length; i++) {
+      if (i == letters.length - 1) {
         encodedLetterSet += ("\"${letters[i]}\"]}");
-      }
-      else{
+      } else {
         encodedLetterSet += ("\"${letters[i]}\",");
       }
-      
     }
     return encodedLetterSet;
   }
@@ -98,10 +104,9 @@ class LetterSet{
   /**
    * Helper method that prints the fields of this letter set.
    */
-  void letterSetInfo(){
-    print (name);
-    print (positionBinary);
-    print (letters);
+  void letterSetInfo() {
+    print(name);
+    print(positionBinary);
+    print(letters);
   }
-  
 }
