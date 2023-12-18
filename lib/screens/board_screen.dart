@@ -19,10 +19,16 @@ class BoardScreen extends StatefulWidget {
   _BoardScreenState createState() => _BoardScreenState();
 }
 
+/**
+ * Blending Board Screen where users can flip through the letters of a letter pack to
+ * practice blending sounds together. 
+ */
 class _BoardScreenState extends State<BoardScreen> {
+  //counters for the shuffling. TODO: FIX ME
   int counter1 = 0;
   int counter2 = 0;
   int counter3 = 0;
+  
   String beginningCardName = letterPackMap[letterPackName].beginning.letters[0];
   String middleCardName = letterPackMap[letterPackName].middle.letters[0];
   String endCardName = letterPackMap[letterPackName].end.letters[0];
@@ -30,6 +36,10 @@ class _BoardScreenState extends State<BoardScreen> {
 
   Random random = new Random();
 
+  /**
+   * Returns the color of the text, or `letter`, on a card depending 
+   * whether dark mode is on and if `letter` is a vowel.
+   */
   Color checkTextColor(String letter) {
     if (isDarkModeOn == true) {
       return Colors.white;
@@ -42,6 +52,10 @@ class _BoardScreenState extends State<BoardScreen> {
     }
   }
 
+  /**
+   * Returns the background color of the text, or `letter`, of a card
+   * depending on whether darkmode is on or `letter` is a vowel.
+   */
   Color checkBackgroundColor(String letter) {
     Color backgroundColor;
     if (isDarkModeOn) {
@@ -57,18 +71,9 @@ class _BoardScreenState extends State<BoardScreen> {
     return backgroundColor;
   }
 
-  /*if(checkVowels(letter) == true){
-      return Color(0xFFfdf0b1);
-    }
-    else{
-      if(isDarkModeOn == true){
-        return(Colors.black);
-      }
-      else{
-        return(Colors.white);
-      }
-    }*/
-
+  /**
+   * Returns whether `letter` is a vowel.
+   */
   bool checkVowels(String letter) {
     if (letter.toLowerCase() == 'a' ||
         letter.toLowerCase() == 'e' ||
@@ -81,6 +86,10 @@ class _BoardScreenState extends State<BoardScreen> {
     }
   }
 
+  /**
+   * Saves `stringValue`,the name of the current letter pack in string form, to shared 
+   * preferences with the key "currentLetterPackName".
+   */
   _saveLetterPackName(String stringValue) async {
     final prefs = await SharedPreferences.getInstance();
     final key = "currentLetterPackName";
@@ -88,7 +97,7 @@ class _BoardScreenState extends State<BoardScreen> {
     prefs.setString(key, value);
   }
 
-  String listToStringConverter(List<String> stringList) {
+  /*String _listToStringConverter(List<String> stringList) {
     String stringData = "";
     //convert stringlist to a string
     for (int i = 0; i < stringList.length; i++) {
@@ -97,8 +106,12 @@ class _BoardScreenState extends State<BoardScreen> {
       stringData += ",";
     }
     return stringData;
-  }
+  }*/
 
+  /**
+   * Upon initialization, the screen is set to landscape mode
+   * and saves the current letter pack name.
+   */
   @override
   void initState() {
     super.initState();
@@ -111,6 +124,9 @@ class _BoardScreenState extends State<BoardScreen> {
     //letterPackMap[letterPackName].dataEncode(QRStringList);
   }
 
+  /**
+   * Returns scaffold containing the main components of the Board Screen.
+   */
   Widget build(BuildContext context) {
     return WillPopScope(
         onWillPop: () async => false,
@@ -132,34 +148,8 @@ class _BoardScreenState extends State<BoardScreen> {
               Positioned(
                   top: 5 + SizeConfig.safeAreaVertical,
                   right: 20,
-                  child: CircleAvatar(
-                    backgroundColor: Colors.black54,
-                    radius: (SizeConfig.screenHeight * 0.05),
-                    child: IconButton(
-                      icon: Icon(SFSymbols.qrcode),
-                      iconSize: SizeConfig.screenHeight * 0.05,
-                      color: colorsList[colorChipIndex],
-                      onPressed: () {
-                        print(letterPackMap[letterPackName].dataEncodeiOS());
-                        showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                  content: Container(
-                                width: SizeConfig.screenHeight - 20,
-                                height: SizeConfig.screenHeight - 20,
-                                child: Center(
-                                    child: QrImage(
-                                  data: letterPackMap[letterPackName]
-                                      .dataEncodeiOS(),
-                                  version: QrVersions.auto,
-                                  //size: 100,
-                                )),
-                              ));
-                            });
-                      },
-                    ),
-                  )),
+                  child: qrButton()
+              ),
               Positioned(
                 top: 5 + SizeConfig.safeAreaVertical,
                 left: 20,
@@ -173,6 +163,9 @@ class _BoardScreenState extends State<BoardScreen> {
   }
 
   /// ---- Build Methods for Widgets on Blending Board Screen ----///
+  /**
+   * Returns an IconButton that sends user to the home screen.
+   */
   Widget homeButton() {
     return CircleAvatar(
       backgroundColor: Colors.black54,
@@ -189,17 +182,14 @@ class _BoardScreenState extends State<BoardScreen> {
                       }
                     ),*/
               );
-
-          /*print(isHomePressed);
-                  setState(() {
-                    isHomePressed = !isHomePressed;
-                  });
-                  */
         },
       ),
     );
   }
 
+  /**
+   * Returns an IconButton that shuffles the letters in the letterPack. TODO: FIXME
+   */
   Widget shuffleButton() {
     return CircleAvatar(
       backgroundColor: isShufflePressed == false
@@ -248,6 +238,44 @@ class _BoardScreenState extends State<BoardScreen> {
     );
   }
 
+  /**
+   * Returns an IconButton that displays the qr code for the opened blending board deck. 
+   * Encodes the blending board deck information into a string so it can be transmitted via qr code. 
+   */
+  Widget qrButton() {
+    return CircleAvatar(
+      backgroundColor: Colors.black54,
+      radius: (SizeConfig.screenHeight * 0.05),
+      child: IconButton(
+        icon: Icon(SFSymbols.qrcode),
+        iconSize: SizeConfig.screenHeight * 0.05,
+        color: colorsList[colorChipIndex],
+        onPressed: () {
+          print(letterPackMap[letterPackName].dataEncodeiOS());
+          showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                    content: Container(
+                  width: SizeConfig.screenHeight - 20,
+                  height: SizeConfig.screenHeight - 20,
+                  child: Center(
+                      child: QrImage(
+                    data: letterPackMap[letterPackName]
+                        .dataEncodeiOS(),
+                    version: QrVersions.auto,
+                    //size: 100,
+                  )),
+                ));
+              });
+        },
+      ),
+    );
+  }
+  /**
+   * Returns a button that displays the current letter of the beginning letter set. 
+   * When pressed, the next letter in the set is displayed.
+   */
   Widget beginningCardButton() {
     return Container(
         width: SizeConfig.screenWidth * 0.27,
@@ -288,6 +316,9 @@ class _BoardScreenState extends State<BoardScreen> {
         ));
   }
 
+  /**
+   * Returns a Container with the background color of the beginning card.
+   */
   Widget beginningCardBackground() {
     return Container(
         width: SizeConfig.screenWidth * 0.27,
@@ -297,7 +328,10 @@ class _BoardScreenState extends State<BoardScreen> {
             color: isDarkModeOn ? Colors.black : Colors.white,
             borderRadius: BorderRadius.circular(10)));
   }
-
+  /**
+   * Returns a button that displays the current letter of the middle letter set. 
+   * When pressed, the next letter in the set is displayed.
+   */
   Widget middleCardButton() {
     return Container(
         width: SizeConfig.screenWidth * 0.27,
@@ -335,7 +369,9 @@ class _BoardScreenState extends State<BoardScreen> {
           ),
         ));
   }
-
+  /**
+   * Returns a Container with the background color of the middle card.
+   */
   Widget middleCardBackground() {
     return Container(
         width: SizeConfig.screenWidth * 0.27,
@@ -345,7 +381,10 @@ class _BoardScreenState extends State<BoardScreen> {
             color: checkBackgroundColor(middleCardName),
             borderRadius: BorderRadius.circular(10)));
   }
-
+  /**
+   * Returns a button that displays the current letter of the ending letter set. 
+   * When pressed, the next letter in the set is displayed.
+   */
   Widget endCardButton() {
     return Container(
       width: SizeConfig.screenWidth * 0.27,
@@ -379,7 +418,9 @@ class _BoardScreenState extends State<BoardScreen> {
       )),
     );
   }
-
+  /**
+   * Returns a Container with the background color of the ending card.
+   */
   Widget endCardBackground() {
     return Container(
         width: SizeConfig.screenWidth * 0.27,
@@ -389,6 +430,9 @@ class _BoardScreenState extends State<BoardScreen> {
             color: Colors.white, borderRadius: BorderRadius.circular(10)));
   }
 
+  /**
+   * Returns a row of the beginning, middle, and end card buttons.
+   */
   Widget cardButtonRow() {
     return Container(
         child: Row(
@@ -401,6 +445,9 @@ class _BoardScreenState extends State<BoardScreen> {
     ));
   }
 
+  /**
+   * Returns a row of containers that consist of the background colors for the cards.
+   */
   Widget cardBackgroundRow() {
     return Container(
         child: Row(

@@ -8,7 +8,6 @@ class LetterSet {
 
   //The placement of the letter set represented in the numerical value of its binary form.
   int positionBinary; //for 3 columns
-  //List <String> position;
 
   //The letters in the letter set.
   List<String> letters;
@@ -72,6 +71,10 @@ class LetterSet {
     return tempList;
   }
 
+  /**
+   * Edits `stringList` with the encoded data of this letter set. 
+   * Uses "#" as a delimiter.
+   */
   void dataEncode(List<String> stringList) {
     stringList.add("#" + name);
     stringList.add("$positionBinary");
@@ -80,6 +83,11 @@ class LetterSet {
     }
   }
 
+  /**
+   * Returns a string of the encoded data of this letter set
+   * in the way that the ios version of Blending Board encodes 
+   * the data for QR transmission
+   */
   String dataEncodeiOS() {
     String encodedLetterSet = "";
     //stringList.add("{\"$position\":");

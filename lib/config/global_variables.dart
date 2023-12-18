@@ -3,6 +3,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../letter_set.dart';
 import '../letter_pack.dart';
 
+/**
+ * Global variables and methods for Blending Board App
+ */
+
 ///----Custom Colors----///
 Color blueC = const Color(0xFF0342dc);
 Color redC = const Color(0xFFEB4D3D);
@@ -92,13 +96,16 @@ List<String> dataStringList = [];
 List<List> allData = [];
 int numberOfLetterPacks;
 LetterPack discardPack;
-//binary representation of position
+
+//Numerical value of the binary representation of possible letter set positions.
 const int beginning = 1;
 const int middle = 2;
 const int end = 4;
 const int sides = 5;
 const int latterHalf = 6;
 const int all = 7;
+
+///----Letter Sets----//
 LetterSet singleConsonantsBeginning =
     LetterSet("Single Consonants", beginning, [
   "b",
@@ -236,6 +243,7 @@ List<LetterSet> allSets = [
   empty
 ];
 
+//----Default Letter Packs----//
 LetterPack standardClosed = LetterPack("Standard (Closed Syllable)",
     singleConsonantsBeginning, closedSyllable, singleConsonantsEnding);
 LetterPack standardOpen = LetterPack("Standard (Open Syllable)",
@@ -249,6 +257,7 @@ LetterPack blendingDemo = LetterPack(
 List<LetterPack> defaultPacks = [standardClosed, standardOpen, blendingDemo];
 List<LetterPack> allPacks = [standardClosed, standardOpen, blendingDemo];
 
+//Map corresponding each letterpack with its name.
 var letterPackMap = {
   "Standard (Closed Syllable)": standardClosed,
   "Standard (Open Syllable)": standardOpen,
@@ -264,20 +273,20 @@ bool isLargeScreen;
 bool isDarkModeOn;
 int colorChipIndex = 0;
 
-//binary representation of mode
-const int light = 4;
-const int auto = 2;
-const int dark = 1;
+//numerical value of the binary representation of mode (for light mode, auto mode, and dark mode)
+const int light = 4; //4: 100
+const int auto = 2;  //2: 010
+const int dark = 1;  //1: 001
 
 int currentMode = 2;
-//light (4): 100
-//auto  (2): 010
-//dark  (1): 001
 
 //selected LetterSet
 LetterSet selLS;
 List<LetterSet> letterSetsFromSelectedColumn = [];
 
+/**
+ * Clears all preferences.
+ */
 reset() async {
   SharedPreferences preferences = await SharedPreferences.getInstance();
   await preferences.clear();

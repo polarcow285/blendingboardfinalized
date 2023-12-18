@@ -19,6 +19,9 @@ class CreateDecksScreen extends StatefulWidget {
   CreateDecksScreenState createState() => CreateDecksScreenState();
 }
 
+/**
+ * Create Decks Screen where the user can create and customize a letter pack by selecting different letter sets.
+ */
 class CreateDecksScreenState extends State<CreateDecksScreen> {
   int _defaultBeginningChoiceIndex = 0;
   int _defaultMiddleChoiceIndex = 1;
@@ -31,6 +34,10 @@ class CreateDecksScreenState extends State<CreateDecksScreen> {
   static LetterSet tempMiddleSet;
   static LetterSet tempEndSet;
 
+  /**
+   * Sorts all possible letter sets into three columns: beginning, middle, and end
+   * by updating beginningSetsList, middleSetsList, and endSetsList
+   */
   void sortChips() {
     beginningSetsList.clear();
     middleSetsList.clear();
@@ -62,6 +69,10 @@ class CreateDecksScreenState extends State<CreateDecksScreen> {
     sortChips();
   }
 
+  /**
+   * Returns the main components of the Create Decks Screen, along with the home button.
+   * TODO: make home button to its own widget
+   */
   Widget build(BuildContext context) {
     return WillPopScope(
         onWillPop: () async => false,
@@ -127,6 +138,9 @@ class CreateDecksScreenState extends State<CreateDecksScreen> {
   }
 
   ///----Build methods for widgets in Create Decks Screen----///
+  /**
+   * Returns a list view of all choice chips for "beginning" letter sets.
+   */
   Widget beginningChoiceChips() {
     return ListView.builder(
       itemCount: beginningSetsList.length,
@@ -197,7 +211,9 @@ class CreateDecksScreenState extends State<CreateDecksScreen> {
       },
     );
   }
-
+  /**
+   * Returns a list view of all choice chips for "middle" letter sets.
+   */
   Widget middleChoiceChips() {
     return ListView.builder(
       itemCount: middleSetsList.length,
@@ -261,7 +277,9 @@ class CreateDecksScreenState extends State<CreateDecksScreen> {
       },
     );
   }
-
+  /**
+   * Returns a list view of all choice chips for "end" letter sets.
+   */
   Widget endChoiceChips() {
     return ListView.builder(
       itemCount: endSetsList.length,
@@ -326,7 +344,10 @@ class CreateDecksScreenState extends State<CreateDecksScreen> {
       },
     );
   }
-
+  /**
+   * Returns a button that updates the selected letter pack information to 
+   * tempBeginningSet, tempMiddleSet, tempEndSet.
+   */
   Widget checkmarkButton() {
     return Container(
       //margin: EdgeInsets.only(right: SizeConfig.safeAreaVertical + 20, left: SizeConfig.safeAreaVertical + 20),
@@ -381,7 +402,9 @@ class CreateDecksScreenState extends State<CreateDecksScreen> {
       ),
     );
   }
-
+  /**
+   * Returns an empty Column for spacing purposes.
+   */
   Widget emptyColumn() {
     return Container(
         width: SizeConfig.screenWidth * 0.1,
@@ -395,6 +418,9 @@ class CreateDecksScreenState extends State<CreateDecksScreen> {
         ));
   }
 
+  /**
+   * Returns a Column of choice chips for the "beginning" letter sets. 
+   */
   Widget column1() {
     return Container(
         width: SizeConfig.screenWidth * 0.25,
@@ -420,7 +446,9 @@ class CreateDecksScreenState extends State<CreateDecksScreen> {
           ],
         ));
   }
-
+  /**
+   * Returns a Column of choice chips for the "middle" letter sets. 
+   */
   Widget column2() {
     return Container(
         width: SizeConfig.screenWidth * 0.25,
@@ -447,6 +475,9 @@ class CreateDecksScreenState extends State<CreateDecksScreen> {
         ));
   }
 
+  /**
+   * Returns a Column of choice chips for the "end" letter sets. 
+   */
   Widget column3() {
     return Container(
         width: SizeConfig.screenWidth * 0.25,
@@ -471,6 +502,9 @@ class CreateDecksScreenState extends State<CreateDecksScreen> {
         ));
   }
 
+  /**
+   * Returns a row of columns that display the letter sets and the checkmark button.
+   */
   Widget choiceChipRow() {
     return Row(
       children: [

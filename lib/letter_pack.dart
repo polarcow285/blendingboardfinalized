@@ -18,6 +18,7 @@ class LetterPack {
   //The right-most letter set
   LetterSet end;
 
+  //List of letter sets in this letter pack. 
   List<LetterSet> sets;
 
   /**
@@ -33,6 +34,9 @@ class LetterPack {
     sets = [beginning, middle, end];
 
   }
+  /**
+   * Edits `stringList` to contain the encoded data for this letter pack.
+   */
   void dataEncode(List<String> stringList) {
     stringList.add(name);
     beginning.dataEncode(stringList);
@@ -40,6 +44,9 @@ class LetterPack {
     end.dataEncode(stringList);
   }
 
+  /**
+   * Helper method that prints the name, the letter set names, and letters in the letter pack.
+   */
   void letterPackInfo() {
     print(name);
     print(beginning.name);
@@ -50,6 +57,9 @@ class LetterPack {
     print(end.letters);
   }
 
+  /**
+   * Encodes the data of all the letter packs.
+   */
   static void encodeAll() {
     for (int i = 0; i < allPacks.length; i++) {
       List<String> temp = [];
@@ -59,6 +69,11 @@ class LetterPack {
     }
   }
 
+  /**
+   * Returns a string of the encoded data of this letter pack
+   * in the way that the ios version of Blending Board encodes 
+   * the data for QR transmission
+   */
   String dataEncodeiOS() {
     String encodedLetterPack = "";
     encodedLetterPack += "{";
@@ -81,8 +96,11 @@ class LetterPack {
     return encodedLetterPack;
   }
 
+  /**
+   * Returns the numerical value of the binary representation of a letter position position, `s`.
+   */
   static int stringToPositionInt(String s) {
-    //because old construcotr had a list of length one that told what the position was
+    //because old contructor had a list of length one that told what the position was
     //new constructor uses int
     switch (s) {
       case "beginning":
@@ -117,7 +135,9 @@ class LetterPack {
         break;
     }
   }
-
+  /**
+   * Returns a letter pack by the decoding letter pack data in `letterSetList`.
+   */
   static LetterPack decodeLetterPack(List<String> letterSetList) {
     LetterPack tempLP;
     String letterPackName = "";
@@ -186,7 +206,9 @@ class LetterPack {
     return tempLP;
   }
 
-  //decodeAll will take allData and update allPacks.
+  /**
+   * Decodes all letter packs' data from allData and updates allPacks.
+   */
   static void decodeAll() {
     //allPacks is a list of letterpacks
     allPacks.clear();

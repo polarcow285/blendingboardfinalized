@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 
 /**
- * SizeConfig class that controls calculates sizes to provide for responsive screens.
+ * SizeConfig class that calculates sizes to provide for responsive screens.
  */
 class SizeConfig {
   static MediaQueryData _mediaQueryData;
