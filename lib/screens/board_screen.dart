@@ -24,11 +24,27 @@ class BoardScreen extends StatefulWidget {
  * practice blending sounds together. 
  */
 class _BoardScreenState extends State<BoardScreen> {
-  //counters for the shuffling. TODO: FIX ME
-  int counter1 = 0;
-  int counter2 = 0;
-  int counter3 = 0;
   
+  //Index variables that iterate through the letters of the beginning, middle, and end letter sets
+  /**
+   * Invariant: 0 <= counter1 < letterPackMap[letterPackName].beginning.letters.length
+   */
+  int counter1 = 0;
+
+  /**
+   * Invariant: 0 <= counter2 < letterPackMap[letterPackName].middle.letters.length
+   */
+  int counter2 = 0;
+
+  /**
+   * Invariant: 0 <= counter3 < letterPackMap[letterPackName].end.letters.length
+   */
+  int counter3 = 0;
+ 
+  List begRandomized; 
+  List midRandomized; 
+  List endRandomized;
+
   String beginningCardName = letterPackMap[letterPackName].beginning.letters[0];
   String middleCardName = letterPackMap[letterPackName].middle.letters[0];
   String endCardName = letterPackMap[letterPackName].end.letters[0];
@@ -204,35 +220,29 @@ class _BoardScreenState extends State<BoardScreen> {
             : Colors
                 .black, //isShufflePressed == false ? Color(0xFF0690d4): Color(0xFF000000),
         onPressed: () {
-          isShufflePressed = !isShufflePressed;
-          if (isShufflePressed == true) {
-            //if shuffle is pressed, randomize
-            setState(() {
-              counter1 = random.nextInt(
-                  letterPackMap[letterPackName].beginning.letters.length);
+          setState(() {
+            isShufflePressed = !isShufflePressed;
+            counter1 = 0;
+            counter2 = 0;
+            counter3 = 0;
+            if (isShufflePressed == true) {
+              begRandomized = List.from(letterPackMap[letterPackName].beginning.letters)..shuffle();
+              beginningCardName = begRandomized[counter1];     
+
+              midRandomized = List.from(letterPackMap[letterPackName].middle.letters)..shuffle();
+              middleCardName = midRandomized[counter2];
+
+              endRandomized = List.from(letterPackMap[letterPackName].end.letters)..shuffle();
+              endCardName = endRandomized[counter3];
+            }
+            else{
               beginningCardName =
                   letterPackMap[letterPackName].beginning.letters[counter1];
-              counter2 = random
-                  .nextInt(letterPackMap[letterPackName].middle.letters.length);
               middleCardName =
                   letterPackMap[letterPackName].middle.letters[counter2];
-              counter3 = random
-                  .nextInt(letterPackMap[letterPackName].end.letters.length);
               endCardName = letterPackMap[letterPackName].end.letters[counter3];
-            });
-          } else {
-            //if shuffle is not pressed, set to original
-            setState(() {
-              counter1 = 0;
-              beginningCardName =
-                  letterPackMap[letterPackName].beginning.letters[counter1];
-              counter2 = 0;
-              middleCardName =
-                  letterPackMap[letterPackName].middle.letters[counter2];
-              counter3 = 0;
-              endCardName = letterPackMap[letterPackName].end.letters[counter3];
-            });
-          }
+            }
+          });
         },
       ),
     );
@@ -308,8 +318,14 @@ class _BoardScreenState extends State<BoardScreen> {
                     letterPackMap[letterPackName].beginning.letters.length) {
                   counter1 = 0;
                 }
-                beginningCardName =
+                if(isShufflePressed){
+                  beginningCardName = begRandomized[counter1];
+                }
+                else{
+                  beginningCardName =
                     letterPackMap[letterPackName].beginning.letters[counter1];
+                }
+                
               });
             },
           ),
