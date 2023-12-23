@@ -9,7 +9,14 @@ class MissionStatementScreen extends StatefulWidget {
   _MissionStatementScreenState createState() => _MissionStatementScreenState();
 }
 
+/**
+ * Screen where users can learn more about the app's mission statement.
+ */
 class _MissionStatementScreenState extends State<MissionStatementScreen> {
+
+  /**
+   * Upon initialization, the screen is set to landscape mode.
+   */
   @override
   void initState() {
     super.initState();
@@ -19,11 +26,21 @@ class _MissionStatementScreenState extends State<MissionStatementScreen> {
     ]);
   }
 
+  /**
+   * Url of the dyslexic mindset website
+   */
   final Uri _url = Uri.parse('http://dyslexicmindset.weebly.com/');
+
+  /**
+   * Launches the url
+   */
   void _launchUrl() async {
     if (!await launchUrl(_url)) throw 'Could not launch $_url';
   }
 
+  /**
+   * Returns the main components of the Mission Statement Screen.
+   */
   Widget build(BuildContext context) {
     return WillPopScope(
         onWillPop: () async => false,
@@ -64,7 +81,10 @@ class _MissionStatementScreenState extends State<MissionStatementScreen> {
   }
 
   ///----Build methods for Mission Statement Screen----///
-
+  /**
+   * Returns a GestureDetector in the form of the Dyslexic Mindset brain image that launches the 
+   * website url when tapped.
+   */
   Widget missionStatementImage() {
     return GestureDetector(
       onTap: () {
@@ -78,6 +98,9 @@ class _MissionStatementScreenState extends State<MissionStatementScreen> {
     );
   }
 
+  /**
+   * Returns the text of the app's mission statement.
+   */
   Widget missionStatementText() {
     return Container(
         margin: EdgeInsets.all(SizeConfig.safeAreaVertical + 20),

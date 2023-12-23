@@ -17,10 +17,21 @@ class SaveScreen extends StatefulWidget {
   SaveScreenState createState() => SaveScreenState();
 }
 
+/**
+ * Save Screen where users can deicde to skip the saving process, or give 
+ * their created letter pack a name and save it to their decks.
+ */
 class SaveScreenState extends State<SaveScreen> {
+  /**
+   * Controller for text editing.
+  */ 
   final _controller = TextEditingController();
 
   ///---Saving to Preferences----///
+  
+  /**
+   * Saves an integer value representing the number of saved values, `numValue` at the key "numberOfKeys".
+   */
   static _saveInt(int numValue) async {
     final prefs = await SharedPreferences.getInstance();
     final key = "numberOfKeys";
@@ -28,7 +39,10 @@ class SaveScreenState extends State<SaveScreen> {
     prefs.setInt(key, value);
     //print('saved $value');
   }
-
+  
+  /**
+   * Saves a List of Strings with the encoded data of a letter pack, `stringList`,  at the key `keyName`
+   */
   static _saveLetterPack(List<String> stringList, String keyName) async {
     LetterPack.encodeAll();
     final prefs = await SharedPreferences.getInstance();
@@ -38,6 +52,9 @@ class SaveScreenState extends State<SaveScreen> {
     //print('saved $value');
   }
 
+  /**
+   * Saves all letter packs to shared preferences.
+   */
   static saveAll() async {
     numberOfLetterPacks++;
     LetterPack.encodeAll();
@@ -51,9 +68,12 @@ class SaveScreenState extends State<SaveScreen> {
     print('Saved All');
     print(numberOfLetterPacks);
   }
-
+ 
   final _formKey = GlobalKey<FormState>();
 
+  /**
+   * Upon initialization, the screen will load in landscape mode.
+   */
   @override
   void initState() {
     super.initState();
@@ -63,11 +83,17 @@ class SaveScreenState extends State<SaveScreen> {
     ]);
   }
 
+  /**
+   * Disposes the controller
+   */
   void dispose() {
     _controller.dispose();
     super.dispose();
   }
 
+  /**
+   * Returns the components of the Save Screen.
+   */
   Widget build(BuildContext context) {
     return WillPopScope(
         onWillPop: () async => false,
@@ -117,6 +143,10 @@ class SaveScreenState extends State<SaveScreen> {
   }
 
   ///----Build methods for widgets in Save Screen----///
+  
+  /**
+   * Returns a row with the text form field and the save button.
+   */
   Widget textSaveRow() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -133,6 +163,10 @@ class SaveScreenState extends State<SaveScreen> {
     );
   }
 
+  /**
+   * Returns a text form field for entering the name of the saved letter pack. 
+   * The name of the saved letter pack cannot be empty.
+   */
   Widget textFormField() {
     return Container(
         width: SizeConfig.screenWidth * 0.3,
@@ -168,6 +202,9 @@ class SaveScreenState extends State<SaveScreen> {
             )));
   }
 
+  /**
+   * Returns a button that saves the data of the created letter pack.
+   */
   Widget saveButton() {
     return Container(
       margin: EdgeInsets.all(20),
@@ -198,6 +235,10 @@ class SaveScreenState extends State<SaveScreen> {
     );
   }
 
+  /**
+   * Returns a button that skips the save process, and saves the created letter pack
+   * as the `discardPack`. Then the user is led to the Board Screen with the discardPack opened.
+   */
   Widget skipSaveButton() {
     return Container(
       margin: EdgeInsets.all(20),

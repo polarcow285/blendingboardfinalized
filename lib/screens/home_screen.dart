@@ -21,6 +21,7 @@ import 'my_decks_screen.dart' show MyDecksScreen;
 import 'create_decks_screen.dart' show CreateDecksScreen;
 import 'settings_screen.dart' show SettingsScreen;
 import 'save_screen.dart' show SaveScreenState;
+
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
 
@@ -30,19 +31,61 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => _MyHomePageState();
 }
 
+/**
+ * Home screen of the Blending Board App. 
+ */
 class _MyHomePageState extends State<MyHomePage> {
+  /**
+   * String holding the encoded data in a scanned QR code.
+   */
   String qrString = "";
+
+  /**
+   * Holds the encoded name of the beginning letter set of the scanned letter pack.
+   */
   String beginningName = "";
+
+  /**
+   * Holds the encoded name of the middle letter set of the scanned letter pack.
+   */
   String middleName = "";
+
+  /**
+   * Holds the encoded name of the end letter set of the scanned letter pack.
+   */
   String endName = "";
-  String lpName = "";
+
+  /**
+   * Holds the remaining encoded data of the beginning letter set from the scanned letter pack.
+   */
   String beginningSubstring = "";
+
+  /**
+   * Holds the remaining encoded data of the end letter set from the scanned letter pack.
+   */
   String endSubstring = "";
+
+  
+  /**
+   * Holds the encoded data of the letter pack name from the scanned letter pack.
+   */
   String letterPackSubstring = "";
+
+  /**
+   * Holds the remaining data of the middle letter set from the scanned letter pack.
+   */
   String middleSubstring = "";
 
-  ///----Reading and Writing to Preferences----///
+  /**
+   * Holds the name of the scanned letter pack.
+   */
+  String lpName = "";
 
+  ///----Reading and Writing to Preferences----///
+  
+  /**
+   * Returns the value stored at the key `keyNumberString`
+   */
   Future<List> _read(String keyNumberString) async {
     final prefs = await SharedPreferences.getInstance();
     final key = keyNumberString;
@@ -51,6 +94,10 @@ class _MyHomePageState extends State<MyHomePage> {
     return value;
   }
 
+  /**
+   * Returns a list of Strings with the data encoded for the discard Pack 
+   * stored at the key `discardKey`
+   */
   Future<List> _readDiscardPack(String discardKey) async {
     final prefs = await SharedPreferences.getInstance();
     final key = discardKey;
@@ -59,6 +106,9 @@ class _MyHomePageState extends State<MyHomePage> {
     return value;
   }
 
+  /**
+   * Returns an integer stored at the key `key`.
+   */
   Future<int> _readInt(String key) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     //Return int
@@ -66,6 +116,9 @@ class _MyHomePageState extends State<MyHomePage> {
     return intValue;
   }
 
+  /**
+   * Returns the mode stored at the key "currentMode".
+   */
   Future<int> _readMode() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     //Return int
@@ -73,6 +126,9 @@ class _MyHomePageState extends State<MyHomePage> {
     return intValue;
   }
 
+  /**
+   * Returns the index of the color theme at the key "colorIndexKey"
+   */
   Future<int> _readColorIndex() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     //Return int
@@ -80,6 +136,9 @@ class _MyHomePageState extends State<MyHomePage> {
     return intValue;
   }
 
+  /**
+   * Reads the data for all the letter packs, the color theme, and the mode.
+   */
   void readAll() async {
     await _readInt("numberOfKeys").then((value) {
       numberOfLetterPacks = value;
@@ -136,12 +195,20 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+
+  /**
+   * Returns the letter pack name stored at key `key`.
+   */
   Future<String> _readLetterPackName(String key) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String stringValue = prefs.getString(key);
     return stringValue;
   }
 
+  /**
+   * Reads the name last opened letter pack. If it is the app's very first time getting opened, it is set
+   * to Standard (Closed Syllable) letter pack.
+   */
   Future<void> readAtLogoButton() async {
     await _readLetterPackName("currentLetterPackName").then((value) {
       if (value == null) {
@@ -162,6 +229,9 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   ///---QR Functions----///
+  /**
+   * Parses the beginning letter set data from qrString.
+   */
   void getBeginningSubstring() {
     print(qrString.indexOf("},"));
     beginningSubstring = qrString.substring(1, qrString.indexOf("},"));
@@ -171,6 +241,9 @@ class _MyHomePageState extends State<MyHomePage> {
     print("qr string: " + qrString);
   }
 
+  /**
+   * Parses the end letter set data from qrString.
+   */
   void getEndSubstring() {
     //print(qrString.indexOf("\"end\""));
     endSubstring = qrString.substring(0, qrString.indexOf("},"));
@@ -178,6 +251,9 @@ class _MyHomePageState extends State<MyHomePage> {
     qrString = qrString.substring(qrString.indexOf("},") + 2, qrString.length);
   }
 
+  /**
+   * Parses the letter pack name from qrString.
+   */
   void getLetterPackSubstring() {
     letterPackSubstring = qrString.substring(
         qrString.indexOf("\"name\""), qrString.indexOf("\"middle\""));
@@ -186,23 +262,26 @@ class _MyHomePageState extends State<MyHomePage> {
         qrString.substring(qrString.indexOf("\"middle\""), qrString.length);
   }
 
+  /**
+   * Parses the middle letter set data from qrString.
+   */
   void getMiddleSubstring() {
     middleSubstring = qrString.substring(0, qrString.indexOf("}"));
   }
 
-  void divideSubstring() {
-    print("original qrString: " + qrString);
-    print("did i get ehre");
+  /**
+   * Parses data from qrString.
+   */
+  void divideSubstring() {   
     getBeginningSubstring();
-    print(qrString);
-    print("im guessing it will breka here");
     getEndSubstring();
-    print("end worked");
     getLetterPackSubstring();
-    print("letterpack worked");
     getMiddleSubstring();
   }
 
+  /**
+   * Returns a letter set by decoding the data in `setSubstring`
+   */
   LetterSet stringToLetterSetConverter(String setSubstring) {
     LetterSet tempLS;
     String lsName = "";
@@ -225,6 +304,9 @@ class _MyHomePageState extends State<MyHomePage> {
     return tempLS;
   }
 
+  /**
+   * Returns a LetterPack from  the qr data. 
+   */
   LetterPack qrToLetterPack() {
     LetterSet begLS;
     LetterSet midLS;
@@ -247,22 +329,11 @@ class _MyHomePageState extends State<MyHomePage> {
     return tempLP;
   }
 
-/*List<String> stringToListConverter(String longString){
-  List<String> stringList = [];
-  int lengthOfElement = 0;
-  //goes through the string and 
-  //pol,jkhb,apo,bop,
-  for(int i=0; i<longString.length; i++){
-    if(longString[i] == ","){
-      stringList.add(longString.substring(i-lengthOfElement, i));
-      lengthOfElement = 0;
-    }
-    else{
-      lengthOfElement++;
-    } 
-  }
-  return stringList;
-}*/
+  /**
+   * Encodes the data from the scanned qrcode into a letter pack and opens that letterpack
+   * in Board Screen. If an error is thrown, displays a dialog telling the user that QR scanning is not
+   * supported on this device.
+   */
   Future<void> _scan() async {
     try {
       ScanResult codeSanner = await BarcodeScanner.scan(
@@ -343,7 +414,11 @@ class _MyHomePageState extends State<MyHomePage> {
       }
     }
   }
-
+  /**
+   * Checks if the user has granted camera permissions. If the user has, then the user can use their 
+   * device's camera to scan the qr code. If the user has not, then displays a dialog asking whether the 
+   * app can use device's camera.
+   */
   checkCameraPermissions() async {
     var cameraStatus = await Permission.camera.status;
     print(cameraStatus);
@@ -395,7 +470,10 @@ class _MyHomePageState extends State<MyHomePage> {
       });
     }
   }
-
+  /**
+   * Upon initialization, the screen is set to landscape mode. If is the first time opening the app,
+   * then data is loaded.
+   */
   @override
   void initState() {
     super.initState();
@@ -406,7 +484,7 @@ class _MyHomePageState extends State<MyHomePage> {
     if (firstBuild == true) {
       reset();
       readAll();
-      print(colorChipIndex);
+      //print(colorChipIndex);
       //var brightness = SchedulerBinding.instance.window.platformBrightness;
       //print(isDarkModeOn);
       firstBuild = false;
@@ -416,10 +494,11 @@ class _MyHomePageState extends State<MyHomePage> {
       currentBrainLogoImage = brainLogoImagesList[colorChipIndex];
       //colorChipIndex = 0;
     }
-
-    print(colorChipIndex);
   }
 
+  /**
+   * Returns the main components of the Home screen.
+   */
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
@@ -517,6 +596,9 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   ///----Build methods for widgets in homescreen----///
+  /**
+   * Returns a button with the createDecksButton, logoButton, and myDecksButton.
+   */
   Widget mainButtonRow() {
     return Container(
         child: Row(
@@ -526,6 +608,9 @@ class _MyHomePageState extends State<MyHomePage> {
     ));
   }
 
+  /**
+   * Returns a row containing the misc butotns.
+   */
   Widget miscButtonRow() {
     return Container(
         margin: EdgeInsets.only(top: 5, bottom: SizeConfig.safeAreaVertical),
@@ -540,6 +625,9 @@ class _MyHomePageState extends State<MyHomePage> {
         ));
   }
 
+  /**
+   * Returns a button that leads users to the Create Decks Screen.
+   */
   Widget createDeckButton() {
     return Container(
         margin: EdgeInsets.only(
@@ -576,6 +664,10 @@ class _MyHomePageState extends State<MyHomePage> {
         ));
   }
 
+  /**
+   * Returns a button in the shape of the Blending Board logo that leads users
+   * to Blending Board screen with the most recent deck used opened.
+   */
   Widget logoButton() {
     return Container(
       margin: EdgeInsets.only(top: 20, right: 5, left: 5, bottom: 20),
@@ -618,6 +710,9 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  /**
+   * Returns a button that leads the user to the My Decks Screen. 
+   */
   Widget myDecksButton() {
     return Container(
         margin: EdgeInsets.only(top: 20, left: 10),
@@ -646,7 +741,9 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ));
   }
-
+  /**
+   * Returns a button that leads the user to the Mission Statement Screen. 
+   */
   Widget missionStatementButton() {
     return Container(
         margin: EdgeInsets.only(right: 5),
@@ -674,7 +771,9 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ));
   }
-
+  /**
+   * Returns a button that leads users to the Settings Screen. 
+   */
   Widget settingsButton() {
     return Container(
       height: SizeConfig.screenWidth * (0.05),
@@ -699,6 +798,9 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  /**
+   * Returns a button that opens the user's camera with the user's permission. 
+   */
   Widget qrCamera() {
     return Container(
       margin: EdgeInsets.only(left: 5),

@@ -20,13 +20,29 @@ class SettingsScreen extends StatefulWidget {
   _SettingsScreenState createState() => _SettingsScreenState();
 }
 
+/**
+ * Settings screen where the user can choose the color theme and mode.
+ */
 class _SettingsScreenState extends State<SettingsScreen> {
+
+  /**
+   * Stores the mode selected by the picker 
+   */
   int modesPickerValue = 0;
+
+  /**
+   * Map containing the mode in its numerical form and its corresponding mode in String form as a Widget. 
+   */
   Map<int, Widget> modesMap = <int, Widget>{
     light: Text("Light"),
     auto: Text("Auto"),
     dark: Text("Dark")
   };
+
+  /**
+   * Upon initilization, sets the screen into landscape mode and
+   * sets modesPickerValue depending on whether dark mode is on.
+   */
   @override
   void initState() {
     super.initState();
@@ -41,6 +57,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
+  /**
+   * Returns the components of the Settings Screen.
+   */
   Widget build(BuildContext context) {
     //var brightness = MediaQuery.of(context).platformBrightness;
     //if auto is selected
@@ -92,6 +111,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ]));
   }
 
+  /**
+   * Saves the numerical form of the mode, `mode` at the key "currentMode".
+   */
   static _saveMode(int mode) async {
     final prefs = await SharedPreferences.getInstance();
     final key = "currentMode";
@@ -100,6 +122,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
     //print('saved $value');
   }
 
+  /**
+   * Saves the numerical value of the selected color theme, `numValue`, at the 
+   * key "colorIndexKey"
+   */
   static _saveColorIndex(int numValue) async {
     final prefs = await SharedPreferences.getInstance();
     final key = "colorIndexKey";
@@ -108,6 +134,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
     //print('saved $value');
   }
 
+  /**
+   * Returns a Cupertino Sliding Segmented Control picker that allows the user
+   * to choose the mode.
+   */
   Widget modePicker() {
     return CupertinoSlidingSegmentedControl(
         groupValue: currentMode,
@@ -183,6 +213,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
         });
   }
 
+  /**
+   * Returns a Column with the components of the Settings Screen.
+   */
   Widget settingsColumn() {
     return Container(
         width: SizeConfig.screenWidth * 0.6,
@@ -212,6 +245,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ));
   }
 
+  /**
+   * Returns a row containing the mode picker.
+   */
   Widget modeRow() {
     return Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
       Container(
@@ -229,6 +265,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
     ]);
   }
 
+  /**
+   * Returns a Row of the chips for selecing the theme color.
+   */
   Widget colorChipsRow() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -249,6 +288,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
+  /**
+   * Returns a ListView of the chips for selecting the color theme.
+   */
   Widget colorChips() {
     return ListView.builder(
         itemCount: themeColorsList.length,

@@ -19,8 +19,19 @@ class CustomizeLettersScreen extends StatefulWidget {
   _CustomizeLettersState createState() => _CustomizeLettersState();
 }
 
+/**
+ * Customize Letters Screen where users can add or remove letters to the 
+ * letter set that they are currently editing.
+ */
 class _CustomizeLettersState extends State<CustomizeLettersScreen> {
+  /**
+   * Controller for the TextFormField.
+   */
   final _controller = TextEditingController();
+
+  /**
+   * List of background colors to display when a letter is selected
+   */
   List<Color> selectedColorsList = [
     Color(0xFF2250be),
     Color(0xffe0353a),
@@ -31,6 +42,11 @@ class _CustomizeLettersState extends State<CustomizeLettersScreen> {
     Color(0xFF6d6e71),
     Color(0xFF217b82)
   ];
+
+  /**
+   * Upon initialization, the screen is set to landscape mode
+   * and saves the current letter pack name.
+   */
   @override
   void initState() {
     super.initState();
@@ -38,14 +54,20 @@ class _CustomizeLettersState extends State<CustomizeLettersScreen> {
       DeviceOrientation.landscapeRight,
       DeviceOrientation.landscapeLeft,
     ]);
-    print(letterSetsFromSelectedColumn);
+    //print(letterSetsFromSelectedColumn);
   }
 
+  /**
+   * Disploses the controller for the text form field.
+   */
   void dispose() {
     _controller.dispose();
     super.dispose();
   }
 
+  /**
+   * Returns whether the LetterSet `lset` is selected.
+   */
   bool isSelectedChecker(LetterSet lset) {
     //check equality of two lists
     Function eq = const ListEquality().equals;
@@ -67,6 +89,9 @@ class _CustomizeLettersState extends State<CustomizeLettersScreen> {
     return isAdded;
   }
 
+  /**
+   * Returns the main components of the Customize Letters Screen.
+   */
   Widget build(BuildContext context) {
     final double itemWidth = SizeConfig.screenWidth / 50;
     final double itemHeight = SizeConfig.screenWidth / 50;
@@ -120,6 +145,10 @@ class _CustomizeLettersState extends State<CustomizeLettersScreen> {
   }
 
   ///----Build methods for widgets in Customize Letters Screen----///
+  
+  /**
+    * Returns whether `name` is a long name.
+    */
   bool isLongName(String name) {
     bool isLongName;
     if (name.length > 18) {
@@ -130,6 +159,9 @@ class _CustomizeLettersState extends State<CustomizeLettersScreen> {
     return isLongName;
   }
 
+  /**
+   * Returns a column containing the list of letter sets from the column the user selected the letter set from.
+   */
   Widget selectedColumn() {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -142,6 +174,9 @@ class _CustomizeLettersState extends State<CustomizeLettersScreen> {
     );
   }
 
+  /**
+   * Returns a list of the letter sets from the column the user selected the letter set from.
+   */
   Widget selectedColumnChips() {
     return ListView.builder(
         itemCount: letterSetsFromSelectedColumn.length,
@@ -267,6 +302,10 @@ class _CustomizeLettersState extends State<CustomizeLettersScreen> {
         });
   }
 
+  /**
+   * Returns a gridview of all the letters in the selected letter set, including letters added by the user
+   * and a TextFormField for users to add new letters.
+   */
   Widget gridView(double width, double height) {
     return GridView.count(
       // Create a grid with 3 columns. If you change the scrollDirection to
@@ -376,7 +415,7 @@ class _CustomizeLettersState extends State<CustomizeLettersScreen> {
                     });
                   }));
         } else {
-          print("current index (original): " + index.toString());
+          //print("current index (original): " + index.toString());
           return Container(
               margin: EdgeInsets.only(
                   top: 5,

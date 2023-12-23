@@ -126,7 +126,10 @@ class CreateDecksScreenState extends State<CreateDecksScreen> {
               ],
             )));
   }
-
+  
+   /**
+    * Returns whether `name` is a long name.
+    */
   bool isLongName(String name) {
     bool isLongName;
     if (name.length > 18) {

@@ -10,14 +10,21 @@ import 'dart:ui';
 
 import 'home_screen.dart' show MyHomePage;
 import 'board_screen.dart' show BoardScreen;
-///----My Decks Screen----///
 
+///----My Decks Screen----///
 class MyDecksScreen extends StatefulWidget {
   @override
   _MyDecksScreenState createState() => _MyDecksScreenState();
 }
 
+/**
+ * My Decks Screen where the user can view their created decks.
+ */
 class _MyDecksScreenState extends State<MyDecksScreen> {
+
+  /**
+   * Upon initialization, loads the screen in landscape mode.
+   */
   @override
   void initState() {
     super.initState();
@@ -27,12 +34,15 @@ class _MyDecksScreenState extends State<MyDecksScreen> {
     ]);
   }
 
+  /**
+   * Returns the main components of the screen. TODO make trash button its own widget
+   */
   Widget build(BuildContext context) {
     //var size = MediaQuery.of(context).size;
 
     /*24 is for notification bar on Android*/
     //final double itemHeight = (size.height - kToolbarHeight - 24) / 2;
-
+    
     final double itemWidth = SizeConfig.screenWidth;
     final double itemHeight = itemWidth / 5;
 
@@ -137,7 +147,10 @@ class _MyDecksScreenState extends State<MyDecksScreen> {
   }
 
   ///----Build methods for My Decks Screen----///
-
+  
+  /**
+   * Returns a column displaying all the user's decks.
+   */
   Widget myDecksColumn(double width, double height) {
     return Container(
         margin: EdgeInsets.only(top: SizeConfig.safeBlockHorizontal),
@@ -157,6 +170,9 @@ class _MyDecksScreenState extends State<MyDecksScreen> {
         ));
   }
 
+  /**
+   * Returns of GridView of all the user's decks.
+   */
   Widget gridView(double width, double height) {
     return ConstrainedBox(
       constraints: new BoxConstraints(
