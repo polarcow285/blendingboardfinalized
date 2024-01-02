@@ -378,8 +378,14 @@ class _BoardScreenState extends State<BoardScreen> {
                     letterPackMap[letterPackName].middle.letters.length) {
                   counter2 = 0;
                 }
-                middleCardName =
+                if(isShufflePressed){
+                  middleCardName = midRandomized[counter2];
+                }
+                else{
+                  middleCardName =
                     letterPackMap[letterPackName].middle.letters[counter2];
+                }
+                
               });
             },
           ),
@@ -428,7 +434,13 @@ class _BoardScreenState extends State<BoardScreen> {
             if (counter3 >= letterPackMap[letterPackName].end.letters.length) {
               counter3 = 0;
             }
-            endCardName = letterPackMap[letterPackName].end.letters[counter3];
+            if(isShufflePressed){
+              endCardName = endRandomized[counter3];
+            }
+            else{
+              endCardName = letterPackMap[letterPackName].end.letters[counter3];
+            }
+            
           });
         },
       )),
