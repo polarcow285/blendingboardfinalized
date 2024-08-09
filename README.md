@@ -1,16 +1,26 @@
-# blendingboardappfinalized
+# Blending Board
+Source code for the Android and Windows version of Blending Board, an app that helps dyslexics learn how to read. This project was done in collaboration with Technology Integration Specialist Nadine Gilkison and iOS app creator Brayden Gogis.
+Google Play Store: https://play.google.com/store/apps/details?id=com.flutter_android.blendingboardapp&hl=en_US&gl=US
+Windows App Store: https://apps.microsoft.com/detail/9pnwhb4xdwsl?hl=en-US&gl=US
 
-A new Flutter project.
+## **Introduction**
+Blending Board is a digital educational tool that helps students with dyslexia sound out syllables and improve reading. Users of the app can create customized digital cards which contain letters that form specific sounds in English. Learners can then flip through their set of cards to practice blending sounds together to create words. This project was created during the pandemic to help students and teachers use blending boards while learning at home. 
 
-## Getting Started
+## **Description**
 
-This project is a starting point for a Flutter application.
+## **Authors and Acknowledgment**
 
-A few resources to get you started if this is your first Flutter project:
+Blending Board (Android and Windows Ver) was created by **[Natalie Leung](https://github.com/polarcow)**.
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+This project was made possible by:
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- **[Nadine Gilkison](https://x.com/nadinegilkison)**
+- **[Brayden Gogis](https://x.com/ChainReactGames)**
+  
+## **Changelog**
+
+- **0.1.0:** Initial release
+- **0.1.1:** Fixed a bug in the build process
+- **0.2.0:** Added a new feature
+- **0.2.1:** Fixed a bug in the new feature
+
