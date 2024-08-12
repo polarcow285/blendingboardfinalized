@@ -11,6 +11,24 @@ Blending Board is a digital educational tool that helps students with dyslexia s
 ## **Description & Main Features**
 To build the Android version of this app, I used Flutter, which is a software development kit made by Google and runs on the coding language, Dart.
 
+The homescreen allows users to access the main functions of the app, such as creating and viewing decks and accessing settings. Clicking the Blending Board icon brings users to their last used deck.
+![](images/homescreen.png)
+
+On the board screen, users can flip through decks by pressing cards to move to the next letter. They also have the ability to shuffle the cards.
+![](images/featureImageBlendingBoard.png)
+
+Users can create decks by choosing specific letter sets for the beginning, middle, and end cards. 
+![](images/createDeckScreen(QR&Customization).png)
+
+Users can customize individual letter sets by adding or removing cards to the original letter set.
+![](images/createDeckScreen(QR&Customization).png)
+
+Created decks have the option to be saved. Saved decks will appear in the “My Decks” screen.
+![](images/savesScreen.png)
+![](images/myDecksScreen.png)
+
+To share decks across devices, each deck has a QR code that can be scanned, transferring the letter deck information across devices.
+![](images/qrImage.png)
 
 ## **Authors and Acknowledgment**
 
