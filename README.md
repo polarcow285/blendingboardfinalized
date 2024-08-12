@@ -15,13 +15,13 @@ The homescreen allows users to access the main functions of the app, such as cre
 ![](images/homescreen.png)
 
 On the board screen, users can flip through decks by pressing cards to move to the next letter. They also have the ability to shuffle the cards.
-![](images/featureImageBlendingBoard.png)
+![](images/Screenshot_1626292680.png)
 
 Users can create decks by choosing specific letter sets for the beginning, middle, and end cards. 
 ![](images/createDeckScreen(QR&Customization).png)
 
 Users can customize individual letter sets by adding or removing cards to the original letter set.
-![](images/createDeckScreen(QR&Customization).png)
+![](images/customize.png)
 
 Created decks have the option to be saved. Saved decks will appear in the “My Decks” screen.
 ![](images/savesScreen.png)
